@@ -12,7 +12,9 @@
     "format": "biome check --write",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "db:push": "drizzle-kit push --force"
+    "db:push": "drizzle-kit push --force",
+    "db:import": "node scripts/import.ts",
+    "db:load": "docker compose up -d --wait && pnpm db:push && pnpm db:import data/1807"
   },
   "commitlint": {
     "extends": [
