@@ -1,5 +1,26 @@
 # Journal de développement
 
+## 2026-10-30 — Processus : dépôt GitHub, branches et PR
+
+**Fait**
+- Dépôt privé `hueynemud/latynnaxplorer` créé ; `main` réduit au projet
+  initial (brief, outillage, base Docker), le travail du modèle de données
+  déplacé sur `feat/modele-donnees`, proposé en PR.
+- `CLAUDE.md` : façon de travailler (un sprint = une branche, PR fusionnée
+  par l'utilisateur, étapes validées une à une).
+- `docs/SPRINTS.md` : les trois prochains sprints (CI, `lib/query/`, vue
+  Liste).
+
+**Décisions**
+- `main` ne reçoit que des PR relues et fusionnées par l'utilisateur.
+- Dépôt privé.
+
+**Questions ouvertes**
+- Protection de `main` sur un dépôt privé : compte GitHub Pro nécessaire ?
+
+**Suite**
+- Relecture et fusion de la PR du modèle de données, puis sprint 1 (CI).
+
 ## 2026-10-30 — Modèle v2 : une table de nœuds
 
 **Fait**
