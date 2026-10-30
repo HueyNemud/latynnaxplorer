@@ -102,10 +102,10 @@
   `4f137c4`, `c3b42c3`.
 - Base PostgreSQL 17 + PostGIS via Docker Compose, extensions `pg_trgm`,
   `unaccent`, fonction `immutable_unaccent` — `659e440`, `aa751a7`.
-- Schéma Drizzle du modèle v2 (`lib/db/schema.ts`) — `9c98dac`.
-- Validation des fichiers d'un volume (ajv, schémas numrev) — `d637718`.
+- Schéma Drizzle du modèle v2 (`lib/db/schema.ts`) — `458539b`.
+- Validation des fichiers d'un volume (ajv, schémas numrev) — `60f12c4`.
 - Import (`scripts/import.ts`), scripts `db:import` / `db:load` —
-  `96507b4`. 1807 : 21 312 nœuds, 45 673 empans, 21 260 ancres, en ≈ 5 s.
+  `34caa92`. 1807 : 21 312 nœuds, 45 673 empans, 21 260 ancres, en ≈ 5 s.
 - 13 tests Vitest sur une petite fixture conforme ; README.
 
 **Décisions**
