@@ -1,6 +1,6 @@
 // Petit volume conforme aux schémas numrev, pour les tests. Ordre de lecture :
 //   p. 1 : titre T1, entrée E3 (sous T1, ligne sans boîte), titre T2 (sous T1), entrée E1, début de E2
-//   p. 2 : fin de E2
+//   p. 2 : élément hors champ O1 (titre courant, sous T2), fin de E2
 
 const ROOT = "00000000-0000-0000-0000-000000000000";
 export const T1 = "10000000-0000-0000-0000-000000000001";
@@ -8,6 +8,7 @@ export const T2 = "10000000-0000-0000-0000-000000000002";
 export const E1 = "20000000-0000-0000-0000-000000000001";
 export const E2 = "20000000-0000-0000-0000-000000000002";
 export const E3 = "20000000-0000-0000-0000-000000000003";
+export const O1 = "40000000-0000-0000-0000-000000000001";
 
 const header = {
   volume: "TEST",
@@ -21,14 +22,14 @@ const header = {
   },
 };
 
-function line(key: string, bbox: number[] | null) {
+function line(key: string, bbox: number[] | null, cls = "B-ENTRY") {
   return {
     id: `1-2:${key}`,
     key,
     uid: null,
     block: "1-2:1.1",
     origin: "ocr",
-    class: "B-ENTRY",
+    class: cls,
     text: key,
     ocr_text: key,
     bbox_estimate: bbox,
@@ -119,11 +120,11 @@ export function fixture() {
           line("e1", [100, 70, 500, 90]),
           line("e2a", [120, 950, 480, 970]),
         ]),
-        page(2, [line("e2b", [100, 10, 300, 30])]),
+        page(2, [line("o1", [400, 0, 600, 8], "OUT OF SCOPE"), line("e2b", [100, 10, 300, 30])]),
       ],
     },
     structure: {
-      schema: "numrev-structure/1",
+      schema: "numrev-structure/2",
       ...header,
       root: ROOT,
       titles: [title(T1, ROOT, "PARTIE.", "t1"), title(T2, T1, "RUBRIQUE.", "t2")],
@@ -131,6 +132,16 @@ export function fixture() {
         e1,
         entry(E2, "Martin, rue Longue, 3.", ["e2a", "e2b"], [1, 2]),
         entry(E3, "Durand.", ["e3"], [1], T1),
+      ],
+      out_of_scope: [
+        {
+          id: O1,
+          parent: T2,
+          range: "1-2",
+          pages: [2],
+          text: "ALMANACH",
+          lines: [{ line: "1-2:o1", start: 0, end: 8 }],
+        },
       ],
     },
   };

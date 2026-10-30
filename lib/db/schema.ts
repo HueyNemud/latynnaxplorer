@@ -18,7 +18,7 @@ import {
   uuid,
 } from "drizzle-orm/pg-core";
 
-export const nodeKind = pgEnum("node_kind", ["entry", "section"]);
+export const nodeKind = pgEnum("node_kind", ["entry", "section", "out_of_scope"]);
 export const spanLabel = pgEnum("span_label", ["SUBJ", "DESC", "ADDR"]);
 
 /** Annuaire, décrit par data/<volume>/volume.json (Dublin Core). */
@@ -33,20 +33,20 @@ export const volume = pgTable(
   (t) => [check("volume_temporal", sql`${t.temporalStart} <= ${t.temporalEnd}`)],
 );
 
-/** Nœud du graphe : une entrée ou une section (titre) de l'annuaire. */
+/** Nœud du graphe : une entrée, une section (titre) ou un élément hors champ de l'annuaire. */
 export const node = pgTable(
   "node",
   {
-    id: uuid().primaryKey(), // uuid numrev de l'entrée ou du titre
+    id: uuid().primaryKey(), // uuid numrev de l'entrée, du titre ou de l'élément hors champ
     volumeId: text("volume_id")
       .notNull()
       .references(() => volume.id, { onDelete: "cascade" }),
     kind: nodeKind().notNull(),
-    parentId: uuid("parent_id"), // section parente : arc member_of (entrée) ou child_of (section) ; null = racine
+    parentId: uuid("parent_id"), // section parente : arc child_of (section), member_of (autres) ; null = racine
     // rang du nœud dans l'ordre de lecture de son volume, tous types confondus (0…n-1) ;
     // arc follows : l'entrée suivante dans cet ordre
     documentReadingOrder: integer("document_reading_order").notNull(),
-    text: text().notNull(), // entrée : « text » ; section : « heading »
+    text: text().notNull(), // section : « heading » ; autres : « text »
   },
   (t) => [
     foreignKey({ columns: [t.parentId], foreignColumns: [t.id] }).onDelete("cascade"),

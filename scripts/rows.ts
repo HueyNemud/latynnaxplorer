@@ -65,25 +65,23 @@ export function toRows({ volume: meta, document, structure }: VolumeFiles): Rows
     return order;
   };
 
+  // Un nœud par titre, entrée et élément hors champ ; le texte d'un titre est son « heading ».
+  const items = [
+    ...structure.titles.map((t) => ({ ...t, kind: "section" as const, text: t.heading })),
+    ...structure.entries.map((e) => ({ ...e, kind: "entry" as const })),
+    ...structure.out_of_scope.map((o) => ({ ...o, kind: "out_of_scope" as const })),
+  ];
+
   // Un nœud prend dans l'ordre de lecture la place de sa première ligne.
-  const nodes: Rows["nodes"] = [
-    ...structure.titles.map((title) => ({
-      id: title.id,
+  const nodes: Rows["nodes"] = items
+    .map((item) => ({
+      id: item.id,
       volumeId,
-      kind: "section" as const,
-      parentId: parentOf(title.parent),
-      text: title.heading,
-      lineOrder: firstLineOrder(title.id, title.lines),
-    })),
-    ...structure.entries.map((entry) => ({
-      id: entry.id,
-      volumeId,
-      kind: "entry" as const,
-      parentId: parentOf(entry.parent),
-      text: entry.text,
-      lineOrder: firstLineOrder(entry.id, entry.lines),
-    })),
-  ]
+      kind: item.kind,
+      parentId: parentOf(item.parent),
+      text: item.text,
+      lineOrder: firstLineOrder(item.id, item.lines),
+    }))
     .sort((a, b) => a.lineOrder - b.lineOrder)
     .map(({ lineOrder: _, ...n }, documentReadingOrder) => ({ ...n, documentReadingOrder }));
 
@@ -98,7 +96,7 @@ export function toRows({ volume: meta, document, structure }: VolumeFiles): Rows
     })),
   );
 
-  const anchors = [...structure.titles, ...structure.entries].flatMap((item) =>
+  const anchors = items.flatMap((item) =>
     anchorsOf(
       item.id,
       item.lines.map((ref) => ref.line),

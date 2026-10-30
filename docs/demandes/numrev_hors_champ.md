@@ -3,6 +3,10 @@
 Prompt destiné à un agent qui travaille dans `../adresses_revolutionnaires`
 (numrev). Rédigé le 2026-10-30 depuis latynnaxplorer.
 
+**Traitée le 2026-10-30** : numrev `c3b94a0` (pages partagées, partie de
+l'autre plage `SUPPRIMÉE`) et `2548ce1` (tableau `out_of_scope`,
+`numrev-structure/2`), branche `stabilisation`.
+
 ---
 
 ## Contexte

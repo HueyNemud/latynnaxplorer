@@ -9,22 +9,23 @@ Sources : `data/<volume>/` (`<volume>.document.json`,
 Principes retenus :
 - **numrev fait foi** : l'application importe l'export tel quel, sans
   rattrapage. Les défauts de données se corrigent dans numrev.
-- **Schéma minimal et commun** : sections et entrées sont des nœuds d'une
-  même table, traités de la même manière.
+- **Schéma minimal et commun** : sections, entrées et éléments hors champ
+  sont des nœuds d'une même table, traités de la même manière.
 - **Un seul annuaire** pour commencer ; pas de liens temporels.
 
 ## 1. Les données sources
 
 Format de référence : `../adresses_revolutionnaires/docs/format_export.md`
-(`numrev-document/1`, `numrev-structure/1`). Fichiers de 1807 (10,8 + 17,9 Mo).
+(`numrev-document/1`, `numrev-structure/2`). Fichiers de 1807 (10,8 + 18,1 Mo).
 
 | Fichier | Objet | Nombre | Repris dans le modèle |
 |---|---|---|---|
 | `structure.json` | titre (section) | 603 | `id`, `parent`, `heading` ; position dans la liste |
 | | entrée | 20 709 | `id`, `parent`, `text`, `spans` ; position dans la liste |
+| | élément hors champ (titre courant, numéro de page, note, texte libre ; une ligne chacun) | 846 | `id`, `parent`, `text` ; position dans la liste |
 | | empan | 45 673 (SUBJ 20 863, ADDR 19 980, DESC 4 830) | `id`, `label`, `start`, `end`, `normalized` |
 | `document.json` | page | 250 objets (248 pages du PDF) | numéro de page (via les lignes) |
-| | ligne | 22 625 | `bbox_estimate` des lignes d'un nœud (union par page) |
+| | ligne | 22 625 (dont 219 `SUPPRIMÉE`) | `bbox_estimate` des lignes d'un nœud (union par page) ; ordre des lignes = ordre de lecture |
 | `volume.json` (à la main) | métadonnées Dublin Core | 1 | `identifier`, `title`, `temporal` |
 
 Non repris : plages, blocs, mots et confiances OCR, `level` des titres,
@@ -36,10 +37,14 @@ Observations à remonter à numrev (l'application ne les corrige pas) :
   pour eux ;
 - 19 entrées simples contiennent plusieurs SUBJ ;
 - 197 renvois « voyez » non structurés ;
-- p. 192 et 212 lues dans deux plages (sans effet ici : seules les lignes
-  rattachées à un nœud sont lues) ;
-- éléments hors champ (981 lignes) non exportés comme entités : non importés
-  en attendant numrev (demande : `docs/demandes/numrev_hors_champ.md`).
+- 89 éléments hors champ sans ligne boîtée : pas d'ancre non plus ;
+- la nature d'un élément hors champ (titre courant, numéro, texte) n'est pas
+  exportée : numrev ne la connaît pas (seul indice : le libellé OCR du bloc,
+  non relu, non repris ici).
+
+Les pages partagées par deux plages (p. 192 et 212) sont réglées dans numrev
+(partie de l'autre plage `SUPPRIMÉE`) : pas de doublon dans `structure.json`.
+Demande d'origine : `docs/demandes/numrev_hors_champ.md`.
 
 ## 2. Modèle
 
@@ -48,9 +53,9 @@ Observations à remonter à numrev (l'application ne les corrige pas) :
 | Table | Rôle | Lignes (1807) |
 |---|---|---|
 | `volume` | l'annuaire : identifiant, titre, intervalle temporel | 1 |
-| `node` | **nœud** typé `entry` ou `section` | 21 312 |
+| `node` | **nœud** typé `entry`, `section` ou `out_of_scope` | 22 158 |
 | `span` | champs structurés d'une entrée : SUBJ / DESC / ADDR | 45 673 |
-| `anchor` | ancrage d'un nœud : page du PDF et boîte, une ligne par page touchée | ≈ 21 250 |
+| `anchor` | ancrage d'un nœud : page du PDF et boîte, une ligne par page touchée | 22 017 |
 
 Pas de table `page` : un numéro de page du PDF suffit pour ancrer (les
 boîtes sont dans un repère relatif 0–1000) et désignera plus tard la toile
@@ -60,12 +65,15 @@ IIIF. La taille de l'image viendra du serveur IIIF.
 
 | Arc | Entre | Stockage |
 |---|---|---|
-| `member_of` | entrée → section | `node.parent_id` d'une entrée |
+| `member_of` | entrée ou élément hors champ → section | `node.parent_id` d'une entrée ou d'un élément hors champ |
 | `child_of` | section → section | `node.parent_id` d'une section |
 | `follows` | entrée → entrée suivante dans l'ordre de lecture du volume, à travers les sections, sans compter les autres nœuds | `node.document_reading_order` : première entrée de rang supérieur |
 
 `member_of` et `child_of` sont la même colonne : numrev donne un seul arbre
-(champ `parent`) où entrées et titres ont pour parent un titre. Le type
+(champ `parent`) où tous les objets ont pour parent un titre (ou la racine).
+Un élément hors champ est rangé sous la rubrique ouverte à cet endroit : un
+titre courant « appartient » ainsi à la rubrique en cours, au sens de
+l'ordre de lecture et non du contenu. Le type
 d'arc se lit au type du nœud source. Aucune table d'arcs : tout est déduit
 des colonnes.
 
@@ -73,8 +81,8 @@ des colonnes.
 attribut commun à tous les nœuds (`document_reading_order`, rang 0…n-1 dans
 le volume, tous types confondus) : une vue qui parcourt le document trie
 par lui, sans passer par un arc. `follows` est une relation entre entrées
-seulement (« l'entrée suivante ») ; elle saute les sections et, plus tard,
-les éléments hors champ, et ne change pas quand on ajoute un type de nœud.
+seulement (« l'entrée suivante ») ; elle saute les sections et les éléments
+hors champ, et n'a pas changé quand ce troisième type de nœud a été ajouté.
 
 ### Diagramme
 
@@ -102,7 +110,7 @@ Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
 
 ### Import (`scripts/`)
 
-- `node` : les `titles` et les `entries` du `structure.json` ;
+- `node` : les `titles`, les `entries` et les `out_of_scope` du `structure.json` ;
   `document_reading_order` = rang de leur première ligne dans l'ordre des
   lignes de `document.json` (ordre de lecture du volume) ; `parent_id` =
   `parent`, sauf la racine numrev → `null`.
@@ -115,22 +123,26 @@ Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
   volume. Un fichier non conforme arrête l'import.
 - Le volume est remplacé en entier, dans une transaction.
 
-Résultat pour 1807 : 21 312 nœuds (603 sections, 20 709 entrées), 45 673
-empans, 21 260 ancres ; 51 entrées et 3 sections sans ancre ; 2 entrées
-ancrées sur deux pages.
+Résultat pour 1807 : 22 158 nœuds (603 sections, 20 709 entrées, 846
+éléments hors champ), 45 673 empans, 22 017 ancres ; 51 entrées, 3 sections
+et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
 
 ### Choix discutables ⚠️
 
 1. **Une seule table `node`** : `text` change de source selon le type
    (`heading` pour une section) ; rien en base n'empêche un empan sur une
-   section ou une entrée parente d'une entrée (numrev fait foi).
-2. **`follows` calculé, pas stocké** : « première entrée de rang
+   section ou un élément hors champ, ni une entrée parente d'une entrée
+   (numrev fait foi).
+2. **Hors champ en `member_of`** : même arc que les entrées vers leur
+   rubrique ; un sous-graphe « toute la rubrique » les inclut donc, sauf
+   filtre `kind = 'entry'`.
+3. **`follows` calculé, pas stocké** : « première entrée de rang
    supérieur » par sous-requête, servie par l'index
    `(volume_id, kind, document_reading_order)`.
-3. **Pas de `page`**, pas de taille d'image : à revoir avec IIIF.
-4. **Ordre alphabétique** : sur le premier SUBJ (`min(char_start)`), par
+4. **Pas de `page`**, pas de taille d'image : à revoir avec IIIF.
+5. **Ordre alphabétique** : sur le premier SUBJ (`min(char_start)`), par
    sous-requête, sans colonne dénormalisée.
-5. **Géocodage** : pas de table, sprint dédié (voir « Plus tard ») ; les
+6. **Géocodage** : pas de table, sprint dédié (voir « Plus tard ») ; les
    empans ADDR et leur uuid en sont le point d'accroche.
 
 ## 3. Requête → sous-graphe induit (SQL)
@@ -171,7 +183,7 @@ une fiche (`id = :id`), tout l'annuaire (`volume_id = :v`).
 ```sql
 -- member_of / child_of : le parent, si les deux bouts sont sélectionnés
 SELECT n.id AS source, n.parent_id AS target,
-       CASE n.kind WHEN 'entry' THEN 'member_of' ELSE 'child_of' END AS kind
+       CASE n.kind WHEN 'section' THEN 'child_of' ELSE 'member_of' END AS kind
 FROM node n
 WHERE n.id IN (SELECT id FROM nodes)
   AND n.parent_id IN (SELECT id FROM nodes);

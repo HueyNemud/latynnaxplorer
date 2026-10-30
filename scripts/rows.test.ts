@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { E1, E2, E3, fixture, T1, T2 } from "./fixture.ts";
+import { E1, E2, E3, fixture, O1, T1, T2 } from "./fixture.ts";
 import { anchorsOf, toRows } from "./rows.ts";
 import { validateVolume } from "./validate.ts";
 
@@ -15,13 +15,14 @@ describe("toRows", () => {
     });
   });
 
-  it("range sections et entrées ensemble, dans l'ordre de lecture de leur première ligne", () => {
+  it("range tous les nœuds ensemble, dans l'ordre de lecture de leur première ligne", () => {
     expect(rows.nodes.map((n) => [n.documentReadingOrder, n.kind, n.id])).toEqual([
       [0, "section", T1],
       [1, "entry", E3],
       [2, "section", T2],
       [3, "entry", E1],
       [4, "entry", E2],
+      [5, "out_of_scope", O1],
     ]);
   });
 
@@ -33,12 +34,13 @@ describe("toRows", () => {
 
   it("rattache à la racine (null) les nœuds dont le parent est la racine numrev", () => {
     const parents = Object.fromEntries(rows.nodes.map((n) => [n.id, n.parentId]));
-    expect(parents).toEqual({ [T1]: null, [T2]: T1, [E1]: T2, [E2]: T2, [E3]: T1 });
+    expect(parents).toEqual({ [T1]: null, [T2]: T1, [E1]: T2, [E2]: T2, [E3]: T1, [O1]: T2 });
   });
 
-  it("prend le titre lisible d'une section et le texte d'une entrée", () => {
+  it("prend le titre lisible d'une section et le texte des autres nœuds", () => {
     expect(rows.nodes.find((n) => n.id === T2)?.text).toBe("RUBRIQUE.");
     expect(rows.nodes.find((n) => n.id === E1)?.text).toBe("Dupont, rue de la Paix, 12.");
+    expect(rows.nodes.find((n) => n.id === O1)?.text).toBe("ALMANACH");
   });
 
   it("reprend les empans des entrées avec leur position", () => {
@@ -57,6 +59,7 @@ describe("toRows", () => {
       [E1, 1, 100, 70, 500, 90],
       [E2, 1, 120, 950, 480, 970],
       [E2, 2, 100, 10, 300, 30],
+      [O1, 2, 400, 0, 600, 8],
     ]);
   });
 });

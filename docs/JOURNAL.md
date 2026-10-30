@@ -21,6 +21,32 @@
 **Suite**
 - Relecture et fusion de la PR du modèle de données, puis sprint 1 (CI).
 
+## 2026-10-30 — Éléments hors champ importés
+
+**Fait**
+- numrev a traité la demande (`c3b94a0`, `2548ce1`, branche
+  `stabilisation`) : tableau `out_of_scope` dans `numrev-structure/2`, pages
+  partagées sans doublon.
+- Nouvel export de 1807 copié dans `data/1807/` (accord donné) ; schéma
+  recopié en `scripts/schemas/numrev-structure-2.schema.json`.
+- Type de nœud `out_of_scope` ; import, fixture et tests adaptés (14 tests).
+- 1807 : 22 158 nœuds dont 846 hors champ (90 à la racine), 22 017 ancres
+  (89 hors champ sans boîte) ; `follows` inchangé (20 708 arcs) ; titres
+  courants et numéros de page intercalés dans l'ordre de lecture.
+- `drizzle-kit push` ajoute la valeur d'enum sans question ni recréation.
+
+**Décisions**
+- Nom du type : `out_of_scope`, comme le tableau numrev.
+- Arc d'un élément hors champ vers sa rubrique : `member_of`, comme une
+  entrée.
+- Libellé OCR du bloc (nature probable de l'élément) non repris.
+
+**Questions ouvertes**
+- Aucune.
+
+**Suite**
+- `lib/query/` ou application Next.js, selon votre priorité.
+
 ## 2026-10-30 — Ordre de lecture et éléments hors champ
 
 **Fait**

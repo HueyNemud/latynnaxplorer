@@ -1,16 +1,16 @@
 // Validation des fichiers d'un volume avant import : rien n'est importé d'un fichier non conforme.
 // Les schémas numrev sont copiés de ../adresses_revolutionnaires/src/numrev/export/schemas/
-// (commit 1b3240e) ; à recopier quand numrev change de version de format.
+// (commit 2548ce1) ; à recopier quand numrev change de version de format.
 
 import { Ajv2020, type ValidateFunction } from "ajv/dist/2020.js";
 import documentSchema from "./schemas/numrev-document-1.schema.json" with { type: "json" };
-import structureSchema from "./schemas/numrev-structure-1.schema.json" with { type: "json" };
+import structureSchema from "./schemas/numrev-structure-2.schema.json" with { type: "json" };
 import volumeSchema from "./schemas/volume.schema.json" with { type: "json" };
 
 /** Boîte [x0, y0, x1, y1], repère numrev 0–1000, origine en haut à gauche. */
 export type Bbox = [number, number, number, number];
 
-/** Référence d'un titre ou d'une entrée vers une ligne de document.json. */
+/** Référence d'un nœud vers une ligne de document.json. */
 interface LineRef {
   line: string;
 }
@@ -46,6 +46,7 @@ export interface NumrevStructure {
       normalized: string;
     }[];
   }[];
+  out_of_scope: { id: string; parent: string; text: string; lines: LineRef[] }[];
 }
 
 export interface VolumeFiles {
