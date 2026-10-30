@@ -1,0 +1,15 @@
+pre-commit:
+  commands:
+    lint:
+      glob: "*.{ts,json,jsonc}"
+      run: pnpm exec biome check --no-errors-on-unmatched {staged_files}
+    # tsc ne vérifie pas un fichier isolé avec la configuration du projet :
+    # tout le projet est vérifié dès qu'un fichier TypeScript est indexé.
+    typecheck:
+      glob: "*.ts"
+      run: pnpm exec tsc --noEmit
+
+commit-msg:
+  commands:
+    commitlint:
+      run: pnpm exec commitlint --edit {1}

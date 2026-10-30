@@ -1,0 +1,3 @@
+allowBuilds:
+  # son postinstall ne fait que « lefthook install », déjà lancé par le script « prepare »
+  lefthook: false
