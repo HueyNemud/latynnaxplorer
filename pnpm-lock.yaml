@@ -109,6 +109,9 @@ importers:
 
   .:
     dependencies:
+      ajv:
+        specifier: 8.20.0
+        version: 8.20.0
       drizzle-orm:
         specifier: 0.45.4
         version: 0.45.4(postgres@3.4.9)
