@@ -4,6 +4,11 @@ Une ligne par décision, la plus récente en haut.
 
 - 2026-10-30 — Un sprint = une branche ; `main` ne reçoit que des PR relues et fusionnées par l'utilisateur ; dépôt GitHub privé `hueynemud/latynnaxplorer`.
 
+- 2026-10-30 — Étendue actuelle : données seulement (modèle, import, validation) ; pas de site, pas de CI ni Renovate avant le sprint GitHub.
+- 2026-10-30 — PostgreSQL 17 (et non 18) : avec 18, drizzle-kit 0.31 recrée les contraintes composites à chaque push.
+- 2026-10-30 — Import validé contre les JSON Schema de numrev (copiés dans `scripts/schemas/`) avec ajv ; volume.json a son propre schéma.
+- 2026-10-30 — Node 26, pnpm 12, dépendances en versions exactes.
+
 - 2026-10-30 — Données d'un volume dans `data/<volume>/` (les JSON de 1807 déplacés dans `data/1807/`).
 - 2026-10-30 — Géocodage hors modèle pour l'instant : sprint dédié, rattaché aux uuid des empans ADDR.
 

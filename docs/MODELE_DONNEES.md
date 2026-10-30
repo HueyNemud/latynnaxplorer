@@ -1,6 +1,6 @@
 # Modèle de données — v2
 
-État : rien n'est implémenté. Décisions : `docs/DECISIONS.md`. Extensions
+État : schéma et import implémentés ; requêtes de la section 3 non implémentées. Décisions : `docs/DECISIONS.md`. Extensions
 prévues (géocodage, liens temporels) : fin de document.
 
 Sources : `data/<volume>/` (`<volume>.document.json`,
@@ -77,88 +77,21 @@ erDiagram
     node ||--o{ anchor : "page + boîte"
 ```
 
-### Schéma Drizzle (`lib/db/schema.ts`, proposé)
+### Schéma Drizzle
 
-Avec `casing: "snake_case"` dans la configuration Drizzle. Les extensions
-`pg_trgm` et `unaccent`, et la fonction `immutable_unaccent` (enveloppe
-`IMMUTABLE` de `unaccent`, exigée pour l'indexer), sont créées par le
-script d'initialisation de la base Docker, pas par Drizzle.
+Source de vérité : `lib/db/schema.ts` (commenté), appliqué par
+`pnpm db:push` (`drizzle-kit push`, sans migrations). Noms de colonnes SQL
+explicites en snake_case. Les extensions `pg_trgm` et `unaccent`, et la
+fonction `immutable_unaccent` (enveloppe `IMMUTABLE` de `unaccent`, exigée
+pour l'indexer), sont créées par `lib/db/init.sql` à la création de la
+base Docker, pas par Drizzle. L'image PostGIS crée en plus ses propres
+extensions (`postgis`, `postgis_topology`, `postgis_tiger_geocoder`,
+`fuzzystrmatch`), inutilisées pour l'instant.
 
-```ts
-import { sql } from "drizzle-orm";
-import {
-  check, date, foreignKey, index, integer, pgEnum, pgTable, primaryKey,
-  smallint, text, unique, uuid,
-} from "drizzle-orm/pg-core";
+Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
+`number`), positions d'empan en `integer`, dates de l'intervalle en `date`.
 
-export const nodeKind = pgEnum("node_kind", ["entry", "section"]);
-export const spanLabel = pgEnum("span_label", ["SUBJ", "DESC", "ADDR"]);
-
-/** Annuaire, décrit par data/<volume>/volume.json (Dublin Core). */
-export const volume = pgTable(
-  "volume",
-  {
-    id: text().primaryKey(), // dc:identifier = nom du volume numrev, ex. « 1807_AD75-PER292 »
-    title: text(), // dc:title ; null tant qu'il n'est pas renseigné
-    temporalStart: date().notNull(), // dcterms:temporal, début (AAAA-MM-JJ)
-    temporalEnd: date().notNull(), // dcterms:temporal, fin (AAAA-MM-JJ)
-  },
-  (t) => [check("volume_temporal", sql`${t.temporalStart} <= ${t.temporalEnd}`)],
-);
-
-/** Nœud du graphe : une entrée ou une section (titre) de l'annuaire. */
-export const node = pgTable(
-  "node",
-  {
-    id: uuid().primaryKey(), // uuid numrev de l'entrée ou du titre
-    volumeId: text().notNull().references(() => volume.id, { onDelete: "cascade" }),
-    kind: nodeKind().notNull(),
-    parentId: uuid(), // section parente : arc member_of (entrée) ou child_of (section) ; null = racine
-    rank: integer().notNull(), // position dans la liste numrev de son type ; entrées : arc follows
-    text: text().notNull(), // entrée : « text » ; section : « heading »
-  },
-  (t) => [
-    foreignKey({ columns: [t.parentId], foreignColumns: [t.id] }).onDelete("cascade"),
-    unique().on(t.volumeId, t.kind, t.rank),
-    index().on(t.parentId),
-    index("node_text_trgm").using("gin", sql`immutable_unaccent(${t.text}) gin_trgm_ops`),
-  ],
-);
-
-/** Champ structuré d'une entrée : empan SUBJ (qui), DESC (quoi) ou ADDR (où). */
-export const span = pgTable(
-  "span",
-  {
-    id: uuid().primaryKey(), // uuid numrev de l'empan (futur point d'accroche du géocodage)
-    nodeId: uuid().notNull().references(() => node.id, { onDelete: "cascade" }),
-    label: spanLabel().notNull(),
-    charStart: smallint().notNull(), // position dans node.text, en points de code (fin exclue)
-    charEnd: smallint().notNull(),
-    normalized: text().notNull(), // texte sans emphase, blancs réduits (numrev)
-  },
-  (t) => [
-    index().on(t.nodeId),
-    index("span_normalized_trgm").using("gin", sql`immutable_unaccent(${t.normalized}) gin_trgm_ops`),
-  ],
-);
-
-/** Ancrage d'un nœud dans la source : sa boîte sur une page du PDF. */
-export const anchor = pgTable(
-  "anchor",
-  {
-    nodeId: uuid().notNull().references(() => node.id, { onDelete: "cascade" }),
-    page: smallint().notNull(), // page du PDF, à partir de 1
-    // union des boîtes de ses lignes sur cette page ; repère numrev 0–1000, origine en haut à gauche
-    x0: smallint().notNull(),
-    y0: smallint().notNull(),
-    x1: smallint().notNull(),
-    y1: smallint().notNull(),
-  },
-  (t) => [primaryKey({ columns: [t.nodeId, t.page] }), index().on(t.page)],
-);
-```
-
-### Import (`scripts/`, pour mémoire)
+### Import (`scripts/`)
 
 - `node` : les `titles` puis les `entries` du `structure.json` ; `rank` =
   position dans leur liste (numrev les donne dans l'ordre du document) ;
@@ -166,6 +99,15 @@ export const anchor = pgTable(
 - `anchor` : pour chaque nœud et chaque page, union des `bbox_estimate` non
   nulles de ses lignes ; aucune ligne boîtée sur la page → pas d'ancre.
 - `volume` : `data/<volume>/volume.json`.
+- Avant tout : validation des trois fichiers (`scripts/validate.ts`) contre
+  les JSON Schema de numrev (copiés dans `scripts/schemas/`) et contre
+  `scripts/schemas/volume.schema.json` ; les trois doivent nommer le même
+  volume. Un fichier non conforme arrête l'import.
+- Le volume est remplacé en entier, dans une transaction.
+
+Résultat pour 1807 : 21 312 nœuds (603 sections, 20 709 entrées), 45 673
+empans, 21 260 ancres ; 51 entrées et 3 sections sans ancre ; 2 entrées
+ancrées sur deux pages.
 
 ### Choix discutables ⚠️
 
