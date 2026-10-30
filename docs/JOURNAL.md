@@ -40,9 +40,11 @@
 **Décisions**
 - Pas de changement du modèle pour la performance à ce stade.
 
+- `follows` stocké, colonnes sans accents et chemin d'ancêtres : notés
+  dans `docs/IDEES.md`, non faits (décision de l'utilisateur).
+
 **Questions ouvertes**
-- Stocker `follows`, ajouter des colonnes générées sans accents ou un chemin
-  d'ancêtres ? Gains mesurés ou estimés en section 4 ; à décider.
+- Aucune.
 
 **Suite**
 - `lib/query/` ou application Next.js, selon votre priorité.

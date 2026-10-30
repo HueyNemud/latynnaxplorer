@@ -300,12 +300,7 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 | arcs de tout le volume (22 158 nœuds) | 213,9 ms | 97,8 ms ; 22,3 ms pour `follows` par `lead()` |
 | vue document (une page, 100 rangs), fiche | < 0,4 ms | < 0,3 ms |
 
-**Pistes non retenues pour l'instant** (elles changent le modèle) :
-- `follows` stocké (vue matérialisée ou colonne) : arcs du volume ≈ 16 ms,
-  de la plus grosse rubrique ≈ 11 ms ;
-- colonne générée `immutable_unaccent(...)` : ≈ 15 % de moins sur la
-  revérification des recherches floues ;
-- chemin des ancêtres (tableau ou `ltree`) : sous-arbre sans récursion.
+Pistes non retenues (elles changent le modèle) : `docs/IDEES.md`.
 
 ## Plus tard : géocodage (sprint dédié)
 
