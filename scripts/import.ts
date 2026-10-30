@@ -52,6 +52,9 @@ try {
     for (const batch of batches(rows.spans)) await tx.insert(span).values(batch);
     for (const batch of batches(rows.anchors)) await tx.insert(anchor).values(batch);
   });
+  // Hors transaction : statistiques à jour pour le planificateur, et carte de visibilité
+  // remplie pour que les parcours d'index seul ne relisent pas la table.
+  await client`VACUUM (ANALYZE) volume, node, span, anchor`;
 } finally {
   await client.end();
 }

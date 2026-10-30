@@ -21,6 +21,32 @@
 **Suite**
 - Relecture et fusion de la PR du modèle de données, puis sprint 1 (CI).
 
+## 2026-10-30 — Performances en lecture
+
+**Fait**
+- `member_of` validé pour les éléments hors champ.
+- Mesure des requêtes de `MODELE_DONNEES.md` sur 1807 (`EXPLAIN ANALYZE`,
+  cache chaud), puis optimisation sans changer le modèle :
+  - index trigrammes partiels par `kind` et par `label`, en plus des
+    généraux : recherche de sections 8,3 → 0,3 ms ;
+  - index `follows` couvrant (`id` en clé) et `VACUUM (ANALYZE)` en fin
+    d'import : parcours d'index seul ;
+  - SQL de `follows` : `OFFSET 0` (évite la double évaluation), variante
+    `lead()` pour les grandes sélections : arcs du volume 214 → 98 ms, et
+    22 ms pour `follows` par `lead()` (résultats identiques, vérifié) ;
+  - `compose.yaml` : `jit=off`, `random_page_cost=1.1`.
+- Mesures et règles d'écriture des requêtes : `MODELE_DONNEES.md`, section 4.
+
+**Décisions**
+- Pas de changement du modèle pour la performance à ce stade.
+
+**Questions ouvertes**
+- Stocker `follows`, ajouter des colonnes générées sans accents ou un chemin
+  d'ancêtres ? Gains mesurés ou estimés en section 4 ; à décider.
+
+**Suite**
+- `lib/query/` ou application Next.js, selon votre priorité.
+
 ## 2026-10-30 — Éléments hors champ importés
 
 **Fait**

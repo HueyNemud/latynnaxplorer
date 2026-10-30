@@ -4,6 +4,7 @@ Une ligne par décision, la plus récente en haut.
 
 - 2026-10-30 — Un sprint = une branche ; `main` ne reçoit que des PR relues et fusionnées par l'utilisateur ; dépôt GitHub privé `hueynemud/latynnaxplorer`.
 
+- 2026-10-30 — Lecture rapide sans changer le modèle : index trigrammes partiels par `kind` / `label`, index couvrant pour `follows`, `VACUUM (ANALYZE)` après import, `jit=off`, `random_page_cost=1.1`.
 - 2026-10-30 — Éléments hors champ importés comme nœuds `out_of_scope` (numrev-structure/2), arc `member_of` vers leur rubrique ; `follows` inchangé.
 - 2026-10-30 — Éléments hors champ : futurs nœuds, mais seulement quand numrev les exportera comme entités (uuid, parent) ; pas importés d'ici là.
 - 2026-10-30 — `follows` = l'entrée suivante dans cet ordre (entrées seulement), calculée, non stockée.

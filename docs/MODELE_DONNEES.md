@@ -138,7 +138,9 @@ et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
    filtre `kind = 'entry'`.
 3. **`follows` calculé, pas stocké** : « première entrée de rang
    supérieur » par sous-requête, servie par l'index
-   `(volume_id, kind, document_reading_order)`.
+   `(volume_id, kind, document_reading_order, id)` en parcours d'index
+   seul ; pour une grande sélection, `lead()` sur les entrées du volume
+   (voir section 4).
 4. **Pas de `page`**, pas de taille d'image : à revoir avec IIIF.
 5. **Ordre alphabétique** : sur le premier SUBJ (`min(char_start)`), par
    sous-requête, sans colonne dénormalisée.
@@ -198,8 +200,19 @@ FROM (
           ORDER BY b.document_reading_order LIMIT 1) AS target
   FROM node a
   WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes)
+  OFFSET 0                         -- empêche l'inlining : sinon la sous-requête est évaluée deux fois
 ) f
 WHERE f.target IN (SELECT id FROM nodes);
+
+-- follows, variante pour une grande sélection (coût fixe : un parcours des entrées du volume)
+SELECT f.source, f.target, 'follows' AS kind
+FROM (
+  SELECT id AS source,
+         lead(id) OVER (PARTITION BY volume_id ORDER BY document_reading_order) AS target
+  FROM node
+  WHERE kind = 'entry' AND volume_id IN (SELECT volume_id FROM node WHERE id IN (SELECT id FROM nodes))
+) f
+WHERE f.source IN (SELECT id FROM nodes) AND f.target IN (SELECT id FROM nodes);
 ```
 
 ### Étape 3 : étendre par les liens documentaires
@@ -243,6 +256,56 @@ SELECT (SELECT b.id FROM node b
         ORDER BY b.document_reading_order DESC LIMIT 1)
 FROM node a WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes);
 ```
+
+## 4. Performances en lecture
+
+Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
+
+**Index** (`lib/db/schema.ts`) :
+
+| Index | Sert à |
+|---|---|
+| `node (volume_id, document_reading_order)` unique | vue document : une plage de rangs |
+| `node (volume_id, kind, document_reading_order, id)` | `follows` et entrées voisines, en parcours d'index seul (`id` en clé : Drizzle n'a pas `INCLUDE`) |
+| `node (parent_id)` | sous-arbre, contenu d'une section |
+| `anchor (node_id, page)` PK, `anchor (page)` | ancres d'un nœud, nœuds d'une page |
+| `span (node_id)` | empans d'une entrée |
+| GIN trigrammes sur `immutable_unaccent(node.text)` : un général + un partiel par `kind` | recherche floue sans accents ; le partiel sert quand la requête fixe `kind = '<littéral>'` |
+| idem sur `immutable_unaccent(span.normalized)` : un général + un partiel par `label` | idem, avec `label = '<littéral>'` |
+
+**Règles pour écrire les requêtes** :
+- fixer `kind` et `label` par un littéral (ou un paramètre de requête
+  préparée) pour que l'index partiel serve ;
+- écrire l'expression indexée telle quelle (`immutable_unaccent(...)`) ;
+- `follows` : `OFFSET 0` (ou `MATERIALIZED`) dans la sous-requête, et
+  `lead()` au-delà de quelques milliers d'entrées.
+
+**Côté serveur** :
+- `VACUUM (ANALYZE)` après chaque import (`scripts/import.ts`) :
+  statistiques à jour, et carte de visibilité remplie pour les parcours
+  d'index seul ;
+- `jit=off` et `random_page_cost=1.1` (`compose.yaml`) ;
+- nœuds insérés dans l'ordre de lecture : la vue document lit des pages
+  contiguës.
+
+**Mesures** (1807, cache chaud, temps d'exécution) :
+
+| Requête | Avant | Après |
+|---|---|---|
+| sections ~ « boulangers » | 8,3 ms | 0,3 ms |
+| SUBJ ~ « Lefevre », tout le volume | 1,2 ms | 0,6 ms |
+| sous-arbre de VINS + SUBJ ~ « Lefevre » | 12,7 ms | 4,4 ms |
+| ADDR ~ « rue de la Paix » (1 648 résultats) | 15,5 ms | 15,5 ms |
+| arcs de la plus grosse rubrique (3 337 enfants) | 49,7 ms | 29,3 ms |
+| arcs de tout le volume (22 158 nœuds) | 213,9 ms | 97,8 ms ; 22,3 ms pour `follows` par `lead()` |
+| vue document (une page, 100 rangs), fiche | < 0,4 ms | < 0,3 ms |
+
+**Pistes non retenues pour l'instant** (elles changent le modèle) :
+- `follows` stocké (vue matérialisée ou colonne) : arcs du volume ≈ 16 ms,
+  de la plus grosse rubrique ≈ 11 ms ;
+- colonne générée `immutable_unaccent(...)` : ≈ 15 % de moins sur la
+  revérification des recherches floues ;
+- chemin des ancêtres (tableau ou `ltree`) : sous-arbre sans récursion.
 
 ## Plus tard : géocodage (sprint dédié)
 

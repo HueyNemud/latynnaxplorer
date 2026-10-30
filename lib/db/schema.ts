@@ -1,8 +1,9 @@
 // Modèle de données v2 : voir docs/MODELE_DONNEES.md.
 // Les extensions et immutable_unaccent() sont créées par lib/db/init.sql.
 
-import { sql } from "drizzle-orm";
+import { type SQL, sql } from "drizzle-orm";
 import {
+  type AnyPgColumn,
   check,
   date,
   foreignKey,
@@ -20,6 +21,22 @@ import {
 
 export const nodeKind = pgEnum("node_kind", ["entry", "section", "out_of_scope"]);
 export const spanLabel = pgEnum("span_label", ["SUBJ", "DESC", "ADDR"]);
+
+/**
+ * Index trigrammes (recherche floue, insensible aux accents) : un sur toute la table, plus un
+ * partiel par valeur de `column`, que le planificateur prend quand la requête fixe cette valeur
+ * (moins de candidats à revérifier, ex. les 603 sections parmi 22 158 nœuds).
+ */
+function trigramIndexes(name: string, expression: SQL, column: AnyPgColumn, values: string[]) {
+  return [
+    index(`${name}_trgm`).using("gin", sql`${expression} gin_trgm_ops`),
+    ...values.map((value) =>
+      index(`${name}_trgm_${value.toLowerCase()}`)
+        .using("gin", sql`${expression} gin_trgm_ops`)
+        .where(sql`${column} = ${sql.raw(`'${value}'`)}`),
+    ),
+  ];
+}
 
 /** Annuaire, décrit par data/<volume>/volume.json (Dublin Core). */
 export const volume = pgTable(
@@ -51,9 +68,10 @@ export const node = pgTable(
   (t) => [
     foreignKey({ columns: [t.parentId], foreignColumns: [t.id] }).onDelete("cascade"),
     unique("node_volume_reading_order").on(t.volumeId, t.documentReadingOrder),
-    index("node_volume_kind_reading_order").on(t.volumeId, t.kind, t.documentReadingOrder), // follows
+    // follows : id en dernière clé (Drizzle n'a pas INCLUDE) pour un parcours d'index seul
+    index("node_volume_kind_reading_order").on(t.volumeId, t.kind, t.documentReadingOrder, t.id),
     index().on(t.parentId),
-    index("node_text_trgm").using("gin", sql`immutable_unaccent(${t.text}) gin_trgm_ops`),
+    ...trigramIndexes("node_text", sql`immutable_unaccent(${t.text})`, t.kind, nodeKind.enumValues),
   ],
 );
 
@@ -72,9 +90,11 @@ export const span = pgTable(
   },
   (t) => [
     index().on(t.nodeId),
-    index("span_normalized_trgm").using(
-      "gin",
-      sql`immutable_unaccent(${t.normalized}) gin_trgm_ops`,
+    ...trigramIndexes(
+      "span_normalized",
+      sql`immutable_unaccent(${t.normalized})`,
+      t.label,
+      spanLabel.enumValues,
     ),
   ],
 );
