@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgis/postgis:18-3.6
+    environment:
+      POSTGRES_USER: latynna
+      POSTGRES_PASSWORD: latynna
+      POSTGRES_DB: latynnaxplorer
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql
+      - ./lib/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    healthcheck:
+      # TCP : le serveur temporaire des scripts d'initialisation n'écoute que sur le socket
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -U latynna -d latynnaxplorer"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+volumes:
+  pgdata:
