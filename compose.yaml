@@ -1,6 +1,7 @@
 services:
   db:
-    image: postgis/postgis:18-3.6
+    # PostgreSQL 17 : avec 18, drizzle-kit 0.31 recrée les contraintes composites à chaque push
+    image: postgis/postgis:17-3.6
     environment:
       POSTGRES_USER: latynna
       POSTGRES_PASSWORD: latynna
@@ -8,7 +9,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql
+      - pgdata:/var/lib/postgresql/data
       - ./lib/db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       # TCP : le serveur temporaire des scripts d'initialisation n'écoute que sur le socket
