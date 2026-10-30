@@ -49,31 +49,43 @@ export function toRows({ volume: meta, document, structure }: VolumeFiles): Rows
   const volumeId = meta.identifier;
   const parentOf = (parent: string) => (parent === structure.root ? null : parent);
 
+  // document.json donne les pages et leurs lignes dans l'ordre de lecture du volume.
   const lines = new Map<string, Line>();
+  const lineReadingOrder = new Map<string, number>();
   for (const page of document.pages) {
-    for (const line of page.lines)
+    for (const line of page.lines) {
       lines.set(line.id, { page: page.page, bbox: line.bbox_estimate });
+      lineReadingOrder.set(line.id, lineReadingOrder.size);
+    }
   }
+  const firstLineOrder = (id: string, refs: { line: string }[]) => {
+    const order = refs[0] && lineReadingOrder.get(refs[0].line);
+    if (order === undefined)
+      throw new Error(`nœud ${id} : première ligne absente de document.json`);
+    return order;
+  };
 
-  // Titres puis entrées : un titre parent précède ses enfants dans la liste numrev.
+  // Un nœud prend dans l'ordre de lecture la place de sa première ligne.
   const nodes: Rows["nodes"] = [
-    ...structure.titles.map((title, rank) => ({
+    ...structure.titles.map((title) => ({
       id: title.id,
       volumeId,
       kind: "section" as const,
       parentId: parentOf(title.parent),
-      rank,
       text: title.heading,
+      lineOrder: firstLineOrder(title.id, title.lines),
     })),
-    ...structure.entries.map((entry, rank) => ({
+    ...structure.entries.map((entry) => ({
       id: entry.id,
       volumeId,
       kind: "entry" as const,
       parentId: parentOf(entry.parent),
-      rank,
       text: entry.text,
+      lineOrder: firstLineOrder(entry.id, entry.lines),
     })),
-  ];
+  ]
+    .sort((a, b) => a.lineOrder - b.lineOrder)
+    .map(({ lineOrder: _, ...n }, documentReadingOrder) => ({ ...n, documentReadingOrder }));
 
   const spans = structure.entries.flatMap((entry) =>
     entry.spans.map((s) => ({

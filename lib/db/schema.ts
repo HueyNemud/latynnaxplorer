@@ -43,12 +43,15 @@ export const node = pgTable(
       .references(() => volume.id, { onDelete: "cascade" }),
     kind: nodeKind().notNull(),
     parentId: uuid("parent_id"), // section parente : arc member_of (entrée) ou child_of (section) ; null = racine
-    rank: integer().notNull(), // position dans la liste numrev de son type ; entrées : arc follows
+    // rang du nœud dans l'ordre de lecture de son volume, tous types confondus (0…n-1) ;
+    // arc follows : l'entrée suivante dans cet ordre
+    documentReadingOrder: integer("document_reading_order").notNull(),
     text: text().notNull(), // entrée : « text » ; section : « heading »
   },
   (t) => [
     foreignKey({ columns: [t.parentId], foreignColumns: [t.id] }).onDelete("cascade"),
-    unique("node_volume_kind_rank").on(t.volumeId, t.kind, t.rank),
+    unique("node_volume_reading_order").on(t.volumeId, t.documentReadingOrder),
+    index("node_volume_kind_reading_order").on(t.volumeId, t.kind, t.documentReadingOrder), // follows
     index().on(t.parentId),
     index("node_text_trgm").using("gin", sql`immutable_unaccent(${t.text}) gin_trgm_ops`),
   ],

@@ -21,6 +21,25 @@
 **Suite**
 - Relecture et fusion de la PR du modèle de données, puis sprint 1 (CI).
 
+## 2026-10-30 — Ordre de lecture et éléments hors champ
+
+**Fait**
+- `rank` (par type) remplacé par `document_reading_order` (tous nœuds du
+  volume), index `(volume_id, kind, document_reading_order)` pour `follows` ;
+  import, fixture et tests adaptés (14 tests). Vérifié sur 1807 : 20 708
+  arcs `follows`, sections et entrées intercalées.
+- Prompt pour numrev : `docs/demandes/numrev_hors_champ.md`.
+
+**Décisions**
+- Ordre de lecture = attribut ; `follows` = relation entre entrées, déduite.
+- Hors champ non importés en attendant numrev (pas de rattrapage ici).
+
+**Questions ouvertes**
+- Retour de numrev sur les éléments hors champ (format, pages partagées).
+
+**Suite**
+- `lib/query/` ou application Next.js, selon votre priorité.
+
 ## 2026-10-30 — Échafaudage données : schéma, validation, import
 
 **Fait**

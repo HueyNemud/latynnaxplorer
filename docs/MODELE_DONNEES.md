@@ -37,7 +37,9 @@ Observations à remonter à numrev (l'application ne les corrige pas) :
 - 19 entrées simples contiennent plusieurs SUBJ ;
 - 197 renvois « voyez » non structurés ;
 - p. 192 et 212 lues dans deux plages (sans effet ici : seules les lignes
-  rattachées à un nœud sont lues).
+  rattachées à un nœud sont lues) ;
+- éléments hors champ (981 lignes) non exportés comme entités : non importés
+  en attendant numrev (demande : `docs/demandes/numrev_hors_champ.md`).
 
 ## 2. Modèle
 
@@ -60,12 +62,19 @@ IIIF. La taille de l'image viendra du serveur IIIF.
 |---|---|---|
 | `member_of` | entrée → section | `node.parent_id` d'une entrée |
 | `child_of` | section → section | `node.parent_id` d'une section |
-| `follows` | entrée → entrée suivante dans l'ordre de lecture du volume, à travers les sections | `node.rank` des entrées : `b.rank = a.rank + 1` |
+| `follows` | entrée → entrée suivante dans l'ordre de lecture du volume, à travers les sections, sans compter les autres nœuds | `node.document_reading_order` : première entrée de rang supérieur |
 
 `member_of` et `child_of` sont la même colonne : numrev donne un seul arbre
 (champ `parent`) où entrées et titres ont pour parent un titre. Le type
 d'arc se lit au type du nœud source. Aucune table d'arcs : tout est déduit
 des colonnes.
+
+**Ordre de lecture et succession sont distincts.** L'ordre de lecture est un
+attribut commun à tous les nœuds (`document_reading_order`, rang 0…n-1 dans
+le volume, tous types confondus) : une vue qui parcourt le document trie
+par lui, sans passer par un arc. `follows` est une relation entre entrées
+seulement (« l'entrée suivante ») ; elle saute les sections et, plus tard,
+les éléments hors champ, et ne change pas quand on ajoute un type de nœud.
 
 ### Diagramme
 
@@ -93,9 +102,10 @@ Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
 
 ### Import (`scripts/`)
 
-- `node` : les `titles` puis les `entries` du `structure.json` ; `rank` =
-  position dans leur liste (numrev les donne dans l'ordre du document) ;
-  `parent_id` = `parent`, sauf la racine numrev → `null`.
+- `node` : les `titles` et les `entries` du `structure.json` ;
+  `document_reading_order` = rang de leur première ligne dans l'ordre des
+  lignes de `document.json` (ordre de lecture du volume) ; `parent_id` =
+  `parent`, sauf la racine numrev → `null`.
 - `anchor` : pour chaque nœud et chaque page, union des `bbox_estimate` non
   nulles de ses lignes ; aucune ligne boîtée sur la page → pas d'ancre.
 - `volume` : `data/<volume>/volume.json`.
@@ -114,9 +124,9 @@ ancrées sur deux pages.
 1. **Une seule table `node`** : `text` change de source selon le type
    (`heading` pour une section) ; rien en base n'empêche un empan sur une
    section ou une entrée parente d'une entrée (numrev fait foi).
-2. **`rank` par type** : titres et entrées ont chacun leur numérotation.
-   Suffisant pour `follows` (entrées seulement) et pour trier chaque type ;
-   ne donne pas l'intercalage titres/entrées.
+2. **`follows` calculé, pas stocké** : « première entrée de rang
+   supérieur » par sous-requête, servie par l'index
+   `(volume_id, kind, document_reading_order)`.
 3. **Pas de `page`**, pas de taille d'image : à revoir avec IIIF.
 4. **Ordre alphabétique** : sur le premier SUBJ (`min(char_start)`), par
    sous-requête, sans colonne dénormalisée.
@@ -166,13 +176,18 @@ FROM node n
 WHERE n.id IN (SELECT id FROM nodes)
   AND n.parent_id IN (SELECT id FROM nodes);
 
--- follows : entrées consécutives, si les deux sont sélectionnées
-SELECT a.id AS source, b.id AS target, 'follows' AS kind
-FROM node a
-JOIN node b ON b.volume_id = a.volume_id AND b.kind = 'entry' AND b.rank = a.rank + 1
-WHERE a.kind = 'entry'
-  AND a.id IN (SELECT id FROM nodes)
-  AND b.id IN (SELECT id FROM nodes);
+-- follows : l'entrée suivante dans l'ordre de lecture, si les deux sont sélectionnées
+SELECT f.source, f.target, 'follows' AS kind
+FROM (
+  SELECT a.id AS source,
+         (SELECT b.id FROM node b
+          WHERE b.volume_id = a.volume_id AND b.kind = 'entry'
+            AND b.document_reading_order > a.document_reading_order
+          ORDER BY b.document_reading_order LIMIT 1) AS target
+  FROM node a
+  WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes)
+) f
+WHERE f.target IN (SELECT id FROM nodes);
 ```
 
 ### Étape 3 : étendre par les liens documentaires
@@ -201,12 +216,20 @@ WITH RECURSIVE down(id) AS (
 )
 SELECT id FROM down;
 
--- entrées voisines dans le texte (précédente et suivante)
+-- entrées voisines dans le texte (précédente et suivante, par follows)
 SELECT id FROM nodes
 UNION
-SELECT b.id FROM node a
-JOIN node b ON b.volume_id = a.volume_id AND b.kind = 'entry' AND b.rank IN (a.rank - 1, a.rank + 1)
-WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes);
+SELECT (SELECT b.id FROM node b
+        WHERE b.volume_id = a.volume_id AND b.kind = 'entry'
+          AND b.document_reading_order > a.document_reading_order
+        ORDER BY b.document_reading_order LIMIT 1)
+FROM node a WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes)
+UNION
+SELECT (SELECT b.id FROM node b
+        WHERE b.volume_id = a.volume_id AND b.kind = 'entry'
+          AND b.document_reading_order < a.document_reading_order
+        ORDER BY b.document_reading_order DESC LIMIT 1)
+FROM node a WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes);
 ```
 
 ## Plus tard : géocodage (sprint dédié)

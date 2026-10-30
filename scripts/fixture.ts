@@ -1,5 +1,5 @@
-// Petit volume conforme aux schémas numrev, pour les tests. Deux pages :
-//   p. 1 : titres T1 > T2, entrée E1, début de E2 ; entrée E3 (ligne sans boîte, sous T1)
+// Petit volume conforme aux schémas numrev, pour les tests. Ordre de lecture :
+//   p. 1 : titre T1, entrée E3 (sous T1, ligne sans boîte), titre T2 (sous T1), entrée E1, début de E2
 //   p. 2 : fin de E2
 
 const ROOT = "00000000-0000-0000-0000-000000000000";
@@ -114,10 +114,10 @@ export function fixture() {
       pages: [
         page(1, [
           line("t1", [100, 10, 900, 30]),
+          line("e3", null),
           line("t2", [100, 40, 600, 60]),
           line("e1", [100, 70, 500, 90]),
           line("e2a", [120, 950, 480, 970]),
-          line("e3", null),
         ]),
         page(2, [line("e2b", [100, 10, 300, 30])]),
       ],

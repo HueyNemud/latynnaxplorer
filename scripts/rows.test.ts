@@ -15,14 +15,20 @@ describe("toRows", () => {
     });
   });
 
-  it("donne les sections puis les entrées, rangées chacune dans l'ordre numrev", () => {
-    expect(rows.nodes.map((n) => [n.kind, n.rank, n.id])).toEqual([
-      ["section", 0, T1],
-      ["section", 1, T2],
-      ["entry", 0, E1],
-      ["entry", 1, E2],
-      ["entry", 2, E3],
+  it("range sections et entrées ensemble, dans l'ordre de lecture de leur première ligne", () => {
+    expect(rows.nodes.map((n) => [n.documentReadingOrder, n.kind, n.id])).toEqual([
+      [0, "section", T1],
+      [1, "entry", E3],
+      [2, "section", T2],
+      [3, "entry", E1],
+      [4, "entry", E2],
     ]);
+  });
+
+  it("refuse un nœud dont la première ligne est absente de document.json", () => {
+    const files = validateVolume(fixture());
+    files.structure.titles[0]?.lines.splice(0, 1, { line: "1-2:inconnue" });
+    expect(() => toRows(files)).toThrow(`nœud ${T1} : première ligne absente de document.json`);
   });
 
   it("rattache à la racine (null) les nœuds dont le parent est la racine numrev", () => {
