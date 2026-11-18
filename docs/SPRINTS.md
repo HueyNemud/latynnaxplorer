@@ -12,26 +12,11 @@ code (périmètre, dépendances, choix discutables).
   numrev, import de `data/1807`, index mesurés.
 - **Sprint 1, intégration continue** (PR #2) : CI GitHub Actions, `main`
   protégée, Renovate.
-
-## En cours : sprint 2, requête → sous-graphe (`lib/query/`)
-
-Branche `feat/requete-sous-arbre`.
-
-But : le cœur du principe fonctionnel, sans interface, conduit par des
-scénarios (`docs/SCENARIOS.md`). Premier scénario : un nœud et tout son
-sous-arbre, dans l'ordre de lecture.
-
-- Requête ⇄ URL : `?subtree=<uuid>` (motifs d'URL en anglais).
-- Résolution en SQL : les nœuds, puis les arcs `member_of`, `child_of` et
-  `follows` du sous-graphe induit ; uuid inconnu = erreur.
-- Tests sur la fixture contre une base PostgreSQL de test, en local et en
+- **Sprint 2, requête → sous-graphe** (PR #10) : `?subtree=<uuid>`,
+  sous-graphe induit résolu en une requête SQL, base de test en local et en
   CI.
-
-**Fin** : PR relue et fusionnée.
-
-## Sprint d'entretien : mises à jour majeures
-
-PR Renovate à examiner une à une : #8 (TypeScript 7), #7 (`postgres` v4).
+- **Sprint d'entretien, mises à jour majeures** (PR #7, #8 et la PR de
+  `docs/mises-a-jour-majeures`) : `postgres` v4, TypeScript 7.
 
 ## Sprint 3 : première page, vue Liste
 
