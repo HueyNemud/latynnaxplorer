@@ -7,3 +7,7 @@ node_modules/
 
 # Données sources : jamais versionnées pour l'instant
 data/
+
+# Next.js : sorties de build, fichier de types régénéré
+.next/
+next-env.d.ts
