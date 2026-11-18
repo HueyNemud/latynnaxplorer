@@ -11,8 +11,6 @@
 
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --size-small: 0.875rem;
-  --size-printed: 1rem;
-  --size-printed-detail: 1.25rem;
 
   --underline-thickness: 2px;
   --underline-offset: 0.25em;
@@ -157,10 +155,6 @@ a {
 
 .node-detail dd {
   margin: 0;
-}
-
-.node-detail dd.text {
-  font-size: var(--size-printed-detail);
 }
 
 .meta {

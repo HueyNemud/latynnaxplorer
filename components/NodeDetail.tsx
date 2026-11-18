@@ -50,7 +50,7 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Con
       <dl>
         <div>
           <dt>Text</dt>
-          <dd className="text">
+          <dd>
             <PrintedText text={node.text} />
           </dd>
         </div>

@@ -87,7 +87,7 @@ seul. Ils demandent un interligne plus grand (place sous chaque ligne).
      un lien qui ouvre son sous-arbre (`?subtree=<uuid>`, nouvelle
      sélection).
   2. **Text** : le texte complet, imprimé (emphase en italique, retours à
-     la ligne gardés), un peu plus grand que le reste.
+     la ligne gardés), à la même taille que les autres valeurs.
   3. **Champs** : un par empan, dans l'ordre du texte (Subject,
      Description, Address, répétés pour un groupe à accolade), valeur
      `normalized`. Le texte hors empan n'y figure pas : il reste visible dans
@@ -139,8 +139,8 @@ CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifi�
 - Couleurs : texte, texte atténué (hors champ, page, mentions),
   soulignements et noms SUBJ, DESC et ADDR, fond de survol, contour de focus.
 - Typographie : une seule police, sans empattements, pour la source comme
-  pour l'interface ; deux tailles de texte imprimé (compacte, titre de
-  fiche).
+  pour l'interface ; dans la fiche, toutes les valeurs à la même taille,
+  clés et métadonnées plus petites.
 - Soulignement : épaisseur et écart sous le texte (fins, pour ne pas
   alourdir la lecture).
 - Espacements : une petite échelle (intérieur de ligne, écart entre blocs de
