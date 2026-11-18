@@ -53,7 +53,7 @@ réordonné. Dans une entrée, chaque empan est marqué d'un **fin soulignement
 coloré**, d'une couleur par libellé ; le texte lui-même garde sa couleur et
 sa graisse.
 
-| Libellé | Marque | Libellé affiché (détaillée) |
+| Libellé | Marque | Nom dans l'interface (légende, à venir) |
 |---|---|---|
 | SUBJ | soulignement couleur SUBJ | Subject |
 | DESC | soulignement couleur DESC | Description |
@@ -73,14 +73,14 @@ n'est pas souligné : deux empans voisins restent séparés.
   1. **Contexte** : chemin des rubriques (fil d'Ariane), atténué ; chaque
      rubrique est un lien qui ouvre son sous-arbre (`?subtree=<uuid>`, nouvelle
      sélection).
-  2. **Texte imprimé**, en plus grand, champs marqués : c'est le titre de la
-     fiche.
-  3. **Champs étiquetés** : liste de définitions dans l'ordre du texte
-     (Subject, Description, Address, répétés au besoin pour un groupe), valeur
-     `normalized`.
-  4. **Source** : « p. 60 » (texte ; lien quand IIIF sera là).
-  5. **Identifiant** : l'uuid, en petit, sélectionnable d'un geste (pour
-     l'équipe numrev).
+  2. **Texte imprimé**, en plus grand, champs soulignés : c'est le titre de
+     la fiche. Les champs ne sont pas repris en liste à part : les
+     soulignements les montrent déjà (essayé puis écarté au sprint 4, la
+     liste était redondante et perdait l'ordre des groupes à accolade).
+  3. **Métadonnées** en clé / valeur :
+     - **Source** : « p. 60 » (texte ; lien quand IIIF sera là) ;
+     - **Identifiant** : l'uuid, en petit, sélectionnable d'un geste (pour
+       l'équipe numrev).
 
 ### Section (`section`)
 
@@ -138,10 +138,10 @@ CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifi�
   sens) ; structure exacte (liste emboîtée ou `tree`) au sprint 5.
 - Le texte imprimé porte `lang="fr"`, quelle que soit la langue de
   l'interface.
-- Les soulignements ne disent le libellé que par la couleur : la fiche
-  donne les mêmes champs étiquetés, et la vue Liste (sprint 5) pourra
-  montrer une légende et le libellé au survol. Ils ne sont pas annoncés dans
-  le texte (ils le hacheraient).
+- Les soulignements ne disent le libellé que par la couleur, et aucune
+  liste étiquetée ne les reprend : **à résoudre** (légende des couleurs,
+  libellé au survol et pour les lecteurs d'écran). Ils ne sont pas annoncés
+  dans le texte tels quels (ils le hacheraient).
 - Contraste AA : 4,5:1 pour tout texte, atténué compris ; 3:1 pour les
   soulignements contre le fond ; focus toujours visible.
 
@@ -152,5 +152,4 @@ CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifi�
 | garder le texte de numrev tel quel | corriger, réordonner ou compléter le texte |
 | souligner les champs, sans toucher au texte | changer la couleur ou la graisse du texte imprimé |
 | montrer le contexte à part, atténué | compter le contexte dans la sélection |
-| donner `normalized` dans les champs, le brut dans le texte | mélanger les deux dans un même bloc |
 | dire « unknown page » quand il n'y a pas d'ancre | cacher la ligne source |

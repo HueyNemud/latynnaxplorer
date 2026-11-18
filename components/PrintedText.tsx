@@ -22,6 +22,6 @@ export function PrintedText({ text, spans = [] }: { text: string; spans?: readon
   );
 }
 
-export function fieldClass(label: Span["label"]): string {
+function fieldClass(label: Span["label"]): string {
   return `field field-${label.toLowerCase()}`;
 }

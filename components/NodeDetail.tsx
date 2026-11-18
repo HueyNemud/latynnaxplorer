@@ -2,20 +2,8 @@
 
 import Link from "next/link";
 import { serializeQuery } from "../lib/query/query.ts";
-import type {
-  Anchor,
-  ContextSection,
-  NodeKind,
-  SpanLabel,
-  SubgraphNode,
-} from "../lib/query/resolve.ts";
-import { fieldClass, PrintedText } from "./PrintedText.tsx";
-
-const FIELD_LABELS: Record<SpanLabel, string> = {
-  SUBJ: "Subject",
-  DESC: "Description",
-  ADDR: "Address",
-};
+import type { Anchor, ContextSection, NodeKind, SubgraphNode } from "../lib/query/resolve.ts";
+import { PrintedText } from "./PrintedText.tsx";
 
 const KIND_LABELS: Record<NodeKind, string | null> = {
   entry: null, // le cas courant : pas de mention
@@ -44,18 +32,6 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Con
       <h1>
         <PrintedText text={node.text} spans={node.spans} />
       </h1>
-      {node.spans.length > 0 && (
-        <dl className="fields">
-          {node.spans.map((span) => (
-            <div key={span.id}>
-              <dt>
-                <span className={fieldClass(span.label)}>{FIELD_LABELS[span.label]}</span>
-              </dt>
-              <dd lang="fr">{span.normalized}</dd>
-            </div>
-          ))}
-        </dl>
-      )}
       <dl className="meta">
         <div>
           <dt>Source</dt>
