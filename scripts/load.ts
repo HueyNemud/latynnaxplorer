@@ -4,7 +4,7 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/postgres-js";
 import type postgres from "postgres";
-import { anchor, node, span, volume } from "../lib/db/schema.ts";
+import { anchor, node, parentClosure, span, volume } from "../lib/db/schema.ts";
 import type { Rows } from "./rows.ts";
 
 const BATCH_SIZE = 1000; // lignes par INSERT, sous la limite de 65 535 paramètres de PostgreSQL
@@ -18,10 +18,11 @@ export async function loadRows(client: postgres.Sql, rows: Rows): Promise<void> 
     await tx.delete(volume).where(eq(volume.id, rows.volume.id)); // supprime ses nœuds en cascade
     await tx.insert(volume).values(rows.volume);
     for (const batch of batches(rows.nodes)) await tx.insert(node).values(batch);
+    for (const batch of batches(rows.parentClosure)) await tx.insert(parentClosure).values(batch);
     for (const batch of batches(rows.spans)) await tx.insert(span).values(batch);
     for (const batch of batches(rows.anchors)) await tx.insert(anchor).values(batch);
   });
   // Hors transaction : statistiques à jour pour le planificateur, et carte de visibilité
   // remplie pour que les parcours d'index seul ne relisent pas la table.
-  await client`VACUUM (ANALYZE) volume, node, span, anchor`;
+  await client`VACUUM (ANALYZE) volume, node, parent_closure, span, anchor`;
 }

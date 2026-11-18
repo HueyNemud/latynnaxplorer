@@ -40,5 +40,6 @@ try {
 }
 
 console.log(
-  `${rows.volume.id} : ${rows.nodes.length} nœuds, ${rows.spans.length} empans, ${rows.anchors.length} ancres`,
+  `${rows.volume.id} : ${rows.nodes.length} nœuds, ${rows.parentClosure.length} lignes de fermeture, ` +
+    `${rows.spans.length} empans, ${rows.anchors.length} ancres`,
 );

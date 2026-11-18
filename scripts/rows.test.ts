@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { E1, E2, E3, fixture, O1, T1, T2 } from "./fixture.ts";
-import { anchorsOf, toRows } from "./rows.ts";
+import { anchorsOf, parentClosureOf, toRows } from "./rows.ts";
 import { validateVolume } from "./validate.ts";
 
 const rows = toRows(validateVolume(fixture()));
@@ -37,6 +37,14 @@ describe("toRows", () => {
     expect(parents).toEqual({ [T1]: null, [T2]: T1, [E1]: T2, [E2]: T2, [E3]: T1, [O1]: T2 });
   });
 
+  it("relie chaque nœud parent à lui-même et à ses ancêtres", () => {
+    expect(rows.parentClosure).toEqual([
+      { ancestorId: T1, descendantId: T1 },
+      { ancestorId: T2, descendantId: T2 },
+      { ancestorId: T1, descendantId: T2 },
+    ]);
+  });
+
   it("prend le titre lisible d'une section et le texte des autres nœuds", () => {
     expect(rows.nodes.find((n) => n.id === T2)?.text).toBe("RUBRIQUE.");
     expect(rows.nodes.find((n) => n.id === E1)?.text).toBe("Dupont, rue de la Paix, 12.");
@@ -61,6 +69,34 @@ describe("toRows", () => {
       [E2, 2, 100, 10, 300, 30],
       [O1, 2, 400, 0, 600, 8],
     ]);
+  });
+});
+
+describe("parentClosureOf", () => {
+  it("ne retient que les nœuds qui ont des enfants, quel que soit leur type", () => {
+    // a ⊃ b ⊃ c ⊃ d : d n'a pas d'enfant
+    const nodes = [
+      { id: "a", parentId: null },
+      { id: "b", parentId: "a" },
+      { id: "c", parentId: "b" },
+      { id: "d", parentId: "c" },
+    ];
+    expect(parentClosureOf(nodes).map((r) => `${r.ancestorId}→${r.descendantId}`)).toEqual([
+      "a→a",
+      "b→b",
+      "a→b",
+      "c→c",
+      "b→c",
+      "a→c",
+    ]);
+  });
+
+  it("refuse une boucle dans les parents", () => {
+    const nodes = [
+      { id: "a", parentId: "b" },
+      { id: "b", parentId: "a" },
+    ];
+    expect(() => parentClosureOf(nodes)).toThrow("boucle dans ses parents");
   });
 });
 

@@ -75,6 +75,28 @@ export const node = pgTable(
   ],
 );
 
+/**
+ * Fermeture des nœuds parents : pour chaque nœud qui a des enfants, une ligne vers lui-même et
+ * vers chacun de ses descendants qui en ont aussi (dans numrev : les sections). Donnée dérivée
+ * de `parent_id`, calculée à l'import ; sert à lire un sous-arbre sans parcours récursif.
+ */
+export const parentClosure = pgTable(
+  "parent_closure",
+  {
+    ancestorId: uuid("ancestor_id")
+      .notNull()
+      .references(() => node.id, { onDelete: "cascade" }),
+    descendantId: uuid("descendant_id")
+      .notNull()
+      .references(() => node.id, { onDelete: "cascade" }),
+  },
+  (t) => [
+    primaryKey({ columns: [t.ancestorId, t.descendantId] }),
+    // ancêtres d'un nœud, et suppression en cascade sans parcours de la table
+    index().on(t.descendantId),
+  ],
+);
+
 /** Champ structuré d'une entrée : empan SUBJ (qui), DESC (quoi) ou ADDR (où). */
 export const span = pgTable(
   "span",

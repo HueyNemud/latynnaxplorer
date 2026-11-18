@@ -9,9 +9,12 @@ const sql = connect(inject("databaseUrl"));
 afterAll(() => sql.end());
 
 async function counts() {
-  const [row] = await sql<{ volumes: number; nodes: number; spans: number; anchors: number }[]>`
+  const [row] = await sql<
+    { volumes: number; nodes: number; closure: number; spans: number; anchors: number }[]
+  >`
     SELECT (SELECT count(*)::int FROM volume) AS volumes,
            (SELECT count(*)::int FROM node) AS nodes,
+           (SELECT count(*)::int FROM parent_closure) AS closure,
            (SELECT count(*)::int FROM span) AS spans,
            (SELECT count(*)::int FROM anchor) AS anchors`;
   return row;
@@ -21,6 +24,6 @@ describe("loadRows", () => {
   it("remplace le volume en entier quand on le recharge", async () => {
     // la base de test contient déjà la fixture : la recharger ne doit rien dupliquer
     await loadRows(sql, toRows(validateVolume(fixture())));
-    expect(await counts()).toEqual({ volumes: 1, nodes: 6, spans: 2, anchors: 6 });
+    expect(await counts()).toEqual({ volumes: 1, nodes: 6, closure: 3, spans: 2, anchors: 6 });
   });
 });
