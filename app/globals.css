@@ -69,20 +69,24 @@ a {
   text-decoration-color: var(--color-addr);
 }
 
-/* Badge avant chaque champ : nom du libellé, dans sa couleur ; hors de la sélection de texte,
-   pour qu'un copier-coller rende le texte imprimé seul */
+/* Libellé du champ, en petit sous le début de son trait. Boîte de largeur nulle posée au
+   début du champ : le libellé ne décale pas le texte et suit le champ quand la ligne se coupe.
+   Hors de la sélection de texte : un copier-coller rend le texte imprimé seul. */
 .badge {
+  position: relative;
   display: inline-block;
-  margin-right: 0.3em;
-  padding: 0 0.35em;
-  border: 1px solid currentcolor;
-  border-radius: 0.25em;
-  font-size: 0.6em;
+  width: 0;
   font-style: normal;
-  font-weight: 600;
-  line-height: 1.4;
-  vertical-align: 0.25em;
   user-select: none;
+}
+
+.badge > span {
+  position: absolute;
+  top: 0.75em;
+  left: 0;
+  font-size: 0.55em;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .badge-subj {
@@ -134,7 +138,7 @@ a {
   margin: 0 0 var(--space-4);
   font-size: var(--size-printed-title);
   font-weight: normal; /* le texte imprimé garde sa graisse */
-  line-height: 1.6;
+  line-height: 2.2; /* place pour les libellés sous les traits */
 }
 
 .node-detail dl {

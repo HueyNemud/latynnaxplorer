@@ -49,20 +49,22 @@ en français. Les exemples de libellés ci-dessous sont ceux de l'interface.
 
 Toutes les variantes portent le texte de numrev **tel quel** (numrev fait foi) :
 emphase en italique, retours à la ligne gardés, aucun mot corrigé ni
-réordonné. Dans une entrée, chaque empan est précédé d'un **badge** (petit
-cadre à la couleur du libellé) et marqué d'un **fin soulignement coloré**,
-d'une couleur par libellé ; le texte lui-même garde sa couleur et sa graisse.
+réordonné. Dans une entrée, chaque empan est marqué d'un **fin soulignement
+coloré**, d'une couleur par libellé, avec le **nom du libellé** en petit, de
+la même couleur, sous le début du trait ; le texte lui-même garde sa couleur,
+sa graisse et sa place (le nom ne le décale pas). Un badge encadré avant le
+champ a été essayé et écarté : il hachait le texte.
 
-| Libellé | Badge | Marque |
+| Libellé | Nom sous le trait | Marque |
 |---|---|---|
 | SUBJ | `subj` | soulignement couleur SUBJ |
 | DESC | `desc` | soulignement couleur DESC |
 | ADDR | `loc` | soulignement couleur ADDR |
 
 Le texte entre les empans (virgules, points de conduite `.....`, accolades)
-n'a ni badge ni soulignement : deux empans voisins restent séparés. Les
-badges sont exclus de la sélection de texte : un copier-coller rend le texte
-imprimé seul.
+n'a ni nom ni soulignement : deux empans voisins restent séparés. Les noms
+sont exclus de la sélection de texte : un copier-coller rend le texte imprimé
+seul. Ils demandent un interligne plus grand (place sous chaque ligne).
 
 ## Variantes
 
@@ -123,7 +125,7 @@ Aucun jeton n'existe encore. Ceux dont ce composant a besoin, en propriétés
 CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifié) :
 
 - Couleurs : texte, texte atténué (hors champ, page, mentions),
-  soulignements et badges SUBJ, DESC et ADDR, fond de survol, contour de focus.
+  soulignements et noms SUBJ, DESC et ADDR, fond de survol, contour de focus.
 - Typographie : une seule police, sans empattements, pour la source comme
   pour l'interface ; deux tailles de texte imprimé (compacte, titre de
   fiche).
@@ -141,9 +143,8 @@ CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifi�
   sens) ; structure exacte (liste emboîtée ou `tree`) au sprint 5.
 - Le texte imprimé porte `lang="fr"`, quelle que soit la langue de
   l'interface.
-- La couleur n'est jamais seule à dire le libellé : le badge le donne en
-  toutes lettres (`lang="en"`), et les lecteurs d'écran le lisent avant le
-  champ.
+- La couleur n'est jamais seule à dire le libellé : son nom est écrit sous
+  le trait (`lang="en"`), et les lecteurs d'écran le lisent avant le champ.
 - Contraste AA : 4,5:1 pour tout texte, atténué compris ; 3:1 pour les
   soulignements contre le fond ; focus toujours visible.
 

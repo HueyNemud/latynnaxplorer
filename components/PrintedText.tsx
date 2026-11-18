@@ -1,6 +1,6 @@
-// Texte imprimé d'un nœud, tel que numrev le donne : emphase en italique, chaque empan précédé
-// d'un badge (subj, desc, loc) et marqué d'un fin soulignement de la couleur de son libellé
-// (docs/composants/noeud-liste.md).
+// Texte imprimé d'un nœud, tel que numrev le donne : emphase en italique, chaque empan marqué
+// d'un fin soulignement de la couleur de son libellé, avec le nom du libellé (subj, desc, loc)
+// en petit sous le début du trait (docs/composants/noeud-liste.md).
 
 import { Fragment, type ReactNode } from "react";
 import type { Span, SpanLabel } from "../lib/query/resolve.ts";
@@ -18,12 +18,13 @@ export function PrintedText({ text, spans = [] }: { text: string; spans?: readon
         if (segment.span) {
           const kind = segment.span.label.toLowerCase();
           content = <span className={`field field-${kind}`}>{content}</span>;
-          // badge au début de l'empan seulement (un empan peut compter plusieurs segments)
+          // libellé au début de l'empan seulement (un empan peut compter plusieurs segments) ;
+          // boîte de largeur nulle : le texte n'est pas décalé
           if (segment.span.id !== previous) {
             content = (
               <>
                 <span className={`badge badge-${kind}`} lang="en">
-                  {BADGES[segment.span.label]}
+                  <span>{BADGES[segment.span.label]}</span>
                 </span>
                 {content}
               </>
