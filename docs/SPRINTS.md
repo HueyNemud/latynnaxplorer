@@ -18,22 +18,54 @@ code (périmètre, dépendances, choix discutables).
 - **Sprint d'entretien, mises à jour majeures** (PR #7, #8 et la PR de
   `docs/mises-a-jour-majeures`) : `postgres` v4, TypeScript 7.
 
-## Sprint 3 : première page, vue Liste
+## Sprint 3 : concept de design (en cours)
 
-But : voir un sous-graphe dans un navigateur.
+Branche `docs/concept-design`, sans code. `docs/DESIGN.md` : objectif,
+profils, domaines, sélection et vues orthogonales, fonctionnalités,
+représentations d'un nœud, principes d'affichage. Remplace le sprint
+« première page, vue Liste » prévu jusqu'ici.
 
-- Next.js (App Router) minimal ; la page lit `?subtree=` côté serveur avec
-  `lib/query/` (`nuqs` reporté).
-- Vue Liste seulement, dans l'ordre du document, sans style travaillé.
-- Dépendances et réglages tranchés (`docs/DECISIONS.md`, 18 novembre).
+## Sprint 4 : la fiche d'un nœud
 
-**À discuter** : ce que montre une ligne de la liste. Pistes déjà
-relevées :
-- disposition plate (une ligne par nœud, sections distinguées, hors champ
-  marqué) ou indentée selon la profondeur (calculée depuis `parentId`) ;
-- en plus du texte : lien de chaque ligne vers son sous-arbre (« ouvrir
-  une entrée », sans toucher `lib/query/`) ; empans SUBJ/DESC/ADDR ou
-  numéro de page (tous deux demandent d'étendre `resolve`).
+But : voir un nœud dans un navigateur, en densité détaillée (vue Liste
+seulement : les autres vues attendent leurs données).
+
+- Avant le code : fiche de composant pour la représentation d'un nœud dans
+  la vue Liste, par type (`entry`, `section`, `out_of_scope`) et par
+  densité (skill `design:design-system`), validée avec l'utilisateur.
+- Next.js (App Router) minimal ; dépendances et réglages déjà tranchés
+  (`docs/DECISIONS.md`, 18 novembre). La page lit `?subtree=` côté
+  serveur ; une sélection d'un seul nœud donne sa fiche.
+
+**À discuter** : ce que `resolve` doit renvoyer en plus (champs
+SUBJ/DESC/ADDR, page, chemin des rubriques comme contexte) ; ce que montre
+une sélection de plusieurs nœuds en attendant le sprint 5.
+
+## Sprint 5 : la vue Liste
+
+But : une sélection de plusieurs nœuds, en densité compacte, dans son
+contexte.
+
+- Disposition dans l'ordre du document ; arcs `member_of` / `child_of`
+  rendus par regroupement.
+- Contexte : chemin des rubriques au-dessus de la sélection.
+- Inspecter : le focus sur une ligne montre sa fiche à côté, sans changer
+  la sélection ; ouvrir une entrée (nouvelle URL).
+
+## Sprint 6 : sélectionner par le contenu
+
+But : une porte d'entrée sans uuid.
+
+- Recherche tolérante sur le texte et les champs (index trigrammes déjà
+  en place) : nouveau scénario de `docs/SCENARIOS.md`, combinable avec
+  `subtree`.
+- Première modification de la requête dans le navigateur : trancher alors
+  `nuqs` (`docs/IDEES.md`).
+
+## Sprint 7 : exporter
+
+But : récupérer la sélection dans un format de données ; trancher en même
+temps le format de l'API JSON (section suivante).
 
 ## À décider au moment voulu : format de l'API JSON
 
@@ -44,6 +76,7 @@ pratique standard plutôt qu'un formalisme ad hoc (OpenAPI ou plus récent,
 
 ## Plus tard (non planifié)
 
-Vues Document (IIIF), Carte et Temps ; géocodage ; liens temporels et
-autres annuaires ; idées de performance (`docs/IDEES.md`). Chacun aura son
-sprint, proposé le moment venu.
+Vues Page (IIIF), Carte et Frise, avec leurs critères (page, zone,
+période) ; géocodage ; liens temporels, autres annuaires et « suivre » ;
+deux vues côte à côte ; idées de performance (`docs/IDEES.md`). Chacun
+aura son sprint, proposé le moment venu.

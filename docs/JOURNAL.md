@@ -1,5 +1,28 @@
 # Journal de développement
 
+## 2026-11-18 — Sprint 3 : concept de design
+
+**Fait**
+- PR #12 (préparation du sprint 3) fusionnée.
+- Le sprint « première page, vue Liste » est abandonné avant tout code :
+  mieux vaut fixer d'abord les principes d'UX et d'UI.
+- `docs/DESIGN.md` : objectif, profils, cinq domaines, sélection et vues
+  orthogonales, fonctionnalités, représentations d'un nœud, principes
+  d'affichage (ee3d769, c51edd1, 3c49c5d, 12ea974).
+- `docs/SPRINTS.md` réécrit : fiche d'un nœud, vue Liste, sélection par
+  le contenu, export.
+
+**Décisions**
+- Concept de design, principes d'affichage, mesurer et relier écartés :
+  voir `docs/DECISIONS.md`.
+- Le mot « aspect » est abandonné : il mêlait critères de sélection et
+  vues ; on dit désormais domaine (données) et vue (affichage).
+
+**Suite**
+- Sprint 4, la fiche d'un nœud : commencer par la fiche de composant
+  (skill `design:design-system`), puis discuter de ce que `resolve` doit
+  renvoyer en plus.
+
 ## 2026-11-18 — Préparation du sprint 3 : dépendances
 
 **Fait**
