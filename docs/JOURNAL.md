@@ -1,5 +1,32 @@
 # Journal de développement
 
+## 2026-11-18 — Sprint 1 : intégration continue
+
+**Fait**
+- PR #1 (modèle de données) relue et fusionnée par merge commit.
+- `docs/SPRINTS.md` : modèle de données fait, sprint 1 en cours — `f4e2335`.
+- CI `.github/workflows/ci.yml`, job `verification` : `pnpm/setup@v3`
+  (pnpm 12.3.4 lu dans `packageManager`, Node 26, cache, lockfile figé),
+  puis lint, typecheck et les 14 tests ; ≈ 20 s — `d6a4523`.
+- `renovate.json` validé contre le schéma de Renovate 44 — `e8418e7`.
+- Protection de `main` posée par l'API GitHub (voir les décisions) ; le
+  check `verification` est bien exigé sur la PR #2.
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (CI, protection, Renovate, mode de fusion).
+- `pnpm/setup` plutôt que `pnpm/action-setup` + `actions/setup-node` :
+  l'action recommandée par pnpm à partir de la version 11, une seule étape.
+
+**Questions ouvertes**
+- Protection d'un dépôt privé : réglée, GitHub l'accepte sur ce compte.
+- Application GitHub Renovate à installer sur le dépôt (par l'utilisateur).
+- `ubuntu-latest` passe à Ubuntu 26 depuis le 19 octobre 2026 (annonce
+  GitHub) : rien à faire a priori.
+
+**Suite**
+- Fusion de la PR #2, puis revue de `docs/SPRINTS.md` et sprint 2
+  (`lib/query/`).
+
 ## 2026-10-30 — Processus : dépôt GitHub, branches et PR
 
 **Fait**
