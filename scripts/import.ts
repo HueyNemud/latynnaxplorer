@@ -4,14 +4,10 @@
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
-import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/postgres-js";
-import postgres from "postgres";
-import { anchor, node, span, volume } from "../lib/db/schema.ts";
+import { connect } from "../lib/db/client.ts";
+import { loadRows } from "./load.ts";
 import { toRows } from "./rows.ts";
 import { validateVolume } from "./validate.ts";
-
-const BATCH_SIZE = 1000; // lignes par INSERT, sous la limite de 65 535 paramètres de PostgreSQL
 
 function readJson(path: string): unknown {
   return JSON.parse(readFileSync(path, "utf8"));
@@ -25,15 +21,8 @@ function exportFile(dir: string, suffix: string): string {
   return join(dir, names[0]);
 }
 
-function* batches<T>(rows: T[]): Generator<T[]> {
-  for (let i = 0; i < rows.length; i += BATCH_SIZE) yield rows.slice(i, i + BATCH_SIZE);
-}
-
 const dir = process.argv[2];
 if (!dir) throw new Error("usage : node scripts/import.ts data/<volume>");
-if (!process.env.DATABASE_URL) process.loadEnvFile(); // .env, voir .env.example
-const url = process.env.DATABASE_URL;
-if (!url) throw new Error("DATABASE_URL absente de l'environnement et de .env");
 
 const rows = toRows(
   validateVolume({
@@ -43,18 +32,9 @@ const rows = toRows(
   }),
 );
 
-const client = postgres(url);
+const client = connect();
 try {
-  await drizzle(client).transaction(async (tx) => {
-    await tx.delete(volume).where(eq(volume.id, rows.volume.id)); // supprime ses nœuds en cascade
-    await tx.insert(volume).values(rows.volume);
-    for (const batch of batches(rows.nodes)) await tx.insert(node).values(batch);
-    for (const batch of batches(rows.spans)) await tx.insert(span).values(batch);
-    for (const batch of batches(rows.anchors)) await tx.insert(anchor).values(batch);
-  });
-  // Hors transaction : statistiques à jour pour le planificateur, et carte de visibilité
-  // remplie pour que les parcours d'index seul ne relisent pas la table.
-  await client`VACUUM (ANALYZE) volume, node, span, anchor`;
+  await loadRows(client, rows);
 } finally {
   await client.end();
 }
