@@ -12,26 +12,19 @@ code (périmètre, dépendances, choix discutables).
   numrev, import de `data/1807`, index mesurés.
 - **Sprint 1, intégration continue** (PR #2) : CI GitHub Actions, `main`
   protégée, Renovate.
-
-## En cours : sprint 2, requête → sous-graphe (`lib/query/`)
-
-Branche `feat/requete-sous-arbre`.
-
-But : le cœur du principe fonctionnel, sans interface, conduit par des
-scénarios (`docs/SCENARIOS.md`). Premier scénario : un nœud et tout son
-sous-arbre, dans l'ordre de lecture.
-
-- Requête ⇄ URL : `?subtree=<uuid>` (motifs d'URL en anglais).
-- Résolution en SQL : les nœuds, puis les arcs `member_of`, `child_of` et
-  `follows` du sous-graphe induit ; uuid inconnu = erreur.
-- Tests sur la fixture contre une base PostgreSQL de test, en local et en
+- **Sprint 2, requête → sous-graphe** (PR #10) : `?subtree=<uuid>`,
+  sous-graphe induit résolu en une requête SQL, base de test en local et en
   CI.
 
-**Fin** : PR relue et fusionnée.
+## En cours : sprint d'entretien, mises à jour majeures
 
-## Sprint d'entretien : mises à jour majeures
+Branche `docs/mises-a-jour-majeures` (journal et feuille de route
+seulement : les mises à jour arrivent par les PR Renovate).
 
-PR Renovate à examiner une à une : #8 (TypeScript 7), #7 (`postgres` v4).
+PR Renovate examinées une à une, après rebasage sur `main` pour que la CI
+passe les tests du sprint 2 : #7 (`postgres` v4), puis #8 (TypeScript 7).
+
+**Fin** : #7 et #8 tranchées par l'utilisateur, PR de la branche fusionnée.
 
 ## Sprint 3 : première page, vue Liste
 

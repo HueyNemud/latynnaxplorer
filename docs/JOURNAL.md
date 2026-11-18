@@ -1,5 +1,32 @@
 # Journal de développement
 
+## 2026-11-18 — Sprint d'entretien : mises à jour majeures
+
+**Fait**
+- PR #10 (sprint 2) fusionnée.
+- Les deux PR Renovate partaient encore de la fusion de la PR #1 : leur CI
+  verte ne passait ni `lib/query/` ni la base de test. Rebasées (case de
+  Renovate) ; CI verte ensuite, tests du sprint 2 compris.
+- #7, `postgres` 3.4.9 → 4.1.1. Changements de la v4 qui pourraient nous
+  toucher : types des paramètres décidés par le serveur (`infer: false`),
+  `sql.array()` retiré, `BEGIN` hors `sql.begin` rejeté, types en module ES.
+  Rien de cela n'est utilisé ici. En local : lint, typecheck, 34 tests ;
+  1807 importé dans deux bases neuves, avec la v3 et avec la v4 : contenu
+  des cinq tables identique (empreinte md5 par table) ; sous-graphes de
+  `resolve` identiques sur les 803 sous-arbres habituels.
+- #8, TypeScript 6.0.3 → 7.0.2 (compilateur natif). `tsconfig.json`
+  n'utilise aucune option retirée ; les nouveaux défauts sont fixés chez
+  nous (`strict`, `module`, `target`, `types`) ou sans effet sur le
+  typecheck. TypeScript 7 n'a plus d'API JavaScript : seul cosmiconfig (par
+  commitlint) en dépend, et seulement pour une configuration en `.ts` ; la
+  nôtre est dans `package.json`. En local : lint, typecheck, 34 tests,
+  commitlint (message accepté, message non conventionnel refusé), `tsc`
+  qui échoue bien sur une erreur de type. Typecheck : 0,3 s contre 1,3 s.
+
+**Suite**
+- Fusion de #7 et #8 par l'utilisateur, puis PR de cette branche et revue
+  de `SPRINTS.md` (sprint 3 : première page).
+
 ## 2026-11-18 — Sprint 2 : premier scénario, un sous-arbre
 
 **Fait**
