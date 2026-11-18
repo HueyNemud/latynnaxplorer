@@ -21,6 +21,109 @@
 **Suite**
 - Relecture et fusion de la PR du modèle de données, puis sprint 1 (CI).
 
+## 2026-10-30 — Performances en lecture
+
+**Fait**
+- `member_of` validé pour les éléments hors champ.
+- Mesure des requêtes de `MODELE_DONNEES.md` sur 1807 (`EXPLAIN ANALYZE`,
+  cache chaud), puis optimisation sans changer le modèle :
+  - index trigrammes partiels par `kind` et par `label`, en plus des
+    généraux : recherche de sections 8,3 → 0,3 ms ;
+  - index `follows` couvrant (`id` en clé) et `VACUUM (ANALYZE)` en fin
+    d'import : parcours d'index seul ;
+  - SQL de `follows` : `OFFSET 0` (évite la double évaluation), variante
+    `lead()` pour les grandes sélections : arcs du volume 214 → 98 ms, et
+    22 ms pour `follows` par `lead()` (résultats identiques, vérifié) ;
+  - `compose.yaml` : `jit=off`, `random_page_cost=1.1`.
+- Mesures et règles d'écriture des requêtes : `MODELE_DONNEES.md`, section 4.
+
+**Décisions**
+- Pas de changement du modèle pour la performance à ce stade.
+
+- `follows` stocké, colonnes sans accents et chemin d'ancêtres : notés
+  dans `docs/IDEES.md`, non faits (décision de l'utilisateur).
+
+**Questions ouvertes**
+- Aucune.
+
+**Suite**
+- `lib/query/` ou application Next.js, selon votre priorité.
+
+## 2026-10-30 — Éléments hors champ importés
+
+**Fait**
+- numrev a traité la demande (`c3b94a0`, `2548ce1`, branche
+  `stabilisation`) : tableau `out_of_scope` dans `numrev-structure/2`, pages
+  partagées sans doublon.
+- Nouvel export de 1807 copié dans `data/1807/` (accord donné) ; schéma
+  recopié en `scripts/schemas/numrev-structure-2.schema.json`.
+- Type de nœud `out_of_scope` ; import, fixture et tests adaptés (14 tests).
+- 1807 : 22 158 nœuds dont 846 hors champ (90 à la racine), 22 017 ancres
+  (89 hors champ sans boîte) ; `follows` inchangé (20 708 arcs) ; titres
+  courants et numéros de page intercalés dans l'ordre de lecture.
+- `drizzle-kit push` ajoute la valeur d'enum sans question ni recréation.
+
+**Décisions**
+- Nom du type : `out_of_scope`, comme le tableau numrev.
+- Arc d'un élément hors champ vers sa rubrique : `member_of`, comme une
+  entrée.
+- Libellé OCR du bloc (nature probable de l'élément) non repris.
+
+**Questions ouvertes**
+- Aucune.
+
+**Suite**
+- `lib/query/` ou application Next.js, selon votre priorité.
+
+## 2026-10-30 — Ordre de lecture et éléments hors champ
+
+**Fait**
+- `rank` (par type) remplacé par `document_reading_order` (tous nœuds du
+  volume), index `(volume_id, kind, document_reading_order)` pour `follows` ;
+  import, fixture et tests adaptés (14 tests). Vérifié sur 1807 : 20 708
+  arcs `follows`, sections et entrées intercalées.
+- Prompt pour numrev : `docs/demandes/numrev_hors_champ.md`.
+
+**Décisions**
+- Ordre de lecture = attribut ; `follows` = relation entre entrées, déduite.
+- Hors champ non importés en attendant numrev (pas de rattrapage ici).
+
+**Questions ouvertes**
+- Retour de numrev sur les éléments hors champ (format, pages partagées).
+
+**Suite**
+- `lib/query/` ou application Next.js, selon votre priorité.
+
+## 2026-10-30 — Échafaudage données : schéma, validation, import
+
+**Fait**
+- Dépôt Git initialisé ; outillage Node 26 / pnpm 12, TypeScript 6, Biome,
+  Vitest, Lefthook (biome check + tsc au pre-commit, commitlint) —
+  `4f137c4`, `c3b42c3`.
+- Base PostgreSQL 17 + PostGIS via Docker Compose, extensions `pg_trgm`,
+  `unaccent`, fonction `immutable_unaccent` — `659e440`, `aa751a7`.
+- Schéma Drizzle du modèle v2 (`lib/db/schema.ts`) — `458539b`.
+- Validation des fichiers d'un volume (ajv, schémas numrev) — `60f12c4`.
+- Import (`scripts/import.ts`), scripts `db:import` / `db:load` —
+  `34caa92`. 1807 : 21 312 nœuds, 45 673 empans, 21 260 ancres, en ≈ 5 s.
+- 13 tests Vitest sur une petite fixture conforme ; README.
+
+**Décisions**
+- PostgreSQL 17 : drizzle-kit 0.31 n'est pas idempotent avec 18 (vérifié).
+- Noms de colonnes SQL explicites, sans l'option `casing` de Drizzle.
+- Boîtes en `real` : fidèles au type `number` du schéma numrev.
+- Pas de `lib/db/client.ts` : seul le script d'import se connecte.
+- Scripts de build de `esbuild` et `lefthook` refusés (`pnpm-workspace.yaml`) :
+  inutiles ici.
+- Schémas numrev exclus de Biome pour rester identiques à l'original.
+
+**Questions ouvertes**
+- Titre et autres champs Dublin Core de `data/1807/volume.json` à remplir.
+
+**Suite**
+- Proposer l'étape suivante : `lib/query/` (requête ⇄ URL, résolution en
+  sous-graphe) ou l'application Next.js, selon votre priorité.
+
 ## 2026-10-30 — Modèle v2 : une table de nœuds
 
 **Fait**

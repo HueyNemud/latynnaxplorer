@@ -2,6 +2,9 @@ services:
   db:
     # PostgreSQL 17 : avec 18, drizzle-kit 0.31 recrée les contraintes composites à chaque push
     image: postgis/postgis:17-3.6
+    # Lecture rapide : pas de compilation JIT (coûteuse au démarrage des requêtes courtes) ;
+    # accès aléatoire presque aussi bon marché que séquentiel (SSD, base en cache)
+    command: ["postgres", "-c", "jit=off", "-c", "random_page_cost=1.1"]
     environment:
       POSTGRES_USER: latynna
       POSTGRES_PASSWORD: latynna

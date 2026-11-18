@@ -1,0 +1,98 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "volume/1",
+  "title": "Métadonnées d'un volume (data/<volume>/volume.json)",
+  "description": "Les 15 éléments Dublin Core (null si non renseigné) et l'intervalle dcterms:temporal en dates AAAA-MM-JJ.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "identifier",
+    "title",
+    "creator",
+    "subject",
+    "description",
+    "publisher",
+    "contributor",
+    "date",
+    "type",
+    "format",
+    "source",
+    "language",
+    "relation",
+    "coverage",
+    "rights",
+    "temporal"
+  ],
+  "properties": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Nom du volume numrev, ex. 1807_AD75-PER292."
+    },
+    "title": {
+      "$ref": "#/$defs/text"
+    },
+    "creator": {
+      "$ref": "#/$defs/text"
+    },
+    "subject": {
+      "$ref": "#/$defs/text"
+    },
+    "description": {
+      "$ref": "#/$defs/text"
+    },
+    "publisher": {
+      "$ref": "#/$defs/text"
+    },
+    "contributor": {
+      "$ref": "#/$defs/text"
+    },
+    "date": {
+      "$ref": "#/$defs/text"
+    },
+    "type": {
+      "$ref": "#/$defs/text"
+    },
+    "format": {
+      "$ref": "#/$defs/text"
+    },
+    "source": {
+      "$ref": "#/$defs/text"
+    },
+    "language": {
+      "$ref": "#/$defs/text"
+    },
+    "relation": {
+      "$ref": "#/$defs/text"
+    },
+    "coverage": {
+      "$ref": "#/$defs/text"
+    },
+    "rights": {
+      "$ref": "#/$defs/text"
+    },
+    "temporal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["start", "end"],
+      "description": "dcterms:temporal : période décrite par l'annuaire.",
+      "properties": {
+        "start": {
+          "$ref": "#/$defs/date"
+        },
+        "end": {
+          "$ref": "#/$defs/date"
+        }
+      }
+    }
+  },
+  "$defs": {
+    "text": {
+      "type": ["string", "null"]
+    },
+    "date": {
+      "type": "string",
+      "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$"
+    }
+  }
+}

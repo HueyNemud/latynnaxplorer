@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["**", "!**/*.md"]
+    "includes": ["**", "!**/*.md", "!scripts/schemas/numrev-*.schema.json"]
   },
   "formatter": {
     "enabled": true,
