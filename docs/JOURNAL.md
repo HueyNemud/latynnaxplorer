@@ -1,5 +1,45 @@
 # Journal de développement
 
+## 2026-11-18 — Sprint 4 : la fiche d'un nœud
+
+**Fait**
+- PR #13 (sprint 3) fusionnée ; branche `feat/fiche-noeud`.
+- Fiche de composant du nœud dans la vue Liste, par type et par densité
+  (`docs/composants/noeud-liste.md`, skill `design:design-system`), à partir
+  d'un relevé des données de 1807 : emphase Markdown dans 4 525 nœuds,
+  24 empans qui coupent une emphase, 58 nœuds sur plusieurs lignes, ancres
+  absentes ou sur deux pages.
+- `resolve` renvoie empans et ancres de chaque nœud ; `context` lit les
+  rubriques ancêtres à part. Quatre écritures mesurées (JSON, tableaux,
+  lignes étiquetées, trois requêtes) : trois requêtes en lignes simples,
+  90 ms au lieu de 192 sur le plus gros sous-arbre ; sous-graphes
+  identiques sur les 803 sous-arbres habituels.
+- Next.js 16.4.6 et React 19.3.1 installés ; `next build` en CI.
+- Page `/` : fiche d'un nœud seul, nombre de nœuds sinon ; `proxy.ts`
+  pour l'entrée par défaut et le statut 400 ; 404 pour un uuid inconnu.
+- `lib/text/segments.ts` : découpe du texte aux bornes de l'emphase et
+  des empans (positions en points de code, `\*` échappé).
+- Fiche revue à l'écran avec l'utilisateur : liste des champs ajoutée puis
+  retirée (redondante avec le texte), badges avant les champs remplacés
+  par le nom du libellé sous le trait ; fil d'Ariane sans gris ni
+  soulignement au repos.
+
+**Décisions**
+- Trois requêtes pour `resolve`, contexte à part, interface en anglais,
+  fiche de composant, contenu de la fiche, proxy, organisation Next :
+  voir `docs/DECISIONS.md`.
+
+**Questions ouvertes**
+- Deux défauts probables de numrev, laissés tels quels (numrev fait foi) :
+  la section « LISTE DE NON-COMMERÇANS, ## CONTENANT ### … » (marques de
+  titre au milieu de l'intitulé) et « PRÉFECTURE DU DÉPARTEMENT DE LA SEINE,
+  Place de l'Hôtel-de-Ville.\ » (barre oblique finale). Demande à numrev ?
+- Densité compacte (sprint 5) : les noms sous les traits demandent un
+  interligne plus grand, à revoir sur des milliers de lignes.
+
+**Suite**
+- Revoir `docs/SPRINTS.md` avec l'utilisateur, puis PR.
+
 ## 2026-11-18 — Sprint 3 : concept de design
 
 **Fait**

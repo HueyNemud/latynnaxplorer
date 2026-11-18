@@ -2,6 +2,10 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-18 — Fiche d'un nœud (vue Liste, densité détaillée) : fil d'Ariane des rubriques (liens vers leur sous-arbre), texte imprimé en titre avec ses champs soulignés et le nom du libellé (`subj`, `desc`, `loc`) en petit sous le début du trait, puis source et identifiant en clé / valeur. Essayés puis écartés : liste des champs à part (redondante), badge encadré avant le champ (hachait le texte).
+- 2026-11-18 — Arrivée sans requête : `proxy.ts` redirige vers une entrée par défaut (pas de page d'accueil pour l'instant) ; requête invalide : page d'erreur au statut 400 par le même proxy (une page de l'App Router ne sait pas répondre 400) ; uuid inconnu : 404 (`notFound()`).
+- 2026-11-18 — Organisation Next : `app/` (pages), `components/` (composants React), `lib/text/` (découpe du texte imprimé, testée par Vitest), `lib/db/server.ts` (pool partagé du serveur). Styles en CSS global, jetons en propriétés personnalisées ; police du système.
+- 2026-11-18 — `sharp` 0.35 n'a plus de script d'installation : rien à déclarer dans `allowBuilds` (contrairement à ce que prévoyait la décision du sprint 3).
 - 2026-11-18 — `resolve` lit le sous-graphe en trois requêtes parallèles (nœuds, empans, ancres), en lignes simples rattachées en TypeScript : regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent sur les gros sous-arbres (mesures : `docs/MODELE_DONNEES.md`, section 4). Remplace « une seule requête SQL par résolution ».
 - 2026-11-18 — Chaque nœud du sous-graphe porte ses empans et ses ancres ; le contexte (rubriques ancêtres, rangées par profondeur dans `parent_closure`) est lu à part par `context`, jamais compté dans la sélection.
 - 2026-11-18 — Interface en anglais par défaut, internationalisation plus tard (`docs/IDEES.md`) ; le texte des annuaires n'est jamais traduit.
