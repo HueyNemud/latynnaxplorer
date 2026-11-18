@@ -1,0 +1,128 @@
+/* Jetons de la fiche de composant (docs/composants/noeud-liste.md). Contrastes sur fond blanc :
+   texte et texte atténué ≥ 4,5:1, soulignements ≥ 3:1. */
+:root {
+  --color-text: #1f2328;
+  --color-muted: #59636e;
+  --color-background: #ffffff;
+  --color-subj: #2563eb;
+  --color-desc: #0f766e;
+  --color-addr: #c2410c;
+  --color-focus: #2563eb;
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --size-small: 0.875rem;
+  --size-printed: 1rem;
+  --size-printed-title: 1.5rem;
+
+  --underline-thickness: 2px;
+  --underline-offset: 0.25em;
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 1rem;
+  --space-4: 1.5rem;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+main {
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-3);
+}
+
+a {
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Texte imprimé : retours à la ligne de numrev gardés (groupes à accolade) */
+.printed {
+  white-space: pre-line;
+}
+
+.field {
+  text-decoration-line: underline;
+  text-decoration-thickness: var(--underline-thickness);
+  text-underline-offset: var(--underline-offset);
+}
+
+.field-subj {
+  text-decoration-color: var(--color-subj);
+}
+
+.field-desc {
+  text-decoration-color: var(--color-desc);
+}
+
+.field-addr {
+  text-decoration-color: var(--color-addr);
+}
+
+/* Fiche */
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  list-style: none;
+  font-size: var(--size-small);
+  color: var(--color-muted);
+}
+
+.breadcrumb li + li::before {
+  content: "›";
+  margin-right: var(--space-2);
+}
+
+.kind {
+  margin: 0 0 var(--space-1);
+  font-size: var(--size-small);
+  color: var(--color-muted);
+}
+
+.node-detail h1 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--size-printed-title);
+  font-weight: normal; /* le texte imprimé garde sa graisse */
+  line-height: 1.6;
+}
+
+.node-detail dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: var(--space-2) var(--space-3);
+  margin: 0 0 var(--space-4);
+}
+
+.node-detail dl > div {
+  display: contents;
+}
+
+.node-detail dt {
+  font-size: var(--size-small);
+  color: var(--color-muted);
+}
+
+.node-detail dd {
+  margin: 0;
+}
+
+.meta {
+  font-size: var(--size-small);
+}
+
+.identifier {
+  user-select: all;
+}
