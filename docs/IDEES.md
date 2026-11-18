@@ -51,3 +51,14 @@ plusieurs volumes en base.
 - À reprendre avec l'opération « filtrer » ; trancher alors entre `nuqs`
   à la place de `parseQuery` / `serializeQuery` (`lib/query/query.ts`) ou
   `nuqs` qui s'appuie sur eux.
+
+## Écartées : analyse dans le site
+
+Le site sert à explorer, sélectionner et exporter le contenu des annuaires
+(`docs/DESIGN.md`, « Objectif ») ; l'analyse revient aux historiens, à
+partir de l'export.
+
+- **Mesurer** : effectifs par rubrique, rue ou période ; « synthèse »
+  comme densité compacte d'un sous-graphe.
+- **Relier** des individus : associés, renvois « *Voyez* » comme arcs,
+  occupants d'une même adresse comme réseau.

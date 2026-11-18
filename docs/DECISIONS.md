@@ -2,6 +2,9 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-18 — Concept de design (`docs/DESIGN.md`) : objectif = exploration visuelle, sélection et export du contenu des annuaires ; cinq domaines (Contenu, Structure, Document, Espace, Temps) qui servent indépendamment à sélectionner (critères combinés, dans l'URL) et à afficher (une vue dispose la sélection selon un domaine) ; fonctionnalités : sélectionner, suivre, inspecter, exporter.
+- 2026-11-18 — Principes d'affichage : chaque vue montre la sélection dans son contexte, distinct d'elle ; densité automatique (un nœud → fiche, plusieurs → compacte) ; une vue à la fois pour commencer, focus pensé comme partagé ; la page source à un clic depuis tout nœud.
+- 2026-11-18 — Mesurer et relier écartés (`docs/IDEES.md`) : l'analyse revient aux historiens, à partir de l'export.
 - 2026-11-18 — Sprint 3, dépendances : `next`, `react`, `react-dom`, et en développement `@types/react`, `@types/react-dom` (versions exactes, prises au début du sprint) ; rien d'autre (pas d'ESLint, de bibliothèque de styles ni de tests React). Next.js 16.4.6 vérifié avec TypeScript 7 et `postgres` v4 sur une application d'essai.
 - 2026-11-18 — `nuqs` reporté : au sprint 3 la page ne fait que lire `?subtree=` côté serveur, ce que fait déjà `lib/query/query.ts`. À reprendre à la première modification de la requête dans le navigateur (voir `docs/IDEES.md`).
 - 2026-11-18 — Avec Next.js, `tsconfig.json` passe à `module: esnext` et `moduleResolution: bundler` (Next impose `bundler`, incompatible avec `nodenext`), plus `jsx`, `lib` `dom`, le plugin `next` et les options que Next ajoute d'office (`allowJs`, `incremental`, `esModuleInterop`, `isolatedModules`). La règle Biome `useImportExtensions` garde les extensions `.ts` dont Node a besoin pour les scripts. CI : étape `pnpm build` ; `.next/` et `next-env.d.ts` ignorés ; `sharp` (optionnel de Next) déclaré dans `allowBuilds`.
