@@ -1,5 +1,74 @@
 # Journal de développement
 
+## 2026-11-18 — Sprint 2 : premier scénario, un sous-arbre
+
+**Fait**
+- PR #2 (intégration continue) fusionnée ; Renovate installé. PR #9
+  (PostGIS 18) fermée : on reste sur PostgreSQL 17.
+- `docs/SCENARIOS.md` : scénario 1, un nœud et tout son sous-arbre ;
+  `SPRINTS.md` : sprint 2 en cours, sprint d'entretien (#7, #8) — `f6a04a9`.
+- `lib/db/client.ts` et `scripts/load.ts` séparés de l'import ; réimport de
+  1807 identique (22 158 nœuds, 45 673 empans, 22 017 ancres) — `a4b4ee9`.
+- Base de test recréée par Vitest (`scripts/test-database.ts`), service
+  PostgreSQL dans la CI ; premier test du chargement — `31df472`.
+- `lib/query/query.ts` : `?subtree=<uuid>` lu et écrit — `c94e115`.
+- `lib/query/resolve.ts` : sous-graphe induit, nœuds dans l'ordre de
+  lecture, arcs déduits ; 30 tests — `8992489`.
+- 1807 : les 603 rubriques sont d'un seul tenant dans l'ordre de lecture ;
+  603 rubriques pour 521 libellés (désignation par uuid) ; 7 niveaux.
+- Entrée suivante par `lead()` sur la plage du sous-arbre plutôt qu'une
+  sous-requête par entrée : sous-graphes identiques sur 803 sous-arbres de
+  1807 (toutes les rubriques et 200 autres nœuds).
+- Pistes sans parcours de l'arbre notées dans `IDEES.md`, mesurées : table
+  de fermeture des sections, sous-arbre en plage de rangs.
+- Table `parent_closure` (fermeture des nœuds parents) calculée à l'import,
+  1 515 lignes pour 1807 ; `drizzle-kit push` reste sans changement au
+  second passage (PostgreSQL 17) — `1b8bc12`.
+- Sous-arbre lu dans `parent_closure`, sans `WITH RECURSIVE` ; `UNION ALL`
+  plutôt que `OR`, qui relisait toute la table — `e8b7992`. Sous-graphes
+  identiques à la requête d'origine sur les 803 sous-arbres ; 33 tests.
+- Temps restant décomposé, vu de Node (51 ms pour 13 737 nœuds) : SQL 20,
+  transfert et lecture des lignes 15, TypeScript 6. Écartés : plan
+  générique des requêtes préparées (sans effet), `json_agg` (plus lent).
+- `follows` stocké dans `node.next_entry_id`, calculé à l'import ; nœuds
+  insérés en une instruction pour la clé étrangère ; 20 708 arcs, identiques
+  à `lead()` sur tout le volume — `a865f1c`. `resolve` lit la colonne :
+  plus aucun calcul en SQL — `504fd5f`. Sous-graphes toujours identiques
+  sur les 803 sous-arbres ; 34 tests.
+- Mesures (`MODELE_DONNEES.md`, section 4), SQL seul : 0,13 ms pour une
+  petite rubrique, 1,5 ms pour 3 338 nœuds, 7,6 ms pour 13 737 (contre
+  1,4 / 20 / 70 à 80 ms au début du sprint) ; 35 ms vu de Node pour le
+  plus gros.
+- Base locale à remettre à niveau après récupération de la branche :
+  `pnpm db:load`.
+
+**Décisions**
+- Voir `docs/DECISIONS.md` : scénarios, motifs d'URL en anglais, filtre
+  `subtree` générique, erreurs, arcs en TypeScript, base de test, API JSON
+  plus tard.
+- Pas de changement du schéma pour la performance (décision de
+  l'utilisateur) : l'hypothèse « rubriques d'un seul tenant », vraie sur
+  1807, est à mieux vérifier dans numrev avant de s'en servir ; pas de
+  demande à numrev pour l'instant.
+
+**Questions ouvertes**
+- Messages d'erreur en français dans le code : à traduire quand
+  l'interface les montrera (application internationale).
+
+- Table de fermeture adoptée (`parent_closure`, nœuds parents de tout
+  type, pas seulement les sections) : simple, exacte, tenue par l'import.
+- `follows` stocké : les trois arcs suivent le même principe (une colonne
+  de `node`). Revient sur la décision du 30 octobre, qui attendait les
+  requêtes réelles de `lib/query/`.
+
+- Index `node (volume_id, kind, document_reading_order, id)` supprimé : il
+  ne servait qu'au calcul de `follows` (décision de l'utilisateur) ; temps
+  inchangés.
+
+**Suite**
+- Fusion de la PR, puis revue de `SPRINTS.md` : sprint d'entretien ou
+  deuxième scénario.
+
 ## 2026-11-18 — Sprint 1 : intégration continue
 
 **Fait**

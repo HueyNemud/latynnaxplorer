@@ -21,6 +21,24 @@ jobs:
     name: verification
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    # Serveur PostgreSQL des tests : ils créent eux-mêmes leur base <base>_test
+    # (scripts/test-database.ts) ; même image que compose.yaml.
+    services:
+      db:
+        image: postgis/postgis:17-3.6
+        env:
+          POSTGRES_USER: latynna
+          POSTGRES_PASSWORD: latynna
+          POSTGRES_DB: latynnaxplorer
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -h 127.0.0.1 -U latynna -d latynnaxplorer"
+          --health-interval 2s
+          --health-timeout 5s
+          --health-retries 15
+    env:
+      DATABASE_URL: postgres://latynna:latynna@localhost:5432/latynnaxplorer
     steps:
       - uses: actions/checkout@v7
 

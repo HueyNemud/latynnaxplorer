@@ -2,6 +2,17 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-18 — `follows` stocké dans `node.next_entry_id` (clé étrangère sans cascade), calculé à l'import : `member_of`, `child_of` et `follows` sont tous trois portés par une colonne. Remplace « `follows` calculé, non stocké » (30 octobre), revu une fois mesurées les requêtes de `lib/query/`.
+- 2026-11-18 — Nœuds d'un volume insérés en une seule instruction (`jsonb_to_recordset`) : clé étrangère vers l'entrée suivante vérifiée en fin d'instruction (Drizzle ne déclare pas de contrainte différée).
+- 2026-11-18 — Table `parent_closure (ancestor_id, descendant_id)` : fermeture des nœuds qui ont des enfants (les sections, dans numrev), calculée à l'import, pour lire un sous-arbre sans parcours récursif ; exacte sans hypothèse sur le type des parents ni sur l'ordre de lecture.
+- 2026-11-18 — Pas de colonne fondée sur l'hypothèse « rubriques d'un seul tenant » : à mieux vérifier dans numrev d'abord.
+- 2026-11-18 — Format de l'API JSON : à décider à la première API HTTP, selon une pratique standard (OpenAPI ou plus récent), pas un formalisme ad hoc.
+- 2026-11-18 — Tests contre une vraie base : `<base>_test` recréée par Vitest à chaque lancement, en local (conteneur Docker) et en CI (service PostgreSQL) ; `lib/db/client.ts` partagé par l'import, les tests et `lib/query/`.
+- 2026-11-18 — Arcs du sous-graphe déduits en TypeScript des lignes de la requête (parent, entrée suivante) : une seule requête SQL par résolution.
+- 2026-11-18 — Uuid inconnu : erreur (`NodeNotFoundError`) ; uuid mal formé, paramètre absent ou répété : requête invalide (`QueryError`).
+- 2026-11-18 — Filtre `subtree` générique : un nœud de n'importe quel type et tous ses descendants ; sans filtre explicite, tout ce qui est désigné est rendu (`lib/query/` ne juge pas de la pertinence).
+- 2026-11-18 — Motifs d'URL en anglais (application internationale) : `?subtree=<uuid>`.
+- 2026-11-18 — Requêtes conçues par scénarios (`docs/SCENARIOS.md`) : chacun donne un filtre combinable et ses tests.
 - 2026-11-18 — PR fusionnées par merge commit (ni squash ni rebase) : les hashes cités dans le journal restent valides.
 - 2026-11-18 — Renovate : chaque lundi matin (heure de Paris), mises à jour mineures et correctifs en une PR, majeures à part, aucune fusion automatique.
 - 2026-11-18 — `main` protégée, administrateurs compris : fusion par PR seulement, check `verification` vert exigé, sans relecture obligatoire (mainteneur seul), ni force-push ni suppression.

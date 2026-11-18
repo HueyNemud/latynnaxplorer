@@ -1,13 +1,35 @@
 // Passage des fichiers validés d'un volume aux lignes des tables : simple projection, sans correction.
 
-import type { anchor, node, span, volume } from "../lib/db/schema.ts";
+import type { anchor, node, parentClosure, span, volume } from "../lib/db/schema.ts";
 import type { Bbox, VolumeFiles } from "./validate.ts";
 
 export interface Rows {
   volume: typeof volume.$inferInsert;
   nodes: (typeof node.$inferInsert)[];
+  parentClosure: (typeof parentClosure.$inferInsert)[];
   spans: (typeof span.$inferInsert)[];
   anchors: (typeof anchor.$inferInsert)[];
+}
+
+/**
+ * Fermeture des nœuds parents : pour chaque nœud qui a des enfants, une ligne (ancêtre, lui)
+ * vers lui-même et vers chacun de ses ancêtres. Refuse une boucle dans les parents.
+ */
+export function parentClosureOf(
+  nodes: { id: string; parentId?: string | null }[],
+): Rows["parentClosure"] {
+  const parentOf = new Map(nodes.map((n) => [n.id, n.parentId ?? null]));
+  const parents = new Set(nodes.flatMap((n) => (n.parentId ? [n.parentId] : [])));
+  return [...parents].flatMap((descendantId) => {
+    const ancestors: Rows["parentClosure"] = [];
+    const seen = new Set<string>();
+    for (let a: string | null = descendantId; a !== null; a = parentOf.get(a) ?? null) {
+      if (seen.has(a)) throw new Error(`nœud ${descendantId} : boucle dans ses parents`);
+      seen.add(a);
+      ancestors.push({ ancestorId: a, descendantId });
+    }
+    return ancestors;
+  });
 }
 
 interface Line {
@@ -85,6 +107,13 @@ export function toRows({ volume: meta, document, structure }: VolumeFiles): Rows
     .sort((a, b) => a.lineOrder - b.lineOrder)
     .map(({ lineOrder: _, ...n }, documentReadingOrder) => ({ ...n, documentReadingOrder }));
 
+  // Arc follows : chaque entrée pointe vers l'entrée suivante dans l'ordre de lecture.
+  let nextEntryId: string | null = null;
+  for (const n of nodes.toReversed()) {
+    n.nextEntryId = n.kind === "entry" ? nextEntryId : null;
+    if (n.kind === "entry") nextEntryId = n.id;
+  }
+
   const spans = structure.entries.flatMap((entry) =>
     entry.spans.map((s) => ({
       id: s.id,
@@ -112,6 +141,7 @@ export function toRows({ volume: meta, document, structure }: VolumeFiles): Rows
       temporalEnd: meta.temporal.end,
     },
     nodes,
+    parentClosure: parentClosureOf(nodes),
     spans,
     anchors,
   };

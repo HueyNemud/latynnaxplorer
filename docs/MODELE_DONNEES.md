@@ -1,6 +1,6 @@
 # Modèle de données — v2
 
-État : schéma et import implémentés ; requêtes de la section 3 non implémentées. Décisions : `docs/DECISIONS.md`. Extensions
+État : schéma et import implémentés ; requêtes de la section 3 implémentées pour le scénario du sous-arbre (`lib/query/`). Décisions : `docs/DECISIONS.md`. Extensions
 prévues (géocodage, liens temporels) : fin de document.
 
 Sources : `data/<volume>/` (`<volume>.document.json`,
@@ -56,6 +56,15 @@ Demande d'origine : `docs/demandes/numrev_hors_champ.md`.
 | `node` | **nœud** typé `entry`, `section` ou `out_of_scope` | 22 158 |
 | `span` | champs structurés d'une entrée : SUBJ / DESC / ADDR | 45 673 |
 | `anchor` | ancrage d'un nœud : page du PDF et boîte, une ligne par page touchée | 22 017 |
+| `parent_closure` | fermeture des nœuds parents : (ancêtre, descendant), dérivée de `parent_id` | 1 515 |
+
+`parent_closure` n'apporte aucune information : elle range autrement
+`parent_id` pour lire un sous-arbre sans parcours récursif. Une ligne relie
+chaque nœud qui a des enfants à lui-même et à chacun de ses ancêtres ;
+dans numrev ce sont exactement les sections (602 sur 603 ont des enfants),
+mais rien n'y suppose le type du nœud ni l'ordre de lecture. Le sous-arbre
+d'un nœud X : X, plus les enfants des nœuds `descendant_id` des lignes
+où `ancestor_id = X`.
 
 Pas de table `page` : un numéro de page du PDF suffit pour ancrer (les
 boîtes sont dans un repère relatif 0–1000) et désignera plus tard la toile
@@ -67,22 +76,30 @@ IIIF. La taille de l'image viendra du serveur IIIF.
 |---|---|---|
 | `member_of` | entrée ou élément hors champ → section | `node.parent_id` d'une entrée ou d'un élément hors champ |
 | `child_of` | section → section | `node.parent_id` d'une section |
-| `follows` | entrée → entrée suivante dans l'ordre de lecture du volume, à travers les sections, sans compter les autres nœuds | `node.document_reading_order` : première entrée de rang supérieur |
+| `follows` | entrée → entrée suivante dans l'ordre de lecture du volume, à travers les sections, sans compter les autres nœuds | `node.next_entry_id` d'une entrée (null pour la dernière), calculé à l'import |
+
+Les trois arcs suivent le même principe : une colonne de `node` pointe vers
+le nœud cible (clé étrangère). `next_entry_id` est déduit à l'import de
+l'ordre de lecture (première entrée de rang supérieur) ; l'import insère
+les nœuds d'un volume en une seule instruction pour que sa clé étrangère,
+vers une entrée plus loin dans l'ordre, soit vérifiée en fin d'instruction.
 
 `member_of` et `child_of` sont la même colonne : numrev donne un seul arbre
 (champ `parent`) où tous les objets ont pour parent un titre (ou la racine).
 Un élément hors champ est rangé sous la rubrique ouverte à cet endroit : un
 titre courant « appartient » ainsi à la rubrique en cours, au sens de
 l'ordre de lecture et non du contenu. Le type
-d'arc se lit au type du nœud source. Aucune table d'arcs : tout est déduit
-des colonnes.
+d'arc se lit au type du nœud source. Aucune table d'arcs : tout est porté
+par des colonnes.
 
 **Ordre de lecture et succession sont distincts.** L'ordre de lecture est un
 attribut commun à tous les nœuds (`document_reading_order`, rang 0…n-1 dans
 le volume, tous types confondus) : une vue qui parcourt le document trie
 par lui, sans passer par un arc. `follows` est une relation entre entrées
 seulement (« l'entrée suivante ») ; elle saute les sections et les éléments
-hors champ, et n'a pas changé quand ce troisième type de nœud a été ajouté.
+hors champ. Stockée, elle se recalcule à chaque import : un nouveau type de
+nœud ou une autre définition de « suivante » ne demande que de modifier son
+calcul dans `scripts/rows.ts`.
 
 ### Diagramme
 
@@ -92,6 +109,7 @@ erDiagram
     node |o--o{ node : "parent_id (member_of / child_of)"
     node ||--o{ span : "SUBJ / DESC / ADDR (entrées)"
     node ||--o{ anchor : "page + boîte"
+    node ||--o{ parent_closure : "ancestor_id / descendant_id (dérivée)"
 ```
 
 ### Schéma Drizzle
@@ -113,7 +131,11 @@ Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
 - `node` : les `titles`, les `entries` et les `out_of_scope` du `structure.json` ;
   `document_reading_order` = rang de leur première ligne dans l'ordre des
   lignes de `document.json` (ordre de lecture du volume) ; `parent_id` =
-  `parent`, sauf la racine numrev → `null`.
+  `parent`, sauf la racine numrev → `null` ; `next_entry_id` = entrée
+  suivante dans cet ordre (entrées seulement). Tous les nœuds du volume en
+  une instruction (`jsonb_to_recordset`), dans l'ordre de lecture.
+- `parent_closure` : calculée des `parent_id` (`parentClosureOf`) ; une
+  boucle dans les parents arrête l'import.
 - `anchor` : pour chaque nœud et chaque page, union des `bbox_estimate` non
   nulles de ses lignes ; aucune ligne boîtée sur la page → pas d'ancre.
 - `volume` : `data/<volume>/volume.json`.
@@ -124,7 +146,8 @@ Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
 - Le volume est remplacé en entier, dans une transaction.
 
 Résultat pour 1807 : 22 158 nœuds (603 sections, 20 709 entrées, 846
-éléments hors champ), 45 673 empans, 22 017 ancres ; 51 entrées, 3 sections
+éléments hors champ), 1 515 lignes de fermeture, 45 673 empans, 22 017
+ancres ; 51 entrées, 3 sections
 et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
 
 ### Choix discutables ⚠️
@@ -136,18 +159,35 @@ et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
 2. **Hors champ en `member_of`** : même arc que les entrées vers leur
    rubrique ; un sous-graphe « toute la rubrique » les inclut donc, sauf
    filtre `kind = 'entry'`.
-3. **`follows` calculé, pas stocké** : « première entrée de rang
-   supérieur » par sous-requête, servie par l'index
-   `(volume_id, kind, document_reading_order, id)` en parcours d'index
-   seul ; pour une grande sélection, `lead()` sur les entrées du volume
-   (voir section 4).
+3. **`follows` stocké** (`node.next_entry_id`) : donnée dérivée de l'ordre
+   de lecture, calculée à l'import, comme `parent_closure` (point 7) ; les
+   trois arcs sont ainsi portés par des colonnes. Clé étrangère sans
+   cascade : supprimer une entrée seule est refusé tant qu'une autre la
+   désigne. Décidé le 18 novembre, après mesure des requêtes de
+   `lib/query/` (calculé, il pesait la moitié du temps des gros
+   sous-arbres).
 4. **Pas de `page`**, pas de taille d'image : à revoir avec IIIF.
 5. **Ordre alphabétique** : sur le premier SUBJ (`min(char_start)`), par
    sous-requête, sans colonne dénormalisée.
 6. **Géocodage** : pas de table, sprint dédié (voir « Plus tard ») ; les
    empans ADDR et leur uuid en sont le point d'accroche.
+7. **`parent_closure`, donnée dérivée** : redondante avec `parent_id`, tenue
+   à jour par l'import seul (le volume est remplacé en entier, la table
+   suit en cascade) ; aucune écriture ailleurs ne doit modifier `parent_id`
+   sans la recalculer. Même règle pour `next_entry_id` et l'ordre de
+   lecture.
 
 ## 3. Requête → sous-graphe induit (SQL)
+
+Implémenté dans `lib/query/` pour les scénarios de `docs/SCENARIOS.md`.
+Une seule requête SQL par résolution : elle rend les nœuds sélectionnés
+avec leurs colonnes d'arcs (`parent_id`, `next_entry_id`) ; les arcs de
+l'étape 2 sont ensuite déduits de ces lignes en TypeScript
+(`inducedArcs`). Le sous-arbre est lu dans `parent_closure`, sans
+`WITH RECURSIVE`.
+
+Les formes ci-dessous restent la référence pour les filtres à venir ; un
+parcours récursif s'y remplace par `parent_closure`.
 
 ### Étape 1 : les nœuds (seule partie qui dépend de la requête)
 
@@ -155,11 +195,12 @@ Exemple : les entrées de la rubrique BOULANGERS et de ses sous-rubriques
 dont un nom ressemble à « Lefevre », dans une période.
 
 ```sql
-WITH RECURSIVE
+WITH
 subtree AS (                       -- la section et tous ses descendants
-  SELECT id FROM node WHERE id = :section
+  SELECT :section AS id
   UNION ALL
-  SELECT n.id FROM node n JOIN subtree t ON n.parent_id = t.id
+  SELECT n.id FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
+  WHERE c.ancestor_id = :section
 ),
 nodes AS (
   SELECT n.id
@@ -190,30 +231,16 @@ FROM node n
 WHERE n.id IN (SELECT id FROM nodes)
   AND n.parent_id IN (SELECT id FROM nodes);
 
--- follows : l'entrée suivante dans l'ordre de lecture, si les deux sont sélectionnées
-SELECT f.source, f.target, 'follows' AS kind
-FROM (
-  SELECT a.id AS source,
-         (SELECT b.id FROM node b
-          WHERE b.volume_id = a.volume_id AND b.kind = 'entry'
-            AND b.document_reading_order > a.document_reading_order
-          ORDER BY b.document_reading_order LIMIT 1) AS target
-  FROM node a
-  WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes)
-  OFFSET 0                         -- empêche l'inlining : sinon la sous-requête est évaluée deux fois
-) f
-WHERE f.target IN (SELECT id FROM nodes);
-
--- follows, variante pour une grande sélection (coût fixe : un parcours des entrées du volume)
-SELECT f.source, f.target, 'follows' AS kind
-FROM (
-  SELECT id AS source,
-         lead(id) OVER (PARTITION BY volume_id ORDER BY document_reading_order) AS target
-  FROM node
-  WHERE kind = 'entry' AND volume_id IN (SELECT volume_id FROM node WHERE id IN (SELECT id FROM nodes))
-) f
-WHERE f.source IN (SELECT id FROM nodes) AND f.target IN (SELECT id FROM nodes);
+-- follows : l'entrée suivante, si les deux sont sélectionnées
+SELECT n.id AS source, n.next_entry_id AS target, 'follows' AS kind
+FROM node n
+WHERE n.id IN (SELECT id FROM nodes)
+  AND n.next_entry_id IN (SELECT id FROM nodes);
 ```
+
+Dans `lib/query/`, ces deux formes sont appliquées en TypeScript
+(`inducedArcs`) aux lignes déjà lues, qui portent `parent_id` et
+`next_entry_id`.
 
 ### Étape 3 : étendre par les liens documentaires
 
@@ -225,36 +252,24 @@ par l'étape 2.
 SELECT id FROM nodes
 UNION SELECT parent_id FROM node WHERE id IN (SELECT id FROM nodes) AND parent_id IS NOT NULL;
 
--- toutes les sections ancêtres
-WITH RECURSIVE up(id) AS (
-  SELECT id FROM nodes
-  UNION
-  SELECT n.parent_id FROM node n JOIN up ON n.id = up.id WHERE n.parent_id IS NOT NULL
-)
-SELECT id FROM up;
-
--- contenu des sections sélectionnées (tous les descendants)
-WITH RECURSIVE down(id) AS (
-  SELECT id FROM nodes
-  UNION
-  SELECT n.id FROM node n JOIN down ON n.parent_id = down.id
-)
-SELECT id FROM down;
-
--- entrées voisines dans le texte (précédente et suivante, par follows)
+-- toutes les sections ancêtres (celles du parent de chaque nœud)
 SELECT id FROM nodes
 UNION
-SELECT (SELECT b.id FROM node b
-        WHERE b.volume_id = a.volume_id AND b.kind = 'entry'
-          AND b.document_reading_order > a.document_reading_order
-        ORDER BY b.document_reading_order LIMIT 1)
-FROM node a WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes)
+SELECT c.ancestor_id FROM node n JOIN parent_closure c ON c.descendant_id = n.parent_id
+WHERE n.id IN (SELECT id FROM nodes);
+
+-- contenu des sections sélectionnées (tous les descendants)
+SELECT id FROM nodes
 UNION
-SELECT (SELECT b.id FROM node b
-        WHERE b.volume_id = a.volume_id AND b.kind = 'entry'
-          AND b.document_reading_order < a.document_reading_order
-        ORDER BY b.document_reading_order DESC LIMIT 1)
-FROM node a WHERE a.kind = 'entry' AND a.id IN (SELECT id FROM nodes);
+SELECT n.id FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
+WHERE c.ancestor_id IN (SELECT id FROM nodes);
+
+-- entrées voisines dans le texte (suivante et précédente, par follows)
+SELECT id FROM nodes
+UNION
+SELECT next_entry_id FROM node WHERE id IN (SELECT id FROM nodes) AND next_entry_id IS NOT NULL
+UNION
+SELECT id FROM node WHERE next_entry_id IN (SELECT id FROM nodes);   -- index node (next_entry_id)
 ```
 
 ## 4. Performances en lecture
@@ -266,8 +281,9 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 | Index | Sert à |
 |---|---|
 | `node (volume_id, document_reading_order)` unique | vue document : une plage de rangs |
-| `node (volume_id, kind, document_reading_order, id)` | `follows` et entrées voisines, en parcours d'index seul (`id` en clé : Drizzle n'a pas `INCLUDE`) |
-| `node (parent_id)` | sous-arbre, contenu d'une section |
+| `node (next_entry_id)` | entrée précédente ; vérification de la clé étrangère à la suppression |
+| `node (parent_id)` | enfants d'une section, sous-arbre (avec `parent_closure`) |
+| `parent_closure (ancestor_id, descendant_id)` PK, `parent_closure (descendant_id)` | nœuds parents d'un sous-arbre ; ancêtres d'un nœud et suppression en cascade |
 | `anchor (node_id, page)` PK, `anchor (page)` | ancres d'un nœud, nœuds d'une page |
 | `span (node_id)` | empans d'une entrée |
 | GIN trigrammes sur `immutable_unaccent(node.text)` : un général + un partiel par `kind` | recherche floue sans accents ; le partiel sert quand la requête fixe `kind = '<littéral>'` |
@@ -277,8 +293,8 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 - fixer `kind` et `label` par un littéral (ou un paramètre de requête
   préparée) pour que l'index partiel serve ;
 - écrire l'expression indexée telle quelle (`immutable_unaccent(...)`) ;
-- `follows` : `OFFSET 0` (ou `MATERIALIZED`) dans la sous-requête, et
-  `lead()` au-delà de quelques milliers d'entrées.
+- sous-arbre : `parent_closure`, et `UNION ALL` plutôt qu'un `OR` entre le
+  nœud et ses descendants (un `OR` relit toute la table).
 
 **Côté serveur** :
 - `VACUUM (ANALYZE)` après chaque import (`scripts/import.ts`) :
@@ -288,7 +304,9 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 - nœuds insérés dans l'ordre de lecture : la vue document lit des pages
   contiguës.
 
-**Mesures** (1807, cache chaud, temps d'exécution) :
+**Mesures** (1807, cache chaud, temps d'exécution ; 30 octobre, quand
+`follows` était encore calculé : les lignes « arcs » ne valent plus pour
+les formes actuelles de l'étape 2) :
 
 | Requête | Avant | Après |
 |---|---|---|
@@ -299,6 +317,34 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 | arcs de la plus grosse rubrique (3 337 enfants) | 49,7 ms | 29,3 ms |
 | arcs de tout le volume (22 158 nœuds) | 213,9 ms | 97,8 ms ; 22,3 ms pour `follows` par `lead()` |
 | vue document (une page, 100 rangs), fiche | < 0,4 ms | < 0,3 ms |
+
+**`resolve` (scénario 1, sous-arbre)** : sous-arbre lu dans
+`parent_closure`, arcs lus dans `parent_id` et `next_entry_id`.
+
+| Sous-arbre | Nœuds | SQL | Depuis Node, arcs compris |
+|---|---|---|---|
+| une entrée | 1 | 0,016 ms | — |
+| petite rubrique | ≈ 30 | 0,13 ms | — |
+| LISTE DE NON-COMMERÇANS | 3 338 | 1,5 ms | 7,7 ms |
+| LISTES PARTICULIÈRES (62 % du volume) | 13 737 | 7,6 ms | 35 ms |
+
+Étapes (SQL seul, petite rubrique ; plus gros sous-arbre) :
+- parcours récursif et une sous-requête d'entrée suivante par entrée :
+  1,4 ms ; 70 à 80 ms ;
+- parcours récursif et `lead()` sur la plage du sous-arbre : 1,0 ms ; 38 ms ;
+- `parent_closure` et `lead()` sur la plage : 0,39 ms ; 19,5 ms ;
+- `parent_closure` et `next_entry_id` stocké (retenu) : 0,13 ms ; 7,6 ms.
+
+Écartés : `lead()` sur toutes les entrées du volume (16 ms ; 49 ms) ; un
+`OR` entre le nœud et ses descendants au lieu de `UNION ALL` (relit toute
+la table : 2,4 ms pour une petite rubrique). Toutes les formes donnent des
+sous-graphes identiques sur les 603 rubriques de 1807 et 200 autres nœuds.
+
+Sur le plus gros sous-arbre, vu de Node, il reste ≈ 15 ms de transfert et
+de lecture des 13 737 lignes par postgres.js (inhérent au volume : seule
+une réponse plus petite, paginée par exemple, le réduirait) et ≈ 6 ms de
+TypeScript (nœuds et arcs). Construire le JSON dans PostgreSQL
+(`json_agg`) est plus lent : 41 ms contre 16 pour les mêmes lignes.
 
 Pistes non retenues (elles changent le modèle) : `docs/IDEES.md`.
 
