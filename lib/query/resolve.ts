@@ -70,20 +70,22 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
 
 /** Sous-graphe induit par le nœud `query.subtree` et tous ses descendants. */
 export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph> {
-  // Le CTE récursif porte les colonnes : sans jointure de retour sur node, le planificateur
-  // ne relit pas toute la table (1807 : petite rubrique 8,6 → 1,4 ms).
+  // Sous-arbre sans parcours : le nœud lui-même, plus les enfants de chacun de ses nœuds
+  // parents descendants, lus dans parent_closure (vide si le nœud n'a pas d'enfant). UNION ALL
+  // plutôt que OR : chaque branche garde son index.
   // Entrée suivante : lead() sur les entrées du volume comprises entre le premier et le dernier
   // rang du sous-arbre, en un parcours d'index. Une entrée suivante au-delà du dernier rang est
   // hors du sous-arbre : on la laisse à null, elle n'y donnerait pas d'arc. Juste aussi pour un
   // sous-arbre qui ne serait pas d'un seul tenant dans l'ordre de lecture.
-  // Plus gros sous-arbre de 1807 : 38 ms, contre 70 à 80 ms par une sous-requête par entrée.
+  // Mesures : docs/MODELE_DONNEES.md, section 4.
   const rows = await sql<SelectedNode[]>`
-    WITH RECURSIVE subtree AS (
+    WITH subtree AS MATERIALIZED (
       SELECT id, volume_id, kind, parent_id, document_reading_order, text
       FROM node WHERE id = ${query.subtree}
       UNION ALL
       SELECT n.id, n.volume_id, n.kind, n.parent_id, n.document_reading_order, n.text
-      FROM node n JOIN subtree t ON n.parent_id = t.id
+      FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
+      WHERE c.ancestor_id = ${query.subtree}
     ),
     -- un sous-arbre tient dans un seul volume ; MATERIALIZED : calculées une fois, les bornes
     -- deviennent des constantes du parcours d'index
