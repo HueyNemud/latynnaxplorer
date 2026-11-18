@@ -39,7 +39,10 @@ export class NodeNotFoundError extends Error {
   }
 }
 
-/** Nœud sélectionné, avec l'entrée qui le suit dans son volume (null hors entrées). */
+/**
+ * Nœud sélectionné, avec l'entrée qui le suit dans son volume. Null hors entrées, et
+ * permis quand cette entrée ne peut pas être sélectionnée : elle n'y donnerait pas d'arc.
+ */
 export interface SelectedNode extends SubgraphNode {
   nextEntryId: string | null;
 }
@@ -69,8 +72,11 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
 export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph> {
   // Le CTE récursif porte les colonnes : sans jointure de retour sur node, le planificateur
   // ne relit pas toute la table (1807 : petite rubrique 8,6 → 1,4 ms).
-  // Entrée suivante : première entrée de rang supérieur dans le volume, une recherche d'index
-  // par entrée ; 80 ms pour 13 311 entrées (62 % de 1807), voir docs/MODELE_DONNEES.md.
+  // Entrée suivante : lead() sur les entrées du volume comprises entre le premier et le dernier
+  // rang du sous-arbre, en un parcours d'index. Une entrée suivante au-delà du dernier rang est
+  // hors du sous-arbre : on la laisse à null, elle n'y donnerait pas d'arc. Juste aussi pour un
+  // sous-arbre qui ne serait pas d'un seul tenant dans l'ordre de lecture.
+  // Plus gros sous-arbre de 1807 : 38 ms, contre 70 à 80 ms par une sous-requête par entrée.
   const rows = await sql<SelectedNode[]>`
     WITH RECURSIVE subtree AS (
       SELECT id, volume_id, kind, parent_id, document_reading_order, text
@@ -78,17 +84,24 @@ export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph
       UNION ALL
       SELECT n.id, n.volume_id, n.kind, n.parent_id, n.document_reading_order, n.text
       FROM node n JOIN subtree t ON n.parent_id = t.id
+    ),
+    -- un sous-arbre tient dans un seul volume ; MATERIALIZED : calculées une fois, les bornes
+    -- deviennent des constantes du parcours d'index
+    bounds AS MATERIALIZED (
+      SELECT min(volume_id) AS volume_id,
+             min(document_reading_order) AS lo, max(document_reading_order) AS hi
+      FROM subtree
+    ),
+    next_entry AS (
+      SELECT b.id, lead(b.id) OVER (ORDER BY b.document_reading_order) AS next_entry_id
+      FROM node b
+      WHERE b.kind = 'entry' AND b.volume_id = (SELECT volume_id FROM bounds)
+        AND b.document_reading_order BETWEEN (SELECT lo FROM bounds) AND (SELECT hi FROM bounds)
     )
     SELECT s.id, s.kind, s.parent_id AS "parentId",
            s.document_reading_order AS "documentReadingOrder", s.text,
-           CASE WHEN s.kind = 'entry' THEN (
-             SELECT b.id FROM node b
-             WHERE b.volume_id = s.volume_id AND b.kind = 'entry'
-               AND b.document_reading_order > s.document_reading_order
-             ORDER BY b.document_reading_order
-             LIMIT 1
-           ) END AS "nextEntryId"
-    FROM subtree s
+           e.next_entry_id AS "nextEntryId"
+    FROM subtree s LEFT JOIN next_entry e USING (id)
     ORDER BY s.document_reading_order`;
   if (rows.length === 0) throw new NodeNotFoundError(query.subtree);
   return {
