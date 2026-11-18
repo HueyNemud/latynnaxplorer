@@ -310,18 +310,22 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 | arcs de tout le volume (22 158 nœuds) | 213,9 ms | 97,8 ms ; 22,3 ms pour `follows` par `lead()` |
 | vue document (une page, 100 rangs), fiche | < 0,4 ms | < 0,3 ms |
 
-**`resolve` (scénario 1, sous-arbre)**, nœuds et entrée suivante en SQL :
+**`resolve` (scénario 1, sous-arbre)**, nœuds et entrée suivante en SQL.
+L'entrée suivante est calculée par `lead()` sur les seules entrées comprises
+entre le premier et le dernier rang du sous-arbre, en un parcours d'index :
 
 | Sous-arbre | Nœuds | SQL | Depuis Node, arcs compris |
 |---|---|---|---|
-| petite rubrique (≈ 30 nœuds) | ≈ 30 | 1,4 ms | — |
-| LISTE DE NON-COMMERÇANS | 3 338 | 20 ms | 24 ms |
-| LISTES PARTICULIÈRES (62 % du volume) | 13 737 | 80 ms | 97 ms |
+| petite rubrique | ≈ 30 | 1,0 ms | — |
+| LISTE DE NON-COMMERÇANS | 3 338 | 9,6 ms | 14 ms |
+| LISTES PARTICULIÈRES (62 % du volume) | 13 737 | 38 ms | 58 ms |
 
-Au-delà de quelques milliers d'entrées, la recherche de l'entrée suivante
-domine (une recherche d'index par entrée). `lead()` sur les entrées du
-volume ramène le plus gros sous-arbre à 49 ms, mais coûte au moins 16 ms
-même pour une petite rubrique : non retenu tant que ces temps suffisent.
+Variantes écartées, pour le plus gros sous-arbre et pour une petite
+rubrique : une sous-requête par entrée (70 à 80 ms ; 1,4 ms) ; `lead()` sur
+toutes les entrées du volume (49 ms ; 16 ms). Il reste le parcours récursif
+(≈ 17 ms, une recherche d'index par nœud) : pistes sans parcours dans
+`docs/IDEES.md`. Les deux formes de requête donnent des sous-graphes
+identiques sur les 603 rubriques de 1807 et 200 autres nœuds.
 
 Pistes non retenues (elles changent le modèle) : `docs/IDEES.md`.
 

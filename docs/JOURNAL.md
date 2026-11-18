@@ -16,16 +16,22 @@
   lecture, arcs déduits ; 30 tests — `8992489`.
 - 1807 : les 603 rubriques sont d'un seul tenant dans l'ordre de lecture ;
   603 rubriques pour 521 libellés (désignation par uuid) ; 7 niveaux.
-- Mesures (`MODELE_DONNEES.md`, section 4) : 1,4 ms pour une petite
-  rubrique, 20 ms pour 3 338 nœuds, 80 ms pour 13 737 (SQL seul).
+- Entrée suivante par `lead()` sur la plage du sous-arbre plutôt qu'une
+  sous-requête par entrée : sous-graphes identiques sur 803 sous-arbres de
+  1807 (toutes les rubriques et 200 autres nœuds).
+- Mesures (`MODELE_DONNEES.md`, section 4) : 1,0 ms pour une petite
+  rubrique, 9,6 ms pour 3 338 nœuds, 38 ms pour 13 737 (SQL seul).
+- Pistes sans parcours de l'arbre notées dans `IDEES.md`, mesurées : table
+  de fermeture des sections, sous-arbre en plage de rangs.
 
 **Décisions**
 - Voir `docs/DECISIONS.md` : scénarios, motifs d'URL en anglais, filtre
   `subtree` générique, erreurs, arcs en TypeScript, base de test, API JSON
   plus tard.
-- `lead()` pour l'entrée suivante non retenu : gagne sur le plus gros
-  sous-arbre (49 ms contre 80), perd sur les petites rubriques (16 contre
-  1,4).
+- Pas de changement du schéma pour la performance (décision de
+  l'utilisateur) : l'hypothèse « rubriques d'un seul tenant », vraie sur
+  1807, est à mieux vérifier dans numrev avant de s'en servir ; pas de
+  demande à numrev pour l'instant.
 
 **Questions ouvertes**
 - Messages d'erreur en français dans le code : à traduire quand
