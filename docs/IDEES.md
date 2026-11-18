@@ -43,3 +43,11 @@ plusieurs volumes en base.
   plage prend 3,4 ms (requête actuelle, avec `parent_closure` et
   `next_entry_id` : 7,6 ms).
 - Coût : une colonne de plus, et une hypothèse sur numrev dans le modèle.
+
+## État de la requête dans le navigateur : `nuqs`
+
+- Prévu par le brief, reporté au sprint 3 (`docs/DECISIONS.md`) : rien ne
+  modifie encore la requête côté client.
+- À reprendre avec l'opération « filtrer » ; trancher alors entre `nuqs`
+  à la place de `parseQuery` / `serializeQuery` (`lib/query/query.ts`) ou
+  `nuqs` qui s'appuie sur eux.

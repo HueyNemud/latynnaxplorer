@@ -1,5 +1,27 @@
 # Journal de développement
 
+## 2026-11-18 — Préparation du sprint 3 : dépendances
+
+**Fait**
+- PR #11 (sprint d'entretien) fusionnée.
+- Application Next.js d'essai, hors du dépôt (Next 16.4.6, React 19.3.1,
+  TypeScript 7.0.2, `postgres` 4.1.1) : `next build` passe et échoue bien
+  sur une erreur de type ; une page serveur lit `?subtree=` et interroge la
+  base de développement (lecture seule).
+- Conflit relevé : Next impose `moduleResolution: bundler`, refusé par
+  TypeScript avec `module: nodenext`. `module: esnext` + `bundler`
+  fonctionne et Next ne retouche plus `tsconfig.json` ; un import relatif
+  sans extension passe alors `tsc` mais casse Node : la règle Biome
+  `useImportExtensions` le signale et le corrige en `.ts`.
+
+**Décisions**
+- Dépendances du sprint 3, réglages qui les accompagnent, `nuqs` reporté :
+  voir `docs/DECISIONS.md`.
+
+**Suite**
+- Contenu d'une ligne de la vue Liste à discuter (pistes dans
+  `SPRINTS.md`), puis branche du sprint 3.
+
 ## 2026-11-18 — Sprint d'entretien : mises à jour majeures
 
 **Fait**
