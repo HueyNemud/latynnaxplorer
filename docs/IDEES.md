@@ -51,3 +51,14 @@ plusieurs volumes en base.
 - À reprendre avec l'opération « filtrer » ; trancher alors entre `nuqs`
   à la place de `parseQuery` / `serializeQuery` (`lib/query/query.ts`) ou
   `nuqs` qui s'appuie sur eux.
+
+## Écartées : analyse dans le site
+
+Le site permet d'explorer les sorties de numrev, pas d'en faire l'analyse
+(`docs/DESIGN.md`, « Explorer, pas analyser ») ; l'export de la sélection
+couvre le besoin des historiens qui analysent eux-mêmes.
+
+- **Mesurer** : effectifs par rubrique, rue ou période ; « synthèse »
+  comme densité compacte d'un sous-graphe.
+- **Relier** des individus : associés, renvois « *Voyez* » comme arcs,
+  occupants d'une même adresse comme réseau.
