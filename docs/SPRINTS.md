@@ -17,15 +17,13 @@ code (périmètre, dépendances, choix discutables).
   CI.
 - **Sprint d'entretien, mises à jour majeures** (PR #7, #8 et la PR de
   `docs/mises-a-jour-majeures`) : `postgres` v4, TypeScript 7.
+- **Sprint 3, concept de design** (PR #13) : `docs/DESIGN.md` (objectif,
+  profils, domaines, sélection et vues orthogonales, fonctionnalités,
+  représentations d'un nœud, principes d'affichage), sans code.
 
-## Sprint 3 : concept de design (en cours)
+## Sprint 4 : la fiche d'un nœud (en cours)
 
-Branche `docs/concept-design`, sans code. `docs/DESIGN.md` : objectif,
-profils, domaines, sélection et vues orthogonales, fonctionnalités,
-représentations d'un nœud, principes d'affichage. Remplace le sprint
-« première page, vue Liste » prévu jusqu'ici.
-
-## Sprint 4 : la fiche d'un nœud
+Branche `feat/fiche-noeud`.
 
 But : voir un nœud dans un navigateur, en densité détaillée (vue Liste
 seulement : les autres vues attendent leurs données).
@@ -37,9 +35,16 @@ seulement : les autres vues attendent leurs données).
   (`docs/DECISIONS.md`, 18 novembre). La page lit `?subtree=` côté
   serveur ; une sélection d'un seul nœud donne sa fiche.
 
-**À discuter** : ce que `resolve` doit renvoyer en plus (champs
-SUBJ/DESC/ADDR, page, chemin des rubriques comme contexte) ; ce que montre
-une sélection de plusieurs nœuds en attendant le sprint 5.
+Choix validés au début du sprint :
+
+- `resolve` renvoie en plus, pour chaque nœud, ses champs (empans) et ses
+  ancres (page, boîte) ; le chemin des rubriques est renvoyé à part du
+  sous-graphe, comme contexte ; rien de plus sur le volume pour l'instant.
+- Une sélection de plusieurs nœuds affiche seulement leur nombre et
+  signale que la vue Liste arrive au sprint 5.
+- La page source s'affiche en texte (« p. 60 ») ; elle deviendra un lien
+  avec les images IIIF.
+- Requête mal formée : 400 ; uuid inconnu : 404.
 
 ## Sprint 5 : la vue Liste
 
