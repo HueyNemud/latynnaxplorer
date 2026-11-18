@@ -37,6 +37,18 @@ describe("toRows", () => {
     expect(parents).toEqual({ [T1]: null, [T2]: T1, [E1]: T2, [E2]: T2, [E3]: T1, [O1]: T2 });
   });
 
+  it("relie chaque entrée à l'entrée suivante dans l'ordre de lecture, à travers les sections", () => {
+    const next = Object.fromEntries(rows.nodes.map((n) => [n.id, n.nextEntryId]));
+    expect(next).toEqual({
+      [T1]: null,
+      [E3]: E1, // T2 s'intercale : sections et éléments hors champ sont sautés
+      [T2]: null,
+      [E1]: E2,
+      [E2]: null, // dernière entrée du volume
+      [O1]: null,
+    });
+  });
+
   it("relie chaque nœud parent à lui-même et à ses ancêtres", () => {
     expect(rows.parentClosure).toEqual([
       { ancestorId: T1, descendantId: T1 },

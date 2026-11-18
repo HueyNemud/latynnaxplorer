@@ -107,6 +107,13 @@ export function toRows({ volume: meta, document, structure }: VolumeFiles): Rows
     .sort((a, b) => a.lineOrder - b.lineOrder)
     .map(({ lineOrder: _, ...n }, documentReadingOrder) => ({ ...n, documentReadingOrder }));
 
+  // Arc follows : chaque entrée pointe vers l'entrée suivante dans l'ordre de lecture.
+  let nextEntryId: string | null = null;
+  for (const n of nodes.toReversed()) {
+    n.nextEntryId = n.kind === "entry" ? nextEntryId : null;
+    if (n.kind === "entry") nextEntryId = n.id;
+  }
+
   const spans = structure.entries.flatMap((entry) =>
     entry.spans.map((s) => ({
       id: s.id,

@@ -60,17 +60,24 @@ export const node = pgTable(
       .references(() => volume.id, { onDelete: "cascade" }),
     kind: nodeKind().notNull(),
     parentId: uuid("parent_id"), // section parente : arc child_of (section), member_of (autres) ; null = racine
-    // rang du nœud dans l'ordre de lecture de son volume, tous types confondus (0…n-1) ;
-    // arc follows : l'entrée suivante dans cet ordre
+    // rang du nœud dans l'ordre de lecture de son volume, tous types confondus (0…n-1)
     documentReadingOrder: integer("document_reading_order").notNull(),
     text: text().notNull(), // section : « heading » ; autres : « text »
+    // entrée suivante dans l'ordre de lecture du volume : arc follows (entrées seulement ;
+    // null pour la dernière entrée et les autres nœuds). Calculée à l'import.
+    nextEntryId: uuid("next_entry_id"),
   },
   (t) => [
     foreignKey({ columns: [t.parentId], foreignColumns: [t.id] }).onDelete("cascade"),
+    // pas de cascade : supprimer une entrée seule ne doit pas emporter la précédente.
+    // L'import insère tous les nœuds en une instruction : la contrainte est vérifiée à la fin.
+    foreignKey({ columns: [t.nextEntryId], foreignColumns: [t.id] }),
     unique("node_volume_reading_order").on(t.volumeId, t.documentReadingOrder),
-    // follows : id en dernière clé (Drizzle n'a pas INCLUDE) pour un parcours d'index seul
+    // entrées d'un volume dans l'ordre de lecture, en parcours d'index seul (id en dernière clé :
+    // Drizzle n'a pas INCLUDE). Servait au calcul de follows, désormais stocké : à réévaluer.
     index("node_volume_kind_reading_order").on(t.volumeId, t.kind, t.documentReadingOrder, t.id),
     index().on(t.parentId),
+    index().on(t.nextEntryId), // entrée précédente, et vérification de la contrainte à la suppression
     ...trigramIndexes("node_text", sql`immutable_unaccent(${t.text})`, t.kind, nodeKind.enumValues),
   ],
 );
