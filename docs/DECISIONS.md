@@ -2,6 +2,11 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-18 — PR fusionnées par merge commit (ni squash ni rebase) : les hashes cités dans le journal restent valides.
+- 2026-11-18 — Renovate : chaque lundi matin (heure de Paris), mises à jour mineures et correctifs en une PR, majeures à part, aucune fusion automatique.
+- 2026-11-18 — `main` protégée, administrateurs compris : fusion par PR seulement, check `verification` vert exigé, sans relecture obligatoire (mainteneur seul), ni force-push ni suppression.
+- 2026-11-18 — CI GitHub Actions (job `verification`) : lint, typecheck, tests ; pnpm et Node 26 par `pnpm/setup`, lockfile figé ; pas de base PostgreSQL tant que les tests n'en ont pas besoin.
+
 - 2026-10-30 — Un sprint = une branche ; `main` ne reçoit que des PR relues et fusionnées par l'utilisateur ; dépôt GitHub privé `hueynemud/latynnaxplorer`.
 
 - 2026-10-30 — Lecture rapide sans changer le modèle : index trigrammes partiels par `kind` / `label`, index couvrant pour `follows`, `VACUUM (ANALYZE)` après import, `jit=off`, `random_page_cost=1.1`.
