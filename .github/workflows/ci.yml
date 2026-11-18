@@ -1,0 +1,37 @@
+# Vérifications automatiques de chaque PR et de chaque arrivée sur main.
+# Le nom du job (« verification ») est celui exigé par la protection de main :
+# le renommer demande de mettre la règle à jour.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# Un nouveau push sur une PR annule la vérification en cours de la même PR.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  verification:
+    name: verification
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      # pnpm (version de « packageManager »), Node et `pnpm install` en une
+      # étape ; échoue si pnpm-lock.yaml n'est pas à jour.
+      - uses: pnpm/setup@v3
+        with:
+          runtime: node@26
+          cache: true
+          require-lockfile: true
+
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
