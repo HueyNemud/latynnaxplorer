@@ -1,15 +1,14 @@
 # Concept de design
 
-Principes d'UX et d'UI du site : comment un nœud et un sous-graphe se
-représentent. Document de travail, complété au fil des décisions ; les
-choix arrêtés sont aussi résumés dans `docs/DECISIONS.md`.
+Principes d'UX et d'UI du site : ce que l'on sélectionne, comment on
+l'affiche, ce que l'on peut en faire. Document de travail, complété au fil
+des décisions ; les choix arrêtés sont aussi résumés dans
+`docs/DECISIONS.md`.
 
-## Objectif : explorer, pas analyser
+## Objectif
 
-Le site donne accès aux sorties de numrev et les rend récupérables ; il ne
-fait pas les analyses à la place des historiens. Une fonction qui mesure,
-agrège ou interprète n'a pas sa place ici ; une fonction qui aide à
-trouver, parcourir, vérifier ou récupérer les données, si.
+Un outil d'exploration visuelle, de sélection et d'export du contenu des
+annuaires extraits par numrev.
 
 ## Profils
 
@@ -21,70 +20,87 @@ trouver, parcourir, vérifier ou récupérer les données, si.
 - Généalogiste qui suit une personne ou une maison de commerce.
 - L'équipe numrev, qui vérifie l'extraction contre la source.
 
-## Tâches
+## Domaines des données
 
-| Tâche | Ce qu'elle demande |
-|---|---|
-| **Retrouver** une entrée | recherche tolérante (nom, adresse) |
-| **Parcourir** une rubrique ou une activité | aspect Structure |
-| **Situer** dans l'espace (rue, îlot, quartier) | aspect Espace |
-| **Suivre** dans le temps, d'un annuaire à l'autre | aspect Temps |
-| **Vérifier** contre la page source | aspect Document ; concerne tous les profils |
-| **Exporter** la sélection | le sous-graphe de l'URL, sous une forme lisible par une machine |
+Les nœuds (entrées, sections, éléments hors champ) se décrivent selon cinq
+domaines. Chacun sert à deux choses indépendantes : **sélectionner** (des
+critères) et **afficher** (une vue).
 
-L'export n'est pas une vue : c'est le même sous-graphe dans un format de
-données (formats à choisir, voir « format de l'API JSON » dans
-`docs/SPRINTS.md`).
-
-## Vocabulaire
-
-- **Aspect** : une dimension des données, commune aux nœuds et aux
-  sous-graphes : Structure, Document, Espace, Temps.
-- **Représentation** : la forme que prend un nœud dans un aspect.
-- **Vue** : la forme que prend un sous-graphe dans un aspect.
-- **Densité** : réglage commun à toutes les représentations, *compacte*
-  (une brique parmi d'autres, dans une vue) ou *détaillée* (une fiche).
-  Ce n'est pas un aspect.
-
-Règle de composition : la vue d'un sous-graphe dans l'aspect X dispose
-ses nœuds dans leur représentation X, en densité compacte.
-
-## Niveau 1 : nœud
-
-| Aspect | Représentation compacte | Représentation détaillée (fiche) | Disponible |
+| Domaine | Ce qu'il couvre | Critères possibles | Vue qui dispose selon lui |
 |---|---|---|---|
-| Structure | une ligne de texte, champs SUBJ/DESC/ADDR distingués | champs étiquetés, chemin des rubriques | maintenant |
-| Document | la boîte du nœud sur sa page (vignette) | la page, boîte surlignée | ancrages présents, images à venir (IIIF) |
-| Espace | un point | le point dans son quartier | après le géocodage |
-| Temps | un repère sur la frise | sa date ; plus tard, ses entrées liées | date du volume dès maintenant, liens plus tard |
+| Contenu | texte, champs SUBJ/DESC/ADDR | nom, activité, adresse (recherche tolérante) | aucune : toute représentation de nœud le porte |
+| Structure | hiérarchie, ordre de lecture | une rubrique et sa descendance | Liste |
+| Document | page, boîte sur la page | une page, une plage de pages | Page |
+| Espace | géométrie | une zone | Carte |
+| Temps | date, liens temporels | une période | Frise |
 
-La représentation dépend aussi du type de nœud (`entry`, `section`,
-`out_of_scope`) : à détailler aspect par aspect.
+## Sélection et vues : deux choses orthogonales
 
-## Niveau 2 : sous-graphe
+- **Sélection** : conjonction de critères portant sur n'importe quels
+  domaines (rubrique X *et* période P *et* zone Z), étendue au besoin par
+  les liens. C'est le sous-graphe induit ; elle est dans l'URL.
+- **Vue** : la sélection disposée selon **un** domaine. Changer de vue ne
+  change pas la sélection.
+- Une vue est l'endroit naturel pour **saisir** un critère sur son propre
+  domaine (tracer une zone sur la carte, choisir une rubrique dans la
+  liste, une période sur la frise) ; une fois posé, le critère vaut pour
+  toutes les vues.
+- Une vue montre toute la sélection, ou dit ce qu'elle ne peut pas placer
+  (« 12 nœuds sans coordonnées »).
 
-| Aspect | Vue | Agencement | Arcs montrés |
+| Vue | Disposition | Arcs montrés |
+|---|---|---|
+| Liste | ordre du document (ou alphabétique) | `member_of` / `child_of` (regroupement), `follows` (contiguïté) |
+| Page | la page source | ordre de lecture |
+| Carte | la géographie | à définir (déménagements, par les liens temporels ?) |
+| Frise | la chronologie, une ligne par lignée | liens temporels |
+
+## Fonctionnalités
+
+| Fonctionnalité | Effet sur la sélection | Dans l'URL |
+|---|---|---|
+| **Sélectionner** | la construit ou la restreint par des critères | oui |
+| **Suivre** | l'étend par les liens temporels | oui |
+| **Inspecter** | ne la change pas : déplace le focus d'un nœud à l'autre, dans une vue, en contexte | non (plus tard peut-être, pour partager un focus) |
+| **Exporter** | la récupère dans un format de données | non |
+
+- Comparer des entrées, les situer, les vérifier contre la source sont des
+  usages d'**inspecter**, dans la vue qui convient.
+- **Ouvrir une entrée** (brief) remplace la sélection par ce seul nœud ;
+  inspecter garde la sélection et montre le détail à côté.
+- L'export n'est pas une vue : c'est le même sous-graphe dans un format de
+  données (formats à choisir, voir « format de l'API JSON » dans
+  `docs/SPRINTS.md`).
+
+## Représentation d'un nœud
+
+Un nœud a une représentation par vue, déclinée selon une **densité** :
+*compacte* (une brique parmi d'autres, dans une vue) ou *détaillée* (une
+fiche). La représentation dépend aussi du type de nœud (`entry`,
+`section`, `out_of_scope`) : à détailler vue par vue. Le contenu (texte,
+champs) est porté par toutes.
+
+| Vue | Compacte | Détaillée (fiche) | Disponible |
 |---|---|---|---|
-| Structure | Liste | ordre du document (ou alphabétique) | `member_of` / `child_of` (regroupement), `follows` (contiguïté) |
-| Document | Page | la page source | ordre de lecture |
-| Espace | Carte | la géographie | à définir (déménagements, par les liens temporels ?) |
-| Temps | Frise | la chronologie, une ligne par lignée | liens temporels |
+| Liste | une ligne de texte, champs distingués | champs étiquetés, chemin des rubriques | maintenant |
+| Page | la boîte du nœud sur sa page (vignette) | la page, boîte surlignée | ancrages présents, images à venir (IIIF) |
+| Carte | un point | le point dans son quartier | après le géocodage |
+| Frise | un repère | sa date ; plus tard, ses entrées liées | date du volume maintenant, liens plus tard |
 
-## Les deux niveaux se rejoignent : la fiche
-
-Un sous-graphe d'un seul nœud est ce nœud dans tous ses aspects
-disponibles, en densité détaillée, côte à côte. Il n'y a pas de page
-« fiche » à concevoir à part.
+**La fiche** : une sélection d'un seul nœud est ce nœud dans toutes ses
+représentations disponibles, en densité détaillée, côte à côte. Il n'y a
+pas de page « fiche » à concevoir à part.
 
 ## Propositions à valider
 
-- **Contexte hors sous-graphe** : oui. Rubrique parente, entrées voisines
-  sur la page, autres occupants d'une adresse aident à s'orienter et à
-  vérifier ; affichés distinctement, jamais comptés dans la sélection.
+- **Contexte** : chaque vue montre la sélection dans son contexte (la page
+  autour des boîtes, la carte autour des points, la hiérarchie autour des
+  entrées). Ce qui entoure la sélection est visible, distinct d'elle, et
+  jamais compté dedans.
 - **Densité** : automatique par défaut (un nœud → fiche, plusieurs →
   compacte).
-- **Vues** : une à la fois pour commencer, mais avec un focus (survol,
-  sélection) pensé dès le départ comme partagé ; à terme, deux vues côte à
-  côte (Liste + Page pour vérifier, Liste + Carte pour situer).
+- **Vues** : une à la fois pour commencer, avec un focus pensé dès le
+  départ comme partagé ; à terme, deux vues côte à côte (Liste + Page,
+  Liste + Carte…).
 - **La source à un clic** : depuis tout nœud, dans toute vue, la page
   d'origine est accessible.

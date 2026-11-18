@@ -54,9 +54,9 @@ plusieurs volumes en base.
 
 ## Écartées : analyse dans le site
 
-Le site permet d'explorer les sorties de numrev, pas d'en faire l'analyse
-(`docs/DESIGN.md`, « Explorer, pas analyser ») ; l'export de la sélection
-couvre le besoin des historiens qui analysent eux-mêmes.
+Le site sert à explorer, sélectionner et exporter le contenu des annuaires
+(`docs/DESIGN.md`, « Objectif ») ; l'analyse revient aux historiens, à
+partir de l'export.
 
 - **Mesurer** : effectifs par rubrique, rue ou période ; « synthèse »
   comme densité compacte d'un sous-graphe.
