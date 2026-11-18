@@ -22,7 +22,12 @@ descendants, récursivement (sous-rubriques, entrées, éléments hors champ).
 - Arcs `member_of`, `child_of` et `follows` dont les deux bouts sont dans
   le résultat ; `follows` relie une entrée à l'entrée suivante du volume,
   seulement si celle-ci est aussi dans le résultat.
-- Un nœud porte `id`, `kind`, `parentId`, `documentReadingOrder` et `text`.
+- Un nœud porte `id`, `kind`, `parentId`, `documentReadingOrder`, `text`,
+  ses empans (`spans`, dans l'ordre du texte) et ses ancres (`anchors`,
+  dans l'ordre des pages).
+- À part du résultat, le **contexte** (`context`) : les rubriques ancêtres
+  du nœud désigné, de la racine à son parent. Il entoure la sélection sans
+  en faire partie.
 - Le nœud peut être de n'importe quel type : une entrée donne un résultat
   réduit à elle-même.
 

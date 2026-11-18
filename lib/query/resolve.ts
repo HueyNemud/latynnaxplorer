@@ -1,18 +1,48 @@
 // Résolution d'une requête en sous-graphe induit (docs/MODELE_DONNEES.md, section 3) :
-// une requête SQL sélectionne les nœuds, puis les arcs entre eux sont déduits de leurs colonnes.
+// SQL sélectionne les nœuds (avec leurs empans et leurs ancres), puis les arcs entre eux sont
+// déduits de leurs colonnes. Le contexte de la sélection (rubriques ancêtres) est lu à part.
 
 import type postgres from "postgres";
-import type { nodeKind } from "../db/schema.ts";
+import type { nodeKind, spanLabel } from "../db/schema.ts";
 import type { Query } from "./query.ts";
 
 export type NodeKind = (typeof nodeKind.enumValues)[number];
 export type ArcKind = "member_of" | "child_of" | "follows";
+export type SpanLabel = (typeof spanLabel.enumValues)[number];
+
+/** Champ structuré d'une entrée ; positions dans `text` brut, en points de code, fin exclue. */
+export interface Span {
+  id: string;
+  label: SpanLabel;
+  charStart: number;
+  charEnd: number;
+  normalized: string;
+}
+
+/** Boîte du nœud sur une page du PDF (repère numrev 0–1000, origine en haut à gauche). */
+export interface Anchor {
+  page: number;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
 
 export interface SubgraphNode {
   id: string;
   kind: NodeKind;
   parentId: string | null;
   documentReadingOrder: number;
+  text: string;
+  /** Dans l'ordre du texte ; vide hors entrées. */
+  spans: Span[];
+  /** Dans l'ordre des pages ; vide si le nœud n'a aucune ligne boîtée. */
+  anchors: Anchor[];
+}
+
+/** Rubrique du contexte d'un nœud. */
+export interface ContextSection {
+  id: string;
   text: string;
 }
 
@@ -39,8 +69,9 @@ export class NodeNotFoundError extends Error {
   }
 }
 
-/** Nœud sélectionné, avec l'entrée qui le suit dans son volume (null hors entrées). */
-export interface SelectedNode extends SubgraphNode {
+/** Nœud sélectionné, tel que lu dans `node` : sans ses empans ni ses ancres, avec l'entrée qui le
+ * suit dans son volume (null hors entrées). */
+export interface SelectedNode extends Omit<SubgraphNode, "spans" | "anchors"> {
   nextEntryId: string | null;
 }
 
@@ -71,19 +102,69 @@ export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph
   // parents descendants, lus dans parent_closure (vide si le nœud n'a pas d'enfant). UNION ALL
   // plutôt que OR : chaque branche garde son index. Les trois arcs sont portés par des
   // colonnes (parent_id, next_entry_id) : rien à calculer en SQL.
-  // Mesures : docs/MODELE_DONNEES.md, section 4.
-  const rows = await sql<SelectedNode[]>`
-    SELECT id, kind, parent_id AS "parentId", document_reading_order AS "documentReadingOrder",
-           text, next_entry_id AS "nextEntryId"
+  const subtree = sql`
+    SELECT id, kind, parent_id, document_reading_order, text, next_entry_id
     FROM node WHERE id = ${query.subtree}
     UNION ALL
     SELECT n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id
     FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
-    WHERE c.ancestor_id = ${query.subtree}
-    ORDER BY "documentReadingOrder"`;
+    WHERE c.ancestor_id = ${query.subtree}`;
+  // Trois requêtes en parallèle, en lignes simples : nœuds, empans, ancres, rattachés ensuite en
+  // TypeScript. Regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent.
+  // Mesures : docs/MODELE_DONNEES.md, section 4.
+  const [rows, spans, anchors] = await Promise.all([
+    sql<SelectedNode[]>`
+      SELECT id, kind, parent_id AS "parentId", document_reading_order AS "documentReadingOrder",
+             text, next_entry_id AS "nextEntryId"
+      FROM (${subtree}) n
+      ORDER BY document_reading_order`,
+    sql<(Span & { nodeId: string })[]>`
+      SELECT s.node_id AS "nodeId", s.id, s.label, s.char_start AS "charStart",
+             s.char_end AS "charEnd", s.normalized
+      FROM (${subtree}) n JOIN span s ON s.node_id = n.id
+      ORDER BY s.char_start, s.char_end`,
+    sql<(Anchor & { nodeId: string })[]>`
+      SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
+      FROM (${subtree}) n JOIN anchor a ON a.node_id = n.id
+      ORDER BY a.page`,
+  ]);
   if (rows.length === 0) throw new NodeNotFoundError(query.subtree);
+  const spansOf = groupByNode(spans);
+  const anchorsOf = groupByNode(anchors);
   return {
-    nodes: rows.map(({ nextEntryId: _, ...node }) => node),
+    nodes: rows.map(({ nextEntryId: _, ...node }) => ({
+      ...node,
+      spans: spansOf.get(node.id) ?? [],
+      anchors: anchorsOf.get(node.id) ?? [],
+    })),
     arcs: inducedArcs(rows),
   };
+}
+
+/** Lignes regroupées par nœud, dans l'ordre où elles arrivent, sans leur colonne `nodeId`. */
+function groupByNode<T extends { nodeId: string }>(rows: T[]): Map<string, Omit<T, "nodeId">[]> {
+  const groups = new Map<string, Omit<T, "nodeId">[]>();
+  for (const { nodeId, ...row } of rows) {
+    const group = groups.get(nodeId);
+    if (group) group.push(row);
+    else groups.set(nodeId, [row]);
+  }
+  return groups;
+}
+
+/**
+ * Contexte du nœud `query.subtree` : ses rubriques ancêtres, de la racine à son parent (vide
+ * pour un nœud racine ou inconnu ; `resolve` signale l'inconnu). À part du sous-graphe : le
+ * contexte entoure la sélection sans en faire partie (docs/DESIGN.md, « Principes
+ * d'affichage »). Rangées par profondeur, comptée dans parent_closure, et non par ordre de
+ * lecture : aucune hypothèse sur la place d'un intitulé par rapport à son contenu.
+ */
+export async function context(sql: postgres.Sql, query: Query): Promise<ContextSection[]> {
+  return sql<ContextSection[]>`
+    SELECT a.id, a.text
+    FROM node n
+    JOIN parent_closure c ON c.descendant_id = n.parent_id
+    JOIN node a ON a.id = c.ancestor_id
+    WHERE n.id = ${query.subtree}
+    ORDER BY (SELECT count(*) FROM parent_closure d WHERE d.descendant_id = a.id)`;
 }

@@ -346,6 +346,25 @@ une réponse plus petite, paginée par exemple, le réduirait) et ≈ 6 ms de
 TypeScript (nœuds et arcs). Construire le JSON dans PostgreSQL
 (`json_agg`) est plus lent : 41 ms contre 16 pour les mêmes lignes.
 
+**Empans et ancres des nœuds** (sprint 4) : `resolve` les renvoie avec
+chaque nœud. Trois requêtes en parallèle, qui sélectionnent chacune le
+sous-arbre de la même façon puis lisent les nœuds, leurs empans et leurs
+ancres en lignes simples, rattachées ensuite en TypeScript. Temps médian
+vu de Node (18 novembre) :
+
+| Écriture | Petite rubrique | 3 338 nœuds | 13 737 nœuds |
+|---|---|---|---|
+| sans empans ni ancres (référence) | 0,35 ms | 7,6 ms | 27 ms |
+| une requête, JSON par nœud (`json_agg`) | 1,0 ms | 45 ms | 192 ms |
+| une requête, tableaux par nœud (`array_agg`) | 1,1 ms | 44 ms | 177 ms |
+| une requête, lignes simples étiquetées (nœud, empan, ancre) | 0,7 ms | 28 ms | 123 ms |
+| trois requêtes, lignes simples (retenu) | 0,8 ms | 21 ms | 90 ms |
+
+Regrouper par nœud dans PostgreSQL, en JSON ou en tableaux, coûte à lui
+seul ≈ 150 ms d'exécution sur le plus gros sous-arbre. Les quatre écritures
+donnent des sous-graphes identiques sur les 603 rubriques et 200 autres
+nœuds. Contexte (rubriques ancêtres, `context`) : 0,1 ms.
+
 Pistes non retenues (elles changent le modèle) : `docs/IDEES.md`.
 
 ## Plus tard : géocodage (sprint dédié)
