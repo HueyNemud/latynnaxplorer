@@ -2,6 +2,8 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-18 — `follows` stocké dans `node.next_entry_id` (clé étrangère sans cascade), calculé à l'import : `member_of`, `child_of` et `follows` sont tous trois portés par une colonne. Remplace « `follows` calculé, non stocké » (30 octobre), revu une fois mesurées les requêtes de `lib/query/`.
+- 2026-11-18 — Nœuds d'un volume insérés en une seule instruction (`jsonb_to_recordset`) : clé étrangère vers l'entrée suivante vérifiée en fin d'instruction (Drizzle ne déclare pas de contrainte différée).
 - 2026-11-18 — Table `parent_closure (ancestor_id, descendant_id)` : fermeture des nœuds qui ont des enfants (les sections, dans numrev), calculée à l'import, pour lire un sous-arbre sans parcours récursif ; exacte sans hypothèse sur le type des parents ni sur l'ordre de lecture.
 - 2026-11-18 — Pas de colonne fondée sur l'hypothèse « rubriques d'un seul tenant » : à mieux vérifier dans numrev d'abord.
 - 2026-11-18 — Format de l'API JSON : à décider à la première API HTTP, selon une pratique standard (OpenAPI ou plus récent), pas un formalisme ad hoc.

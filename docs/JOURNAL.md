@@ -27,9 +27,18 @@
 - Sous-arbre lu dans `parent_closure`, sans `WITH RECURSIVE` ; `UNION ALL`
   plutôt que `OR`, qui relisait toute la table — `e8b7992`. Sous-graphes
   identiques à la requête d'origine sur les 803 sous-arbres ; 33 tests.
-- Mesures (`MODELE_DONNEES.md`, section 4), SQL seul : 0,39 ms pour une
-  petite rubrique, 5,8 ms pour 3 338 nœuds, 19,5 ms pour 13 737 (contre
-  1,4 / 20 / 70 à 80 ms au début du sprint).
+- Temps restant décomposé, vu de Node (51 ms pour 13 737 nœuds) : SQL 20,
+  transfert et lecture des lignes 15, TypeScript 6. Écartés : plan
+  générique des requêtes préparées (sans effet), `json_agg` (plus lent).
+- `follows` stocké dans `node.next_entry_id`, calculé à l'import ; nœuds
+  insérés en une instruction pour la clé étrangère ; 20 708 arcs, identiques
+  à `lead()` sur tout le volume — `a865f1c`. `resolve` lit la colonne :
+  plus aucun calcul en SQL — `504fd5f`. Sous-graphes toujours identiques
+  sur les 803 sous-arbres ; 34 tests.
+- Mesures (`MODELE_DONNEES.md`, section 4), SQL seul : 0,13 ms pour une
+  petite rubrique, 1,5 ms pour 3 338 nœuds, 7,6 ms pour 13 737 (contre
+  1,4 / 20 / 70 à 80 ms au début du sprint) ; 35 ms vu de Node pour le
+  plus gros.
 - Base locale à remettre à niveau après récupération de la branche :
   `pnpm db:load`.
 
@@ -48,10 +57,16 @@
 
 - Table de fermeture adoptée (`parent_closure`, nœuds parents de tout
   type, pas seulement les sections) : simple, exacte, tenue par l'import.
+- `follows` stocké : les trois arcs suivent le même principe (une colonne
+  de `node`). Revient sur la décision du 30 octobre, qui attendait les
+  requêtes réelles de `lib/query/`.
+
+**Questions ouvertes**
+- Index `node (volume_id, kind, document_reading_order, id)` : il servait
+  au calcul de `follows`, plus utilisé par aucune requête ; le garder ou
+  le retirer ?
 
 **Suite**
-- Sur le plus gros sous-arbre, examiner le reste du temps : entrée
-  suivante, jointure, tri.
 - Fusion de la PR, puis revue de `SPRINTS.md` : sprint d'entretien ou
   deuxième scénario.
 
