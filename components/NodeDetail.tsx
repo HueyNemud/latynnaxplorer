@@ -1,18 +1,31 @@
-// Fiche d'un nœud dans la vue Liste : densité détaillée (docs/composants/noeud-liste.md).
+// Fiche d'un nœud dans la vue Liste : densité détaillée, en clé / valeur — texte, champs,
+// métadonnées (docs/composants/noeud-liste.md). Le texte souligné est la densité compacte.
 
 import Link from "next/link";
 import { serializeQuery } from "../lib/query/query.ts";
-import type { Anchor, ContextSection, NodeKind, SubgraphNode } from "../lib/query/resolve.ts";
+import type {
+  Anchor,
+  ContextSection,
+  NodeKind,
+  SpanLabel,
+  SubgraphNode,
+} from "../lib/query/resolve.ts";
+import { segments } from "../lib/text/segments.ts";
 import { PrintedText } from "./PrintedText.tsx";
 
-const KIND_LABELS: Record<NodeKind, string | null> = {
-  entry: null, // le cas courant : pas de mention
+const KIND_LABELS: Record<NodeKind, string> = {
+  entry: "Entry",
   section: "Section",
   out_of_scope: "Out of scope",
 };
 
+const FIELD_LABELS: Record<SpanLabel, string> = {
+  SUBJ: "Subject",
+  DESC: "Description",
+  ADDR: "Address",
+};
+
 export function NodeDetail({ node, context }: { node: SubgraphNode; context: ContextSection[] }) {
-  const kind = KIND_LABELS[node.kind];
   return (
     <article className="node-detail">
       {context.length > 0 && (
@@ -28,11 +41,36 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Con
           </ol>
         </nav>
       )}
-      {kind && <p className="kind">{kind}</p>}
-      <h1>
-        <PrintedText text={node.text} spans={node.spans} />
+      {/* titre pour les lecteurs d'écran ; à l'écran, le texte est la première valeur */}
+      <h1 className="visually-hidden" lang="fr">
+        {segments(node.text, [])
+          .map((s) => s.text)
+          .join("")}
       </h1>
+      <dl>
+        <div>
+          <dt>Text</dt>
+          <dd className="text">
+            <PrintedText text={node.text} />
+          </dd>
+        </div>
+      </dl>
+      {node.spans.length > 0 && (
+        <dl>
+          {/* un champ par empan, dans l'ordre du texte (répétés pour un groupe à accolade) */}
+          {node.spans.map((span) => (
+            <div key={span.id}>
+              <dt>{FIELD_LABELS[span.label]}</dt>
+              <dd lang="fr">{span.normalized}</dd>
+            </div>
+          ))}
+        </dl>
+      )}
       <dl className="meta">
+        <div>
+          <dt>Type</dt>
+          <dd>{KIND_LABELS[node.kind]}</dd>
+        </div>
         <div>
           <dt>Source</dt>
           <dd>{pages(node.anchors)}</dd>

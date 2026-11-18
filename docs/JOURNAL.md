@@ -19,10 +19,13 @@
   pour l'entrée par défaut et le statut 400 ; 404 pour un uuid inconnu.
 - `lib/text/segments.ts` : découpe du texte aux bornes de l'emphase et
   des empans (positions en points de code, `\*` échappé).
-- Fiche revue à l'écran avec l'utilisateur : liste des champs ajoutée puis
-  retirée (redondante avec le texte), badges avant les champs remplacés
-  par le nom du libellé sous le trait ; fil d'Ariane sans gris ni
-  soulignement au repos.
+- Fiche revue à l'écran avec l'utilisateur, en plusieurs essais : texte
+  souligné en titre, puis champs seuls, puis badges avant les champs, puis
+  nom du libellé sous le trait. Conclusion : le texte souligné est une
+  représentation compacte ; la fiche devient un ensemble de clés / valeurs
+  (Text, champs, métadonnées). `PrintedText` (texte souligné) est gardé
+  pour la compacte du sprint 5. Fil d'Ariane sans gris ni soulignement au
+  repos.
 
 **Décisions**
 - Trois requêtes pour `resolve`, contexte à part, interface en anglais,
@@ -34,8 +37,9 @@
   la section « LISTE DE NON-COMMERÇANS, ## CONTENANT ### … » (marques de
   titre au milieu de l'intitulé) et « PRÉFECTURE DU DÉPARTEMENT DE LA SEINE,
   Place de l'Hôtel-de-Ville.\ » (barre oblique finale). Demande à numrev ?
-- Densité compacte (sprint 5) : les noms sous les traits demandent un
-  interligne plus grand, à revoir sur des milliers de lignes.
+- Densité compacte (sprint 5) : le texte souligné, avec les noms sous les
+  traits, demande un interligne plus grand ; à revoir sur des milliers de
+  lignes.
 
 **Suite**
 - Revoir `docs/SPRINTS.md` avec l'utilisateur, puis PR.

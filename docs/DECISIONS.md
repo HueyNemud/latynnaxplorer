@@ -2,7 +2,8 @@
 
 Une ligne par décision, la plus récente en haut.
 
-- 2026-11-18 — Fiche d'un nœud (vue Liste, densité détaillée) : fil d'Ariane des rubriques (liens vers leur sous-arbre), texte imprimé en titre avec ses champs soulignés et le nom du libellé (`subj`, `desc`, `loc`) en petit sous le début du trait, puis source et identifiant en clé / valeur. Essayés puis écartés : liste des champs à part (redondante), badge encadré avant le champ (hachait le texte).
+- 2026-11-18 — Fiche d'un nœud (vue Liste, densité détaillée) : fil d'Ariane des rubriques (liens vers leur sous-arbre), puis clés / valeurs en trois groupes : Text (texte complet, emphase en italique), champs (un par empan, valeur `normalized`), métadonnées (Type, Source, Identifier).
+- 2026-11-18 — Texte souligné (champs soulignés de la couleur de leur libellé, nom `subj` / `desc` / `loc` en petit sous le début du trait) : représentation de la densité compacte, pas de la fiche. Écartés : badges encadrés avant les champs (hachaient le texte).
 - 2026-11-18 — Arrivée sans requête : `proxy.ts` redirige vers une entrée par défaut (pas de page d'accueil pour l'instant) ; requête invalide : page d'erreur au statut 400 par le même proxy (une page de l'App Router ne sait pas répondre 400) ; uuid inconnu : 404 (`notFound()`).
 - 2026-11-18 — Organisation Next : `app/` (pages), `components/` (composants React), `lib/text/` (découpe du texte imprimé, testée par Vitest), `lib/db/server.ts` (pool partagé du serveur). Styles en CSS global, jetons en propriétés personnalisées ; police du système.
 - 2026-11-18 — `sharp` 0.35 n'a plus de script d'installation : rien à déclarer dans `allowBuilds` (contrairement à ce que prévoyait la décision du sprint 3).

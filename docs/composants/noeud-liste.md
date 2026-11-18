@@ -49,7 +49,14 @@ en français. Les exemples de libellés ci-dessous sont ceux de l'interface.
 
 Toutes les variantes portent le texte de numrev **tel quel** (numrev fait foi) :
 emphase en italique, retours à la ligne gardés, aucun mot corrigé ni
-réordonné. Dans une entrée, chaque empan est marqué d'un **fin soulignement
+réordonné.
+
+## Texte souligné (densité compacte)
+
+Réalisé au sprint 4 (`components/PrintedText.tsx`), essayé d'abord comme
+titre de la fiche puis réservé à la compacte : il en a la nature (le texte
+d'un seul tenant, lisible d'un coup d'œil). Dans une entrée, chaque empan est
+marqué d'un **fin soulignement
 coloré**, d'une couleur par libellé, avec le **nom du libellé** en petit, de
 la même couleur, sous le début du trait ; le texte lui-même garde sa couleur,
 sa graisse et sa place (le nom ne le décale pas). Un badge encadré avant le
@@ -70,22 +77,28 @@ seul. Ils demandent un interligne plus grand (place sous chaque ligne).
 
 ### Entrée (`entry`)
 
-- **Compacte** : une ligne de texte imprimé, champs marqués ; à droite, la
-  page (« p. 60 »), en retrait visuel. Retour à la ligne si le texte est
-  long ou s'il a plusieurs lignes.
-- **Détaillée (fiche)**, de haut en bas :
+- **Compacte** : une ligne de texte souligné (section précédente) ; à
+  droite, la page (« p. 60 »), en retrait visuel. Retour à la ligne si le
+  texte est long ou s'il a plusieurs lignes.
+- **Détaillée (fiche)** : un ensemble de clés / valeurs, sans soulignement,
+  sous le contexte :
   1. **Contexte** : chemin des rubriques (fil d'Ariane), en petit, liens
-     non soulignés (soulignés au survol et au focus) ; chaque
-     rubrique est un lien qui ouvre son sous-arbre (`?subtree=<uuid>`, nouvelle
+     non soulignés (soulignés au survol et au focus) ; chaque rubrique est
+     un lien qui ouvre son sous-arbre (`?subtree=<uuid>`, nouvelle
      sélection).
-  2. **Texte imprimé**, en plus grand, champs soulignés : c'est le titre de
-     la fiche. Les champs ne sont pas repris en liste à part : les
-     soulignements les montrent déjà (essayé puis écarté au sprint 4, la
-     liste était redondante et perdait l'ordre des groupes à accolade).
-  3. **Métadonnées** en clé / valeur :
-     - **Source** : « p. 60 » (texte ; lien quand IIIF sera là) ;
-     - **Identifiant** : l'uuid, en petit, sélectionnable d'un geste (pour
-       l'équipe numrev).
+  2. **Text** : le texte complet, imprimé (emphase en italique, retours à
+     la ligne gardés), un peu plus grand que le reste.
+  3. **Champs** : un par empan, dans l'ordre du texte (Subject,
+     Description, Address, répétés pour un groupe à accolade), valeur
+     `normalized`. Le texte hors empan n'y figure pas : il reste visible dans
+     Text.
+  4. **Métadonnées** : **Type** (Entry, Section, Out of scope), **Source**
+     (« p. 60 » ; lien quand IIIF sera là), **Identifier** (l'uuid,
+     sélectionnable d'un geste, pour l'équipe numrev).
+
+  Les trois groupes sont séparés par un espace, colonnes des clés alignées.
+  Essayés puis écartés au sprint 4 : texte souligné en titre (c'est la
+  compacte), champs seuls sans le texte, badges encadrés avant les champs.
 
 ### Section (`section`)
 
@@ -95,17 +108,16 @@ mais elle existe.
 
 - **Compacte** : l'intitulé, en titre de groupe ; le niveau d'emboîtement se
   lit au retrait et à la taille (détails au sprint 5, avec le regroupement).
-- **Détaillée** : contexte (rubriques parentes), intitulé en titre, mention
-  « Section », source, identifiant. Pas de champs (les sections n'en ont
-  pas).
+- **Détaillée** : contexte (rubriques parentes), Text (l'intitulé),
+  métadonnées (Type : Section). Pas de champs (les sections n'en ont pas).
 
 ### Hors champ (`out_of_scope`)
 
 - **Compacte** : texte atténué, plus petit, précédé de la mention « out of
   scope » (en texte, pas seulement par la couleur) ; tronqué à deux lignes
   avec points de suspension.
-- **Détaillée** : contexte, mention « Out of scope », texte entier, source,
-  identifiant. Pas de champs.
+- **Détaillée** : contexte, Text (le texte entier), métadonnées (Type : Out
+  of scope). Pas de champs.
 
 ## États (compacte, sprint 5)
 
@@ -136,15 +148,18 @@ CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifi�
 
 ## Accessibilité
 
-- **Fiche** : `<article>` ; le texte imprimé en `<h1>` ; le fil d'Ariane en
+- **Fiche** : `<article>` ; le texte du nœud en `<h1>` masqué à l'écran (lu
+  par les lecteurs d'écran ; à l'écran, il est la valeur Text) ; les trois
+  groupes en `<dl>` ; le fil d'Ariane en
   `<nav aria-label="Sections">` avec une `<ol>` ; les champs en `<dl>` ;
   l'emphase en `<em>`.
 - **Compacte** : élément d'une liste ordonnée (l'ordre du document a un
   sens) ; structure exacte (liste emboîtée ou `tree`) au sprint 5.
 - Le texte imprimé porte `lang="fr"`, quelle que soit la langue de
   l'interface.
-- La couleur n'est jamais seule à dire le libellé : son nom est écrit sous
-  le trait (`lang="en"`), et les lecteurs d'écran le lisent avant le champ.
+- Compacte : la couleur n'est jamais seule à dire le libellé, son nom est
+  écrit sous le trait (`lang="en"`) et les lecteurs d'écran le lisent avant
+  le champ.
 - Contraste AA : 4,5:1 pour tout texte, atténué compris ; 3:1 pour les
   soulignements contre le fond ; focus toujours visible.
 
