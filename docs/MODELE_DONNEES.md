@@ -1,6 +1,6 @@
 # Modèle de données — v2
 
-État : schéma et import implémentés ; requêtes de la section 3 non implémentées. Décisions : `docs/DECISIONS.md`. Extensions
+État : schéma et import implémentés ; requêtes de la section 3 implémentées pour le scénario du sous-arbre (`lib/query/`). Décisions : `docs/DECISIONS.md`. Extensions
 prévues (géocodage, liens temporels) : fin de document.
 
 Sources : `data/<volume>/` (`<volume>.document.json`,
@@ -56,6 +56,15 @@ Demande d'origine : `docs/demandes/numrev_hors_champ.md`.
 | `node` | **nœud** typé `entry`, `section` ou `out_of_scope` | 22 158 |
 | `span` | champs structurés d'une entrée : SUBJ / DESC / ADDR | 45 673 |
 | `anchor` | ancrage d'un nœud : page du PDF et boîte, une ligne par page touchée | 22 017 |
+| `parent_closure` | fermeture des nœuds parents : (ancêtre, descendant), dérivée de `parent_id` | 1 515 |
+
+`parent_closure` n'apporte aucune information : elle range autrement
+`parent_id` pour lire un sous-arbre sans parcours récursif. Une ligne relie
+chaque nœud qui a des enfants à lui-même et à chacun de ses ancêtres ;
+dans numrev ce sont exactement les sections (602 sur 603 ont des enfants),
+mais rien n'y suppose le type du nœud ni l'ordre de lecture. Le sous-arbre
+d'un nœud X : X, plus les enfants des nœuds `descendant_id` des lignes
+où `ancestor_id = X`.
 
 Pas de table `page` : un numéro de page du PDF suffit pour ancrer (les
 boîtes sont dans un repère relatif 0–1000) et désignera plus tard la toile
@@ -92,6 +101,7 @@ erDiagram
     node |o--o{ node : "parent_id (member_of / child_of)"
     node ||--o{ span : "SUBJ / DESC / ADDR (entrées)"
     node ||--o{ anchor : "page + boîte"
+    node ||--o{ parent_closure : "ancestor_id / descendant_id (dérivée)"
 ```
 
 ### Schéma Drizzle
@@ -114,6 +124,8 @@ Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
   `document_reading_order` = rang de leur première ligne dans l'ordre des
   lignes de `document.json` (ordre de lecture du volume) ; `parent_id` =
   `parent`, sauf la racine numrev → `null`.
+- `parent_closure` : calculée des `parent_id` (`parentClosureOf`) ; une
+  boucle dans les parents arrête l'import.
 - `anchor` : pour chaque nœud et chaque page, union des `bbox_estimate` non
   nulles de ses lignes ; aucune ligne boîtée sur la page → pas d'ancre.
 - `volume` : `data/<volume>/volume.json`.
@@ -124,7 +136,8 @@ Types retenus : boîtes d'ancre en `real` (le schéma numrev les déclare
 - Le volume est remplacé en entier, dans une transaction.
 
 Résultat pour 1807 : 22 158 nœuds (603 sections, 20 709 entrées, 846
-éléments hors champ), 45 673 empans, 22 017 ancres ; 51 entrées, 3 sections
+éléments hors champ), 1 515 lignes de fermeture, 45 673 empans, 22 017
+ancres ; 51 entrées, 3 sections
 et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
 
 ### Choix discutables ⚠️
@@ -146,6 +159,10 @@ et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
    sous-requête, sans colonne dénormalisée.
 6. **Géocodage** : pas de table, sprint dédié (voir « Plus tard ») ; les
    empans ADDR et leur uuid en sont le point d'accroche.
+7. **`parent_closure`, donnée dérivée** : redondante avec `parent_id`, tenue
+   à jour par l'import seul (le volume est remplacé en entier, la table
+   suit en cascade) ; aucune écriture ailleurs ne doit modifier `parent_id`
+   sans la recalculer.
 
 ## 3. Requête → sous-graphe induit (SQL)
 
@@ -153,11 +170,12 @@ Implémenté dans `lib/query/` pour les scénarios de `docs/SCENARIOS.md`.
 Une seule requête SQL par résolution : elle rend les nœuds sélectionnés,
 chaque entrée avec l'id de l'entrée suivante du volume ; les arcs de
 l'étape 2 sont ensuite déduits de ces lignes en TypeScript
-(`inducedArcs`). Le CTE récursif du sous-arbre porte les colonnes du nœud
-plutôt que les seuls `id` : sans jointure de retour sur `node`, le
-planificateur ne relit pas toute la table.
+(`inducedArcs`). Le sous-arbre est lu dans `parent_closure`, sans
+`WITH RECURSIVE` ; l'entrée suivante par `lead()` sur les entrées comprises
+dans la plage de rangs du sous-arbre.
 
-Les formes ci-dessous restent la référence pour les filtres à venir.
+Les formes ci-dessous restent la référence pour les filtres à venir ; un
+parcours récursif s'y remplace par `parent_closure`.
 
 ### Étape 1 : les nœuds (seule partie qui dépend de la requête)
 
@@ -165,11 +183,12 @@ Exemple : les entrées de la rubrique BOULANGERS et de ses sous-rubriques
 dont un nom ressemble à « Lefevre », dans une période.
 
 ```sql
-WITH RECURSIVE
+WITH
 subtree AS (                       -- la section et tous ses descendants
-  SELECT id FROM node WHERE id = :section
+  SELECT :section AS id
   UNION ALL
-  SELECT n.id FROM node n JOIN subtree t ON n.parent_id = t.id
+  SELECT n.id FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
+  WHERE c.ancestor_id = :section
 ),
 nodes AS (
   SELECT n.id
@@ -235,21 +254,17 @@ par l'étape 2.
 SELECT id FROM nodes
 UNION SELECT parent_id FROM node WHERE id IN (SELECT id FROM nodes) AND parent_id IS NOT NULL;
 
--- toutes les sections ancêtres
-WITH RECURSIVE up(id) AS (
-  SELECT id FROM nodes
-  UNION
-  SELECT n.parent_id FROM node n JOIN up ON n.id = up.id WHERE n.parent_id IS NOT NULL
-)
-SELECT id FROM up;
+-- toutes les sections ancêtres (celles du parent de chaque nœud)
+SELECT id FROM nodes
+UNION
+SELECT c.ancestor_id FROM node n JOIN parent_closure c ON c.descendant_id = n.parent_id
+WHERE n.id IN (SELECT id FROM nodes);
 
 -- contenu des sections sélectionnées (tous les descendants)
-WITH RECURSIVE down(id) AS (
-  SELECT id FROM nodes
-  UNION
-  SELECT n.id FROM node n JOIN down ON n.parent_id = down.id
-)
-SELECT id FROM down;
+SELECT id FROM nodes
+UNION
+SELECT n.id FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
+WHERE c.ancestor_id IN (SELECT id FROM nodes);
 
 -- entrées voisines dans le texte (précédente et suivante, par follows)
 SELECT id FROM nodes
@@ -277,7 +292,8 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 |---|---|
 | `node (volume_id, document_reading_order)` unique | vue document : une plage de rangs |
 | `node (volume_id, kind, document_reading_order, id)` | `follows` et entrées voisines, en parcours d'index seul (`id` en clé : Drizzle n'a pas `INCLUDE`) |
-| `node (parent_id)` | sous-arbre, contenu d'une section |
+| `node (parent_id)` | enfants d'une section, sous-arbre (avec `parent_closure`) |
+| `parent_closure (ancestor_id, descendant_id)` PK, `parent_closure (descendant_id)` | nœuds parents d'un sous-arbre ; ancêtres d'un nœud et suppression en cascade |
 | `anchor (node_id, page)` PK, `anchor (page)` | ancres d'un nœud, nœuds d'une page |
 | `span (node_id)` | empans d'une entrée |
 | GIN trigrammes sur `immutable_unaccent(node.text)` : un général + un partiel par `kind` | recherche floue sans accents ; le partiel sert quand la requête fixe `kind = '<littéral>'` |
@@ -311,21 +327,29 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 | vue document (une page, 100 rangs), fiche | < 0,4 ms | < 0,3 ms |
 
 **`resolve` (scénario 1, sous-arbre)**, nœuds et entrée suivante en SQL.
-L'entrée suivante est calculée par `lead()` sur les seules entrées comprises
-entre le premier et le dernier rang du sous-arbre, en un parcours d'index :
+Sous-arbre lu dans `parent_closure` ; entrée suivante par `lead()` sur les
+seules entrées comprises entre le premier et le dernier rang du sous-arbre,
+en un parcours d'index :
 
 | Sous-arbre | Nœuds | SQL | Depuis Node, arcs compris |
 |---|---|---|---|
-| petite rubrique | ≈ 30 | 1,0 ms | — |
-| LISTE DE NON-COMMERÇANS | 3 338 | 9,6 ms | 14 ms |
-| LISTES PARTICULIÈRES (62 % du volume) | 13 737 | 38 ms | 58 ms |
+| une entrée | 1 | 0,06 ms | — |
+| petite rubrique | ≈ 30 | 0,39 ms | — |
+| LISTE DE NON-COMMERÇANS | 3 338 | 5,8 ms | 14 ms |
+| LISTES PARTICULIÈRES (62 % du volume) | 13 737 | 19,5 ms | 51 ms |
 
-Variantes écartées, pour le plus gros sous-arbre et pour une petite
-rubrique : une sous-requête par entrée (70 à 80 ms ; 1,4 ms) ; `lead()` sur
-toutes les entrées du volume (49 ms ; 16 ms). Il reste le parcours récursif
-(≈ 17 ms, une recherche d'index par nœud) : pistes sans parcours dans
-`docs/IDEES.md`. Les deux formes de requête donnent des sous-graphes
-identiques sur les 603 rubriques de 1807 et 200 autres nœuds.
+Étapes (SQL seul, petite rubrique ; plus gros sous-arbre) :
+- parcours récursif et une sous-requête d'entrée suivante par entrée :
+  1,4 ms ; 70 à 80 ms ;
+- parcours récursif et `lead()` sur la plage : 1,0 ms ; 38 ms ;
+- `parent_closure` et `lead()` sur la plage (retenu) : 0,39 ms ; 19,5 ms.
+
+Écartés : `lead()` sur toutes les entrées du volume (16 ms ; 49 ms) ; un
+`OR` entre le nœud et ses descendants au lieu de `UNION ALL` (relit toute
+la table : 2,4 ms pour une petite rubrique). Sur le plus gros sous-arbre,
+le reste du temps tient à l'entrée suivante, à la jointure et au tri des
+13 737 lignes. Toutes les formes donnent des sous-graphes identiques sur
+les 603 rubriques de 1807 et 200 autres nœuds.
 
 Pistes non retenues (elles changent le modèle) : `docs/IDEES.md`.
 

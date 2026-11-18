@@ -19,10 +19,19 @@
 - Entrée suivante par `lead()` sur la plage du sous-arbre plutôt qu'une
   sous-requête par entrée : sous-graphes identiques sur 803 sous-arbres de
   1807 (toutes les rubriques et 200 autres nœuds).
-- Mesures (`MODELE_DONNEES.md`, section 4) : 1,0 ms pour une petite
-  rubrique, 9,6 ms pour 3 338 nœuds, 38 ms pour 13 737 (SQL seul).
 - Pistes sans parcours de l'arbre notées dans `IDEES.md`, mesurées : table
   de fermeture des sections, sous-arbre en plage de rangs.
+- Table `parent_closure` (fermeture des nœuds parents) calculée à l'import,
+  1 515 lignes pour 1807 ; `drizzle-kit push` reste sans changement au
+  second passage (PostgreSQL 17) — `1b8bc12`.
+- Sous-arbre lu dans `parent_closure`, sans `WITH RECURSIVE` ; `UNION ALL`
+  plutôt que `OR`, qui relisait toute la table — `e8b7992`. Sous-graphes
+  identiques à la requête d'origine sur les 803 sous-arbres ; 33 tests.
+- Mesures (`MODELE_DONNEES.md`, section 4), SQL seul : 0,39 ms pour une
+  petite rubrique, 5,8 ms pour 3 338 nœuds, 19,5 ms pour 13 737 (contre
+  1,4 / 20 / 70 à 80 ms au début du sprint).
+- Base locale à remettre à niveau après récupération de la branche :
+  `pnpm db:load`.
 
 **Décisions**
 - Voir `docs/DECISIONS.md` : scénarios, motifs d'URL en anglais, filtre
@@ -37,7 +46,12 @@
 - Messages d'erreur en français dans le code : à traduire quand
   l'interface les montrera (application internationale).
 
+- Table de fermeture adoptée (`parent_closure`, nœuds parents de tout
+  type, pas seulement les sections) : simple, exacte, tenue par l'import.
+
 **Suite**
+- Sur le plus gros sous-arbre, examiner le reste du temps : entrée
+  suivante, jointure, tri.
 - Fusion de la PR, puis revue de `SPRINTS.md` : sprint d'entretien ou
   deuxième scénario.
 
