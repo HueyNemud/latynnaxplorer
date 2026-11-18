@@ -33,16 +33,22 @@
   voir `docs/DECISIONS.md`.
 
 **Questions ouvertes**
-- Deux défauts probables de numrev, laissés tels quels (numrev fait foi) :
-  la section « LISTE DE NON-COMMERÇANS, ## CONTENANT ### … » (marques de
-  titre au milieu de l'intitulé) et « PRÉFECTURE DU DÉPARTEMENT DE LA SEINE,
-  Place de l'Hôtel-de-Ville.\ » (barre oblique finale). Demande à numrev ?
+- Deux défauts de numrev, laissés tels quels (numrev fait foi) : la
+  section « LISTE DE NON-COMMERÇANS, ## CONTENANT ### … » (marques de titre
+  au milieu de l'intitulé) et « PRÉFECTURE DU DÉPARTEMENT DE LA SEINE,
+  Place de l'Hôtel-de-Ville.\ » (barre oblique d'un astérisque échappé).
+  Demande écrite : `docs/demandes/numrev_intitules_titres.md`, à
+  transmettre.
 - Densité compacte (sprint 5) : le texte souligné, avec les noms sous les
   traits, demande un interligne plus grand ; à revoir sur des milliers de
   lignes.
 
 **Suite**
-- Revoir `docs/SPRINTS.md` avec l'utilisateur, puis PR.
+- `docs/SPRINTS.md` revu avec l'utilisateur (sprint 5 précisé, demande
+  numrev) ; PR du sprint 4 ouverte, à relire et fusionner par
+  l'utilisateur.
+- Après la fusion : sprint 5, la vue Liste, sur une nouvelle branche depuis
+  `main` ; commencer par la maquette de la densité compacte.
 
 ## 2026-11-18 — Sprint 3 : concept de design
 

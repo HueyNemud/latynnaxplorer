@@ -23,7 +23,13 @@ code (périmètre, dépendances, choix discutables).
 
 ## Sprint 4 : la fiche d'un nœud (en cours)
 
-Branche `feat/fiche-noeud`.
+Branche `feat/fiche-noeud`, PR ouverte, en attente de relecture.
+
+Réalisé : fiche de composant (`docs/composants/noeud-liste.md`), `resolve`
+avec empans et ancres, `context`, Next.js, fiche en clés / valeurs (Text,
+champs, métadonnées), entrée par défaut, 400 et 404 (détail dans
+`docs/JOURNAL.md`). Le texte souligné (`components/PrintedText.tsx`) est
+prêt pour la compacte du sprint 5.
 
 But : voir un nœud dans un navigateur, en densité détaillée (vue Liste
 seulement : les autres vues attendent leurs données).
@@ -51,11 +57,26 @@ Choix validés au début du sprint :
 But : une sélection de plusieurs nœuds, en densité compacte, dans son
 contexte.
 
+- Densité compacte : le texte souligné du sprint 4 (champs soulignés de la
+  couleur de leur libellé, nom `subj` / `desc` / `loc` sous le trait).
+  Avant le code, maquette sur une vraie rubrique : garder les noms sous
+  chaque trait (interligne plus grand) ou les montrer autrement (survol,
+  légende) ; compléter `docs/composants/noeud-liste.md` (états, structure
+  de liste accessible).
 - Disposition dans l'ordre du document ; arcs `member_of` / `child_of`
   rendus par regroupement.
 - Contexte : chemin des rubriques au-dessus de la sélection.
-- Inspecter : le focus sur une ligne montre sa fiche à côté, sans changer
-  la sélection ; ouvrir une entrée (nouvelle URL).
+- Inspecter : le focus sur une ligne montre sa fiche (le composant du
+  sprint 4) à côté, sans changer la sélection ; ouvrir une entrée (nouvelle
+  URL).
+- Performance à surveiller : le plus gros sous-arbre compte 13 737 nœuds
+  (`resolve` : 90 ms) ; rendre des milliers de lignes d'un coup ou non.
+
+## Hors sprint : demande à numrev
+
+`docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
+gardent des marques Markdown (`##` au milieu, `\` final). À transmettre
+par l'utilisateur ; rien n'est contourné ici.
 
 ## Sprint 6 : sélectionner par le contenu
 
