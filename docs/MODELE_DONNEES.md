@@ -149,6 +149,16 @@ et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
 
 ## 3. Requête → sous-graphe induit (SQL)
 
+Implémenté dans `lib/query/` pour les scénarios de `docs/SCENARIOS.md`.
+Une seule requête SQL par résolution : elle rend les nœuds sélectionnés,
+chaque entrée avec l'id de l'entrée suivante du volume ; les arcs de
+l'étape 2 sont ensuite déduits de ces lignes en TypeScript
+(`inducedArcs`). Le CTE récursif du sous-arbre porte les colonnes du nœud
+plutôt que les seuls `id` : sans jointure de retour sur `node`, le
+planificateur ne relit pas toute la table.
+
+Les formes ci-dessous restent la référence pour les filtres à venir.
+
 ### Étape 1 : les nœuds (seule partie qui dépend de la requête)
 
 Exemple : les entrées de la rubrique BOULANGERS et de ses sous-rubriques
@@ -299,6 +309,19 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 | arcs de la plus grosse rubrique (3 337 enfants) | 49,7 ms | 29,3 ms |
 | arcs de tout le volume (22 158 nœuds) | 213,9 ms | 97,8 ms ; 22,3 ms pour `follows` par `lead()` |
 | vue document (une page, 100 rangs), fiche | < 0,4 ms | < 0,3 ms |
+
+**`resolve` (scénario 1, sous-arbre)**, nœuds et entrée suivante en SQL :
+
+| Sous-arbre | Nœuds | SQL | Depuis Node, arcs compris |
+|---|---|---|---|
+| petite rubrique (≈ 30 nœuds) | ≈ 30 | 1,4 ms | — |
+| LISTE DE NON-COMMERÇANS | 3 338 | 20 ms | 24 ms |
+| LISTES PARTICULIÈRES (62 % du volume) | 13 737 | 80 ms | 97 ms |
+
+Au-delà de quelques milliers d'entrées, la recherche de l'entrée suivante
+domine (une recherche d'index par entrée). `lead()` sur les entrées du
+volume ramène le plus gros sous-arbre à 49 ms, mais coûte au moins 16 ms
+même pour une petite rubrique : non retenu tant que ces temps suffisent.
 
 Pistes non retenues (elles changent le modèle) : `docs/IDEES.md`.
 

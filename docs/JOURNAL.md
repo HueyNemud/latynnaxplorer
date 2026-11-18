@@ -1,5 +1,40 @@
 # Journal de développement
 
+## 2026-11-18 — Sprint 2 : premier scénario, un sous-arbre
+
+**Fait**
+- PR #2 (intégration continue) fusionnée ; Renovate installé. PR #9
+  (PostGIS 18) fermée : on reste sur PostgreSQL 17.
+- `docs/SCENARIOS.md` : scénario 1, un nœud et tout son sous-arbre ;
+  `SPRINTS.md` : sprint 2 en cours, sprint d'entretien (#7, #8) — `f6a04a9`.
+- `lib/db/client.ts` et `scripts/load.ts` séparés de l'import ; réimport de
+  1807 identique (22 158 nœuds, 45 673 empans, 22 017 ancres) — `a4b4ee9`.
+- Base de test recréée par Vitest (`scripts/test-database.ts`), service
+  PostgreSQL dans la CI ; premier test du chargement — `31df472`.
+- `lib/query/query.ts` : `?subtree=<uuid>` lu et écrit — `c94e115`.
+- `lib/query/resolve.ts` : sous-graphe induit, nœuds dans l'ordre de
+  lecture, arcs déduits ; 30 tests — `8992489`.
+- 1807 : les 603 rubriques sont d'un seul tenant dans l'ordre de lecture ;
+  603 rubriques pour 521 libellés (désignation par uuid) ; 7 niveaux.
+- Mesures (`MODELE_DONNEES.md`, section 4) : 1,4 ms pour une petite
+  rubrique, 20 ms pour 3 338 nœuds, 80 ms pour 13 737 (SQL seul).
+
+**Décisions**
+- Voir `docs/DECISIONS.md` : scénarios, motifs d'URL en anglais, filtre
+  `subtree` générique, erreurs, arcs en TypeScript, base de test, API JSON
+  plus tard.
+- `lead()` pour l'entrée suivante non retenu : gagne sur le plus gros
+  sous-arbre (49 ms contre 80), perd sur les petites rubriques (16 contre
+  1,4).
+
+**Questions ouvertes**
+- Messages d'erreur en français dans le code : à traduire quand
+  l'interface les montrera (application internationale).
+
+**Suite**
+- Fusion de la PR, puis revue de `SPRINTS.md` : sprint d'entretien ou
+  deuxième scénario.
+
 ## 2026-11-18 — Sprint 1 : intégration continue
 
 **Fait**
