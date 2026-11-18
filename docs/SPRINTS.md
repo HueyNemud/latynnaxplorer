@@ -22,11 +22,18 @@ code (périmètre, dépendances, choix discutables).
 
 But : voir un sous-graphe dans un navigateur.
 
-- Next.js (App Router) minimal, requête dans l'URL avec `nuqs`.
+- Next.js (App Router) minimal ; la page lit `?subtree=` côté serveur avec
+  `lib/query/` (`nuqs` reporté).
 - Vue Liste seulement, dans l'ordre du document, sans style travaillé.
+- Dépendances et réglages tranchés (`docs/DECISIONS.md`, 18 novembre).
 
-**À discuter** : liste exacte des dépendances ; ce que montre une ligne de
-la liste.
+**À discuter** : ce que montre une ligne de la liste. Pistes déjà
+relevées :
+- disposition plate (une ligne par nœud, sections distinguées, hors champ
+  marqué) ou indentée selon la profondeur (calculée depuis `parentId`) ;
+- en plus du texte : lien de chaque ligne vers son sous-arbre (« ouvrir
+  une entrée », sans toucher `lib/query/`) ; empans SUBJ/DESC/ADDR ou
+  numéro de page (tous deux demandent d'étendre `resolve`).
 
 ## À décider au moment voulu : format de l'API JSON
 

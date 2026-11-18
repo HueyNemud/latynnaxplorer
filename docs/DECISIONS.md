@@ -2,6 +2,9 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-18 — Sprint 3, dépendances : `next`, `react`, `react-dom`, et en développement `@types/react`, `@types/react-dom` (versions exactes, prises au début du sprint) ; rien d'autre (pas d'ESLint, de bibliothèque de styles ni de tests React). Next.js 16.4.6 vérifié avec TypeScript 7 et `postgres` v4 sur une application d'essai.
+- 2026-11-18 — `nuqs` reporté : au sprint 3 la page ne fait que lire `?subtree=` côté serveur, ce que fait déjà `lib/query/query.ts`. À reprendre à la première modification de la requête dans le navigateur (voir `docs/IDEES.md`).
+- 2026-11-18 — Avec Next.js, `tsconfig.json` passe à `module: esnext` et `moduleResolution: bundler` (Next impose `bundler`, incompatible avec `nodenext`), plus `jsx`, `lib` `dom`, le plugin `next` et les options que Next ajoute d'office (`allowJs`, `incremental`, `esModuleInterop`, `isolatedModules`). La règle Biome `useImportExtensions` garde les extensions `.ts` dont Node a besoin pour les scripts. CI : étape `pnpm build` ; `.next/` et `next-env.d.ts` ignorés ; `sharp` (optionnel de Next) déclaré dans `allowBuilds`.
 - 2026-11-18 — `follows` stocké dans `node.next_entry_id` (clé étrangère sans cascade), calculé à l'import : `member_of`, `child_of` et `follows` sont tous trois portés par une colonne. Remplace « `follows` calculé, non stocké » (30 octobre), revu une fois mesurées les requêtes de `lib/query/`.
 - 2026-11-18 — Nœuds d'un volume insérés en une seule instruction (`jsonb_to_recordset`) : clé étrangère vers l'entrée suivante vérifiée en fin d'instruction (Drizzle ne déclare pas de contrainte différée).
 - 2026-11-18 — Table `parent_closure (ancestor_id, descendant_id)` : fermeture des nœuds qui ont des enfants (les sections, dans numrev), calculée à l'import, pour lire un sous-arbre sans parcours récursif ; exacte sans hypothèse sur le type des parents ni sur l'ordre de lecture.
