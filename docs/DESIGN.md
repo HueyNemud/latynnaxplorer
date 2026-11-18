@@ -91,7 +91,7 @@ champs) est porté par toutes.
 représentations disponibles, en densité détaillée, côte à côte. Il n'y a
 pas de page « fiche » à concevoir à part.
 
-## Propositions à valider
+## Principes d'affichage
 
 - **Contexte** : chaque vue montre la sélection dans son contexte (la page
   autour des boîtes, la carte autour des points, la hiérarchie autour des
