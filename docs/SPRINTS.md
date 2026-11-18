@@ -10,38 +10,28 @@ code (périmètre, dépendances, choix discutables).
 
 - **Modèle de données** (PR #1) : schéma Drizzle, validation des fichiers
   numrev, import de `data/1807`, index mesurés.
+- **Sprint 1, intégration continue** (PR #2) : CI GitHub Actions, `main`
+  protégée, Renovate.
 
-## En cours : sprint 1, intégration continue
+## En cours : sprint 2, requête → sous-graphe (`lib/query/`)
 
-Branche `build/integration-continue`.
+Branche `feat/requete-sous-arbre`.
 
-But : qu'aucune PR n'arrive dans `main` sans vérification automatique.
+But : le cœur du principe fonctionnel, sans interface, conduit par des
+scénarios (`docs/SCENARIOS.md`). Premier scénario : un nœud et tout son
+sous-arbre, dans l'ordre de lecture.
 
-- GitHub Actions sur chaque PR et chaque push sur `main` : install, lint,
-  typecheck, test (build quand l'application existera). Pas de base
-  PostgreSQL tant que les tests n'en ont pas besoin.
-- Protection de `main` : fusion par PR seulement, CI verte exigée, sans
-  relecture obligatoire (mainteneur seul), force-push interdit.
-- Renovate (demandé par le brief) : hebdomadaire, mineures et correctifs
-  groupés, majeures à part, pas de fusion automatique.
-
-**Fin** : PR relue et fusionnée, protection active.
-
-## Sprint 2 : requête → sous-graphe (`lib/query/`)
-
-But : le cœur du principe fonctionnel, sans interface.
-
-- Une requête minimale : par exemple une rubrique et un texte flou sur un
-  champ.
-- Sérialisation ⇄ URL (format de chaîne seulement, sans `nuqs` à ce stade).
+- Requête ⇄ URL : `?subtree=<uuid>` (motifs d'URL en anglais).
 - Résolution en SQL : les nœuds, puis les arcs `member_of`, `child_of` et
-  `follows` (formes de `docs/MODELE_DONNEES.md`, section 4).
-- Tests sur la petite fixture, contre une vraie base PostgreSQL.
+  `follows` du sous-graphe induit ; uuid inconnu = erreur.
+- Tests sur la fixture contre une base PostgreSQL de test, en local et en
+  CI.
 
-**À discuter** :
-- les filtres du premier jet (le moins possible) ;
-- le format de la requête dans l'URL ;
-- la base de test : conteneur Docker local et en CI.
+**Fin** : PR relue et fusionnée.
+
+## Sprint d'entretien : mises à jour majeures
+
+PR Renovate à examiner une à une : #8 (TypeScript 7), #7 (`postgres` v4).
 
 ## Sprint 3 : première page, vue Liste
 
@@ -52,6 +42,13 @@ But : voir un sous-graphe dans un navigateur.
 
 **À discuter** : liste exacte des dépendances ; ce que montre une ligne de
 la liste.
+
+## À décider au moment voulu : format de l'API JSON
+
+Dès qu'une API HTTP exposera les sous-graphes (pas tant que les pages
+appellent `lib/query/` côté serveur) : décrire ses réponses selon une
+pratique standard plutôt qu'un formalisme ad hoc (OpenAPI ou plus récent,
+à comparer alors).
 
 ## Plus tard (non planifié)
 
