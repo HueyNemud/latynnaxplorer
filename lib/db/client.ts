@@ -10,6 +10,10 @@ export function databaseUrl(): string {
   return url;
 }
 
-export function connect(url: string = databaseUrl()): postgres.Sql {
-  return postgres(url);
+/** `onnotice` : que faire des avis du serveur (par défaut, console.log). */
+export function connect(
+  url: string = databaseUrl(),
+  options?: { onnotice?: (notice: postgres.Notice) => void },
+): postgres.Sql {
+  return postgres(url, options);
 }
