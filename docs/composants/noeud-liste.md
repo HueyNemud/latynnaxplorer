@@ -49,18 +49,20 @@ en français. Les exemples de libellés ci-dessous sont ceux de l'interface.
 
 Toutes les variantes portent le texte de numrev **tel quel** (numrev fait foi) :
 emphase en italique, retours à la ligne gardés, aucun mot corrigé ni
-réordonné. Dans une entrée, chaque empan est marqué d'un **fin soulignement
-coloré**, d'une couleur par libellé ; le texte lui-même garde sa couleur et
-sa graisse.
+réordonné. Dans une entrée, chaque empan est précédé d'un **badge** (petit
+cadre à la couleur du libellé) et marqué d'un **fin soulignement coloré**,
+d'une couleur par libellé ; le texte lui-même garde sa couleur et sa graisse.
 
-| Libellé | Marque | Nom dans l'interface (légende, à venir) |
+| Libellé | Badge | Marque |
 |---|---|---|
-| SUBJ | soulignement couleur SUBJ | Subject |
-| DESC | soulignement couleur DESC | Description |
-| ADDR | soulignement couleur ADDR | Address |
+| SUBJ | `subj` | soulignement couleur SUBJ |
+| DESC | `desc` | soulignement couleur DESC |
+| ADDR | `loc` | soulignement couleur ADDR |
 
 Le texte entre les empans (virgules, points de conduite `.....`, accolades)
-n'est pas souligné : deux empans voisins restent séparés.
+n'a ni badge ni soulignement : deux empans voisins restent séparés. Les
+badges sont exclus de la sélection de texte : un copier-coller rend le texte
+imprimé seul.
 
 ## Variantes
 
@@ -70,7 +72,8 @@ n'est pas souligné : deux empans voisins restent séparés.
   page (« p. 60 »), en retrait visuel. Retour à la ligne si le texte est
   long ou s'il a plusieurs lignes.
 - **Détaillée (fiche)**, de haut en bas :
-  1. **Contexte** : chemin des rubriques (fil d'Ariane), atténué ; chaque
+  1. **Contexte** : chemin des rubriques (fil d'Ariane), en petit, liens
+     non soulignés (soulignés au survol et au focus) ; chaque
      rubrique est un lien qui ouvre son sous-arbre (`?subtree=<uuid>`, nouvelle
      sélection).
   2. **Texte imprimé**, en plus grand, champs soulignés : c'est le titre de
@@ -119,8 +122,8 @@ Pas d'état de chargement : la page est rendue côté serveur.
 Aucun jeton n'existe encore. Ceux dont ce composant a besoin, en propriétés
 CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifié) :
 
-- Couleurs : texte, texte atténué (contexte, hors champ, page),
-  soulignements SUBJ, DESC et ADDR, fond de survol, contour de focus.
+- Couleurs : texte, texte atténué (hors champ, page, mentions),
+  soulignements et badges SUBJ, DESC et ADDR, fond de survol, contour de focus.
 - Typographie : une seule police, sans empattements, pour la source comme
   pour l'interface ; deux tailles de texte imprimé (compacte, titre de
   fiche).
@@ -138,10 +141,9 @@ CSS personnalisées (valeurs fixées à l'implémentation, contraste AA vérifi�
   sens) ; structure exacte (liste emboîtée ou `tree`) au sprint 5.
 - Le texte imprimé porte `lang="fr"`, quelle que soit la langue de
   l'interface.
-- Les soulignements ne disent le libellé que par la couleur, et aucune
-  liste étiquetée ne les reprend : **à résoudre** (légende des couleurs,
-  libellé au survol et pour les lecteurs d'écran). Ils ne sont pas annoncés
-  dans le texte tels quels (ils le hacheraient).
+- La couleur n'est jamais seule à dire le libellé : le badge le donne en
+  toutes lettres (`lang="en"`), et les lecteurs d'écran le lisent avant le
+  champ.
 - Contraste AA : 4,5:1 pour tout texte, atténué compris ; 3:1 pour les
   soulignements contre le fond ; focus toujours visible.
 

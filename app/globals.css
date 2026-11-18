@@ -69,6 +69,34 @@ a {
   text-decoration-color: var(--color-addr);
 }
 
+/* Badge avant chaque champ : nom du libellé, dans sa couleur ; hors de la sélection de texte,
+   pour qu'un copier-coller rende le texte imprimé seul */
+.badge {
+  display: inline-block;
+  margin-right: 0.3em;
+  padding: 0 0.35em;
+  border: 1px solid currentcolor;
+  border-radius: 0.25em;
+  font-size: 0.6em;
+  font-style: normal;
+  font-weight: 600;
+  line-height: 1.4;
+  vertical-align: 0.25em;
+  user-select: none;
+}
+
+.badge-subj {
+  color: var(--color-subj);
+}
+
+.badge-desc {
+  color: var(--color-desc);
+}
+
+.badge-addr {
+  color: var(--color-addr);
+}
+
 /* Fiche */
 .breadcrumb {
   display: flex;
@@ -78,12 +106,22 @@ a {
   padding: 0;
   list-style: none;
   font-size: var(--size-small);
-  color: var(--color-muted);
 }
 
 .breadcrumb li + li::before {
   content: "›";
   margin-right: var(--space-2);
+  color: var(--color-muted);
+}
+
+/* liens sans soulignement au repos ; souligné au survol et au focus clavier */
+.breadcrumb a {
+  text-decoration: none;
+}
+
+.breadcrumb a:hover,
+.breadcrumb a:focus-visible {
+  text-decoration: underline;
 }
 
 .kind {
