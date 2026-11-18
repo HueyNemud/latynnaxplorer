@@ -73,9 +73,6 @@ export const node = pgTable(
     // L'import insère tous les nœuds en une instruction : la contrainte est vérifiée à la fin.
     foreignKey({ columns: [t.nextEntryId], foreignColumns: [t.id] }),
     unique("node_volume_reading_order").on(t.volumeId, t.documentReadingOrder),
-    // entrées d'un volume dans l'ordre de lecture, en parcours d'index seul (id en dernière clé :
-    // Drizzle n'a pas INCLUDE). Servait au calcul de follows, désormais stocké : à réévaluer.
-    index("node_volume_kind_reading_order").on(t.volumeId, t.kind, t.documentReadingOrder, t.id),
     index().on(t.parentId),
     index().on(t.nextEntryId), // entrée précédente, et vérification de la contrainte à la suppression
     ...trigramIndexes("node_text", sql`immutable_unaccent(${t.text})`, t.kind, nodeKind.enumValues),

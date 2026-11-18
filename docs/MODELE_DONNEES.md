@@ -281,7 +281,6 @@ Toute la base de 1807 tient en mémoire (62 Mo, `shared_buffers` 128 Mo).
 | Index | Sert à |
 |---|---|
 | `node (volume_id, document_reading_order)` unique | vue document : une plage de rangs |
-| `node (volume_id, kind, document_reading_order, id)` | entrées d'un volume dans l'ordre, en parcours d'index seul (`id` en clé : Drizzle n'a pas `INCLUDE`) ; servait au calcul de `follows`, à réévaluer |
 | `node (next_entry_id)` | entrée précédente ; vérification de la clé étrangère à la suppression |
 | `node (parent_id)` | enfants d'une section, sous-arbre (avec `parent_closure`) |
 | `parent_closure (ancestor_id, descendant_id)` PK, `parent_closure (descendant_id)` | nœuds parents d'un sous-arbre ; ancêtres d'un nœud et suppression en cascade |

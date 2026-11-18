@@ -61,10 +61,9 @@
   de `node`). Revient sur la décision du 30 octobre, qui attendait les
   requêtes réelles de `lib/query/`.
 
-**Questions ouvertes**
-- Index `node (volume_id, kind, document_reading_order, id)` : il servait
-  au calcul de `follows`, plus utilisé par aucune requête ; le garder ou
-  le retirer ?
+- Index `node (volume_id, kind, document_reading_order, id)` supprimé : il
+  ne servait qu'au calcul de `follows` (décision de l'utilisateur) ; temps
+  inchangés.
 
 **Suite**
 - Fusion de la PR, puis revue de `SPRINTS.md` : sprint d'entretien ou
