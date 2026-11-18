@@ -23,9 +23,12 @@
   commitlint (message accepté, message non conventionnel refusé), `tsc`
   qui échoue bien sur une erreur de type. Typecheck : 0,3 s contre 1,3 s.
 
+- #7 et #8 fusionnées par l'utilisateur, sans conflit. Les deux ensemble
+  sur `main` : lint, typecheck, 34 tests.
+
 **Suite**
-- Fusion de #7 et #8 par l'utilisateur, puis PR de cette branche et revue
-  de `SPRINTS.md` (sprint 3 : première page).
+- Revue de `SPRINTS.md` avec l'utilisateur avant le sprint 3 (première
+  page, vue Liste).
 
 ## 2026-11-18 — Sprint 2 : premier scénario, un sous-arbre
 

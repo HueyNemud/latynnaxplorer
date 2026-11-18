@@ -15,16 +15,8 @@ code (périmètre, dépendances, choix discutables).
 - **Sprint 2, requête → sous-graphe** (PR #10) : `?subtree=<uuid>`,
   sous-graphe induit résolu en une requête SQL, base de test en local et en
   CI.
-
-## En cours : sprint d'entretien, mises à jour majeures
-
-Branche `docs/mises-a-jour-majeures` (journal et feuille de route
-seulement : les mises à jour arrivent par les PR Renovate).
-
-PR Renovate examinées une à une, après rebasage sur `main` pour que la CI
-passe les tests du sprint 2 : #7 (`postgres` v4), puis #8 (TypeScript 7).
-
-**Fin** : #7 et #8 tranchées par l'utilisateur, PR de la branche fusionnée.
+- **Sprint d'entretien, mises à jour majeures** (PR #7, #8 et la PR de
+  `docs/mises-a-jour-majeures`) : `postgres` v4, TypeScript 7.
 
 ## Sprint 3 : première page, vue Liste
 
