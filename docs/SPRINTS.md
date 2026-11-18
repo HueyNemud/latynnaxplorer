@@ -6,31 +6,26 @@ branche et arrive dans `main` par une PR relue et fusionnée par
 l'utilisateur. Son contenu exact est proposé puis validé avant d'écrire du
 code (périmètre, dépendances, choix discutables).
 
-## En cours : modèle de données
+## Fait
 
-Branche `feat/modele-donnees`, PR ouverte.
+- **Modèle de données** (PR #1) : schéma Drizzle, validation des fichiers
+  numrev, import de `data/1807`, index mesurés.
 
-- Schéma Drizzle : nœuds typés (`entry`, `section`, `out_of_scope`), empans,
-  ancres ; arcs déduits des colonnes.
-- Validation des fichiers numrev (JSON Schema, ajv), import de `data/1807`.
-- Index et réglages pour la lecture, mesurés.
+## En cours : sprint 1, intégration continue
 
-**Fin** : PR relue et fusionnée.
-
-## Sprint 1 : intégration continue
+Branche `build/integration-continue`.
 
 But : qu'aucune PR n'arrive dans `main` sans vérification automatique.
 
-- GitHub Actions sur chaque PR : install, lint, typecheck, test (build
-  quand l'application existera).
-- Protection de `main` : fusion par PR seulement, CI verte exigée.
-- Renovate (demandé par le brief).
+- GitHub Actions sur chaque PR et chaque push sur `main` : install, lint,
+  typecheck, test (build quand l'application existera). Pas de base
+  PostgreSQL tant que les tests n'en ont pas besoin.
+- Protection de `main` : fusion par PR seulement, CI verte exigée, sans
+  relecture obligatoire (mainteneur seul), force-push interdit.
+- Renovate (demandé par le brief) : hebdomadaire, mineures et correctifs
+  groupés, majeures à part, pas de fusion automatique.
 
-**À discuter** :
-- la protection de branche d'un dépôt privé demande un compte GitHub Pro :
-  à vérifier, sinon dépôt public ou règle tenue à la main ;
-- Renovate : fréquence, regroupement des mises à jour, fusion automatique
-  ou non.
+**Fin** : PR relue et fusionnée, protection active.
 
 ## Sprint 2 : requête → sous-graphe (`lib/query/`)
 
