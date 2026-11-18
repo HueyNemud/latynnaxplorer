@@ -23,7 +23,7 @@ code (périmètre, dépendances, choix discutables).
 
 ## Sprint 4 : la fiche d'un nœud (en cours)
 
-Branche `feat/fiche-noeud`, PR ouverte, en attente de relecture.
+Branche `feat/fiche-noeud`, PR #14 ouverte, en attente de relecture.
 
 Réalisé : fiche de composant (`docs/composants/noeud-liste.md`), `resolve`
 avec empans et ancres, `context`, Next.js, fiche en clés / valeurs (Text,

@@ -45,7 +45,7 @@
 
 **Suite**
 - `docs/SPRINTS.md` revu avec l'utilisateur (sprint 5 précisé, demande
-  numrev) ; PR du sprint 4 ouverte, à relire et fusionner par
+  numrev) ; PR #14 du sprint 4 ouverte, à relire et fusionner par
   l'utilisateur.
 - Après la fusion : sprint 5, la vue Liste, sur une nouvelle branche depuis
   `main` ; commencer par la maquette de la densité compacte.
