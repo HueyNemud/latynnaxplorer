@@ -118,7 +118,7 @@ Choix validés :
   Sans lui, 1807 a 133 racines : on ne peut ni ouvrir le volume entier, ni
   (plus tard) le choisir dans une facette.
 
-## Sprint 7 : sélectionner par le contenu
+## Sprint 7 : sélectionner par le contenu (PR #17)
 
 Réalisé : recherche par texte dans tout l'annuaire (`?text=`, exacte,
 sans accents ni casse), critères tous facultatifs et combinables,
