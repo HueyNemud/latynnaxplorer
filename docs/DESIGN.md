@@ -67,7 +67,8 @@ critères) et **afficher** (une vue).
 - Comparer des entrées, les situer, les vérifier contre la source sont des
   usages d'**inspecter**, dans la vue qui convient.
 - **Ouvrir une entrée** (brief) remplace la sélection par ce seul nœud ;
-  inspecter garde la sélection et montre le détail à côté.
+  inspecter garde la sélection et montre le détail sur place (vue Liste :
+  déplié sous la ligne).
 - L'export n'est pas une vue : c'est le même sous-graphe dans un format de
   données (formats à choisir, voir « format de l'API JSON » dans
   `docs/SPRINTS.md`).
@@ -82,7 +83,7 @@ champs) est porté par toutes.
 
 | Vue | Compacte | Détaillée (fiche) | Disponible |
 |---|---|---|---|
-| Liste | une ligne de texte, champs distingués | champs étiquetés, chemin des rubriques | maintenant |
+| Liste | une ligne de texte imprimé, champs sur fond pastel, sujet en gras ; une section est une carte, son titre une ligne | la fiche (champs étiquetés, chemin des rubriques), dépliée sous la ligne | maintenant |
 | Page | la boîte du nœud sur sa page (vignette) | la page, boîte surlignée | ancrages présents, images à venir (IIIF) |
 | Carte | un point | le point dans son quartier | après le géocodage |
 | Frise | un repère | sa date ; plus tard, ses entrées liées | date du volume maintenant, liens plus tard |
@@ -95,10 +96,12 @@ pas de page « fiche » à concevoir à part.
 
 - **Contexte** : chaque vue montre la sélection dans son contexte (la page
   autour des boîtes, la carte autour des points, la hiérarchie autour des
-  entrées). Ce qui entoure la sélection est visible, distinct d'elle, et
-  jamais compté dedans.
+  entrées). Le contexte prend les mêmes représentations que la sélection
+  (vue Liste : les rubriques ancêtres sont des cartes comme les autres),
+  n'en montre que ce qui mène à elle, et n'est jamais compté dedans.
 - **Densité** : automatique par défaut (un nœud → fiche, plusieurs →
-  compacte).
+  compacte) ; dans une vue compacte, chaque nœud peut se déplier en sa
+  fiche (inspecter).
 - **Vues** : une à la fois pour commencer, avec un focus pensé dès le
   départ comme partagé ; à terme, deux vues côte à côte (Liste + Page,
   Liste + Carte…).
