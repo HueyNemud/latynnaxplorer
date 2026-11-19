@@ -118,14 +118,28 @@ par l'utilisateur ; rien n'est contourné ici.
 
 But : une porte d'entrée sans uuid.
 
-- Recherche tolérante sur le texte et les champs (index trigrammes déjà
-  en place) : nouveau scénario de `docs/SCENARIOS.md`, combinable avec
-  `subtree`.
-- Première modification de la requête dans le navigateur : trancher alors
-  `nuqs` (`docs/IDEES.md`).
-- À discuter au début du sprint : une recherche peut renvoyer des milliers
-  de nœuds ; la pagination de la vue Liste (`docs/IDEES.md`, mesures du
-  sprint 5) pourrait devenir nécessaire.
+Étapes, validées une à une :
+
+1. Requête : scénario 2 de `docs/SCENARIOS.md`, `?text=<mots>`, recherche
+   tolérante sans accents (`<%`, index trigrammes en place) sur le texte
+   de tous les nœuds ; combinable avec `subtree` (conjonction), qui
+   devient facultatif. Tests.
+2. Contexte de résultats dispersés : les rubriques ancêtres de tous les
+   résultats ; la vue Liste regroupe les résultats sous leurs rubriques
+   communes. Sans changer le modèle de données.
+3. Champ de recherche : maquette, puis implémentation.
+4. Journal, décisions, revue de ce fichier.
+
+Choix validés :
+
+- Recherche sur le texte entier seulement ; par champ (sujet, activité,
+  adresse) plus tard si le besoin se confirme.
+- Tout rendre, même une sélection plus grosse que le plus gros sous-arbre
+  (« rue » : 17 402 nœuds sur 22 158) ; pagination toujours reportée
+  (`docs/IDEES.md`).
+- Saisie par un formulaire natif (`<form method="get">`, sans script) :
+  `nuqs` reporté de nouveau.
+- Surlignage des correspondances hors sprint (`docs/IDEES.md`).
 
 ## Sprint 8 : exporter
 
