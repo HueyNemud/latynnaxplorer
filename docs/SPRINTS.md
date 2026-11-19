@@ -120,10 +120,10 @@ But : une porte d'entrée sans uuid.
 
 Étapes, validées une à une :
 
-1. Requête : scénario 2 de `docs/SCENARIOS.md`, `?text=<mots>`, recherche
-   tolérante sans accents (`<%`, index trigrammes en place) sur le texte
-   de tous les nœuds ; combinable avec `subtree` (conjonction), qui
-   devient facultatif. Tests.
+1. Requête (fait) : scénario 2 de `docs/SCENARIOS.md`, `?text=<texte>`,
+   phrase entière sans accents ni casse, sur le texte de tous les nœuds
+   (index trigrammes en place) ; combinable avec `subtree` (conjonction),
+   qui devient facultatif. Tests.
 2. Contexte de résultats dispersés : les rubriques ancêtres de tous les
    résultats ; la vue Liste regroupe les résultats sous leurs rubriques
    communes. Sans changer le modèle de données.
@@ -134,6 +134,9 @@ Choix validés :
 
 - Recherche sur le texte entier seulement ; par champ (sujet, activité,
   adresse) plus tard si le besoin se confirme.
+- Recherche exacte, pas floue : mesurée sur 1807, la similarité par
+  trigrammes ramenait trop de bruit (« paix » → « Paille ») ; plein texte
+  de PostgreSQL écarté aussi (`docs/IDEES.md`).
 - Tout rendre, même une sélection plus grosse que le plus gros sous-arbre
   (« rue » : 17 402 nœuds sur 22 158) ; pagination toujours reportée
   (`docs/IDEES.md`).
