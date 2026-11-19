@@ -47,7 +47,18 @@ plusieurs volumes en base.
 ## Pagination de la vue Liste
 
 - Sprint 5 : tout est rendu, même le plus gros sous-arbre de 1807
-  (13 737 nœuds).
+  (13 737 nœuds). Gardé en connaissance de cause après mesure.
+- Mesures du sprint 5 (serveur de production, en local) : Postes
+  (303 nœuds) 1,9 Mo, 0,1 s ; « Liste de non-commerçans » (3 337) 13,8 Mo,
+  0,8 s ; « Listes particulières » (13 736) 66 Mo de HTML (13 Mo
+  compressé), 5 s côté serveur, premier affichage à 4,6 s et chargement à
+  9,5 s dans Chromium, 596 000 éléments, 306 Mo de mémoire JS. Seules 3
+  rubriques sur 602 dépassent 1 000 nœuds, mais la plus grosse est à un
+  clic (« Open » d'une carte de contexte).
+- Répartition du poids : 46 Mo de charge RSC (copie sérialisée de l'arbre
+  rendu, pour l'hydratation), 13,7 Mo de fiches repliées, le reste en
+  lignes. Rendre la fiche au premier dépliage (composant client et route)
+  diviserait le poids par 3 environ : insuffisant seul.
 - À reprendre si le rendu devient lent (plusieurs volumes, sélections plus
   larges) : paginer, ou `content-visibility: auto` en CSS. La
   virtualisation est déconseillée (une dépendance, mal accordée aux groupes

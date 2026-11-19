@@ -167,9 +167,10 @@ petits. Disparaissent : soulignement et noms sous le trait (`--color-subj`…,
 - **Structure** : chaque carte est une `<section>` nommée par sa ligne de
   titre (`aria-labelledby`) ; ses éléments dans l'ordre du document.
 - **Dépliage** : `<details>` / `<summary>` natifs (rôle, état, clavier,
-  Ctrl+F qui ouvre l'élément trouvé). À vérifier dans l'arbre
-  d'accessibilité : `display: contents` sur `<details>` ne doit pas masquer le
-  `summary` aux lecteurs d'écran.
+  Ctrl+F qui ouvre l'élément trouvé). Vérifié dans l'arbre d'accessibilité
+  de Chromium : `display: contents` sur `<details>` ne masque ni le
+  `summary` ni son état. Le `summary` est nommé par son texte seul
+  (`aria-labelledby`), sans « Open » ni le numéro de page.
 - **Titres** : un `summary` ne peut pas contenir de vrai titre (aplati par
   les lecteurs d'écran) ; la navigation se fait par régions (`<section>`
   nommées).
@@ -210,6 +211,7 @@ petits. Disparaissent : soulignement et noms sous le trait (`--color-subj`…,
 
 ## Questions ouvertes
 
-- **Poids de la page** : chaque vue détaillée est dans le HTML (repliée). À
-  mesurer sur le plus gros sous-arbre ; si c'est trop lourd, la rendre au
-  premier dépliage.
+- **Poids de la page** : chaque vue détaillée est dans le HTML (repliée).
+  Mesuré au sprint 5 : 66 Mo pour 13 736 nœuds, dont 46 Mo de charge RSC ;
+  accepté pour l'instant, la pagination est la vraie réponse
+  (`docs/IDEES.md`).

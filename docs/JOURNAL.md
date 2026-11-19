@@ -1,5 +1,38 @@
 # Journal de développement
 
+## 2026-11-19 — Sprint 5, étapes 2 à 4 : la vue Liste
+
+**Fait**
+- `PrintedText` ne marque plus les empans que par une classe ; fond pastel,
+  sujet en gras et jetons de la vue Liste dans `app/globals.css` ; plus de
+  soulignement, de noms sous le trait ni de focus bleu.
+- `context` renvoie des nœuds complets, du même type que `resolve` (ancres
+  comprises, empans vides) : le contexte se montre comme la sélection, sans
+  conversion, toujours rendu à part.
+- `components/NodeList.tsx` : cartes emboîtées, un élément `<details>` pour
+  tout nœud, fiche du sprint 4 dépliée dessous ; le titre d'une carte est
+  son premier élément (fixé par le CSS, sans classe à part). Une sélection
+  d'un seul nœud est montrée comme les autres, dépliée. La fiche perd son
+  `h1` : la page n'en a plus qu'un, le texte du nœud désigné.
+- Rendu identique à la maquette (captures), maquette supprimée.
+- Vérifications : `next build` ; arbre d'accessibilité de Chromium
+  (`display: contents` ne masque rien : zones dépliables avec leur état,
+  régions nommées) ; ligne annoncée par son seul texte (elle l'était avec
+  « Open » et le numéro de page) ; Firefox (titres empilés au défilement,
+  survol), piloté par WebDriver BiDi ; aucun trait entre une ligne ouverte
+  et sa fiche (pixels relevés à l'échelle 1).
+- Poids mesuré : 66 Mo de HTML et ~10 s pour la plus grosse rubrique,
+  dont 46 Mo de charge RSC ; accepté pour l'instant (`docs/IDEES.md`).
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (19 novembre) : sélection d'un seul nœud,
+  `context` en nœuds complets, poids accepté.
+
+**Questions ouvertes**
+- Pagination de la vue Liste, à rediscuter avec la recherche (sprint 6).
+- Open dans le `summary` : élément interactif imbriqué, à tester avec un
+  vrai lecteur d'écran.
+
 ## 2026-11-19 — Sprint 5, étape 1 : maquette de la vue Liste
 
 **Fait**

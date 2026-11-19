@@ -50,24 +50,19 @@ Choix validés au début du sprint :
   avec les images IIIF.
 - Requête mal formée : 400 ; uuid inconnu : 404.
 
-## Sprint 5 : la vue Liste (en cours)
+## Sprint 5 : la vue Liste
 
-Branche `feat/vue-liste`.
+Réalisé : maquette revue à l'écran, fiche de composant réécrite
+(`docs/composants/noeud-liste.md`), vue Liste (`components/NodeList.tsx`) :
+cartes emboîtées, contexte compris, un seul élément `<details>` pour tout
+nœud, titres fixés et empilés, champs sur fond pastel, Open ; `context`
+renvoie des nœuds complets ; vérifié sous Chromium et Firefox, arbre
+d'accessibilité compris. Poids des très grosses rubriques mesuré et
+accepté pour l'instant (`docs/IDEES.md`, « Pagination »). Détail dans
+`docs/JOURNAL.md`.
 
 But : une sélection de plusieurs nœuds, en densité compacte, dans son
 contexte.
-
-Étapes, chacune présentée et validée avant la suivante :
-
-1. ~~Maquette sur une vraie rubrique, fiche de composant complétée~~ :
-   fait (`docs/composants/noeud-liste.md`) ; maquette supprimée après
-   l'implémentation.
-2. ~~La vue Liste, d'après la fiche de composant~~ : fait
-   (`components/NodeList.tsx`) ; `context` renvoie des nœuds complets.
-3. Vérifications : poids et temps de rendu du plus gros sous-arbre ;
-   `display: contents` sur `<details>` (arbre d'accessibilité, Firefox) ;
-   captures.
-4. Journal, décisions, revue des sprints, PR.
 
 Choix validés :
 
@@ -96,6 +91,9 @@ But : une porte d'entrée sans uuid.
   `subtree`.
 - Première modification de la requête dans le navigateur : trancher alors
   `nuqs` (`docs/IDEES.md`).
+- À discuter au début du sprint : une recherche peut renvoyer des milliers
+  de nœuds ; la pagination de la vue Liste (`docs/IDEES.md`, mesures du
+  sprint 5) pourrait devenir nécessaire.
 
 ## Sprint 7 : exporter
 
