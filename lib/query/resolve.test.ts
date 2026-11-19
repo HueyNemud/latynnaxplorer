@@ -5,7 +5,6 @@
 import { afterAll, describe, expect, inject, it } from "vitest";
 import { E1, E2, E3, O1, T1, T2 } from "../../scripts/fixture.ts";
 import { connect } from "../db/client.ts";
-import type { Query } from "./query.ts";
 import { context, inducedArcs, NodeNotFoundError, resolve, type SelectedNode } from "./resolve.ts";
 
 const sql = connect(inject("databaseUrl"));
@@ -111,36 +110,37 @@ describe("resolve, sous-arbre", () => {
   });
 });
 
-describe("resolve, texte", () => {
-  const ids = async (query: Query) => (await resolve(sql, query)).nodes.map((n) => n.id);
+describe("resolve, texte dans le sous-arbre", () => {
+  const ids = async (text: string, subtree = T1) =>
+    (await resolve(sql, { subtree, text })).nodes.map((n) => n.id);
 
   it("rend les nœuds de tout type qui contiennent le texte, et les arcs entre eux", async () => {
-    const { nodes, arcs } = await resolve(sql, { text: "rue" });
+    const { nodes, arcs } = await resolve(sql, { subtree: T1, text: "rue" });
     expect(nodes.map((n) => n.id)).toEqual([E1, E2]);
     expect(nodes[0]?.spans).toHaveLength(2);
     expect(arcs).toEqual([{ source: E1, target: E2, kind: "follows" }]);
-    expect(await ids({ text: "rubrique" })).toEqual([T2]);
-    expect(await ids({ text: "almanach" })).toEqual([O1]);
+    expect(await ids("rubrique")).toEqual([T2]);
+    expect(await ids("almanach")).toEqual([O1]);
+  });
+
+  it("ne cherche que dans le sous-arbre", async () => {
+    expect(await ids("Durand")).toEqual([E3]);
+    expect(await ids("Durand", T2)).toEqual([]);
   });
 
   it("cherche la phrase entière, sans tenir compte des accents ni de la casse", async () => {
-    expect(await ids({ text: "RUE DE LA PÂIX" })).toEqual([E1]);
-    expect(await ids({ text: "Paix rue" })).toEqual([]);
+    expect(await ids("RUE DE LA PÂIX")).toEqual([E1]);
+    expect(await ids("Paix rue")).toEqual([]);
   });
 
   it("ne tolère pas les fautes", async () => {
-    expect(await ids({ text: "Dupond" })).toEqual([]);
+    expect(await ids("Dupond")).toEqual([]);
   });
 
   it("prend « % », « _ » et « \\ » à la lettre", async () => {
-    expect(await ids({ text: "%" })).toEqual([]);
-    expect(await ids({ text: "D_pont" })).toEqual([]);
-    expect(await ids({ text: "\\" })).toEqual([]);
-  });
-
-  it("se combine avec le sous-arbre", async () => {
-    expect(await ids({ subtree: T1, text: "Durand" })).toEqual([E3]);
-    expect(await ids({ subtree: T2, text: "Durand" })).toEqual([]);
+    expect(await ids("%")).toEqual([]);
+    expect(await ids("D_pont")).toEqual([]);
+    expect(await ids("\\")).toEqual([]);
   });
 
   it("refuse un sous-arbre inconnu, même sans résultat", async () => {

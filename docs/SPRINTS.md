@@ -122,8 +122,8 @@ But : une porte d'entrée sans uuid.
 
 1. Requête (fait) : scénario 2 de `docs/SCENARIOS.md`, `?text=<texte>`,
    phrase entière sans accents ni casse, sur le texte de tous les nœuds
-   (index trigrammes en place) ; combinable avec `subtree` (conjonction),
-   qui devient facultatif. Tests.
+   (index trigrammes en place), toujours dans un sous-arbre : `subtree`
+   reste obligatoire. Tests.
 2. Contexte de résultats dispersés : les rubriques ancêtres de tous les
    résultats ; la vue Liste regroupe les résultats sous leurs rubriques
    communes. Sans changer le modèle de données.

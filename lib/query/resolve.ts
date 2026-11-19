@@ -95,28 +95,30 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
  * (parent_id, next_entry_id) : rien à calculer en SQL. Sous-arbre sans parcours (scénario 1) :
  * le nœud lui-même, plus les enfants de chacun de ses nœuds parents descendants, lus dans
  * parent_closure (vide si le nœud n'a pas d'enfant) ; UNION ALL plutôt que OR : chaque branche
- * garde son index. Texte (scénario 2) : servi par l'index trigrammes de `node.text`, à condition
- * d'écrire l'expression indexée telle quelle.
+ * garde son index.
+ *
+ * Avec un texte (scénario 2), on part de l'index trigrammes de `node.text` (expression écrite
+ * telle quelle), puis on garde ce qui est dans le sous-arbre. Filtrer le sous-arbre par le texte
+ * serait plus rapide au premier appel, mais PostgreSQL passe au plan générique des requêtes
+ * préparées après cinq appels, qui relit alors l'index pour chaque sous-rubrique : 2 → 60 ms
+ * pour « rue de la paix » dans la plus grosse rubrique de 1807, contre 2 ms ici à tous les
+ * appels (« rue », 11 296 nœuds sur 17 402 dans l'index : 45 ms).
  */
 function selection(sql: postgres.Sql, { subtree, text }: Query) {
-  const nodes =
-    subtree === undefined
-      ? sql`node`
-      : sql`(
-          SELECT * FROM node WHERE id = ${subtree}
-          UNION ALL
-          SELECT n.* FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
-          WHERE c.ancestor_id = ${subtree}
-        )`;
+  const columns = sql`n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id`;
+  if (text === undefined)
+    return sql`
+      SELECT ${columns} FROM node n WHERE n.id = ${subtree}
+      UNION ALL
+      SELECT ${columns} FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
+      WHERE c.ancestor_id = ${subtree}`;
   // Le texte cherché est pris tel quel : ses « % », « _ » et « \ » sont échappés pour ILIKE.
-  const contains =
-    text === undefined
-      ? sql``
-      : sql`WHERE immutable_unaccent(n.text)
-              ILIKE '%' || immutable_unaccent(${text.replace(/[\\%_]/g, "\\$&")}) || '%'`;
   return sql`
-    SELECT n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id
-    FROM ${nodes} n ${contains}`;
+    SELECT ${columns} FROM node n
+    WHERE immutable_unaccent(n.text)
+            ILIKE '%' || immutable_unaccent(${text.replace(/[\\%_]/g, "\\$&")}) || '%'
+      AND (n.id = ${subtree} OR n.parent_id IN (
+        SELECT c.descendant_id FROM parent_closure c WHERE c.ancestor_id = ${subtree}))`;
 }
 
 /**
@@ -144,7 +146,7 @@ export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph
       FROM (${selected}) n JOIN anchor a ON a.node_id = n.id
       ORDER BY a.page`,
   ]);
-  if (rows.length === 0 && query.subtree !== undefined) {
+  if (rows.length === 0) {
     const [known] = await sql`SELECT 1 FROM node WHERE id = ${query.subtree}`;
     if (!known) throw new NodeNotFoundError(query.subtree);
   }
@@ -173,14 +175,13 @@ function groupByNode<T extends { nodeId: string }>(rows: T[]): Map<string, Omit<
 
 /**
  * Contexte du nœud `query.subtree` : ses rubriques ancêtres, de la racine à son parent (vide
- * pour un nœud racine ou inconnu, `resolve` signalant l'inconnu ; vide aussi sans `subtree`). Des nœuds complets, comme ceux
+ * pour un nœud racine ou inconnu ; `resolve` signale l'inconnu). Des nœuds complets, comme ceux
  * du sous-graphe (une rubrique n'a pas d'empans), pour être montrés de la même façon ; mais
  * rendus à part : le contexte entoure la sélection sans en faire partie (docs/DESIGN.md,
  * « Principes d'affichage »). Rangées par profondeur, comptée dans parent_closure, et non par
  * ordre de lecture : aucune hypothèse sur la place d'un intitulé par rapport à son contenu.
  */
 export async function context(sql: postgres.Sql, query: Query): Promise<SubgraphNode[]> {
-  if (query.subtree === undefined) return [];
   const ancestors = sql`
     SELECT c.ancestor_id AS id
     FROM node n JOIN parent_closure c ON c.descendant_id = n.parent_id
