@@ -11,14 +11,17 @@ import { NodeDetail } from "./NodeDetail.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
 /**
- * `context` : rubriques ancêtres de la sélection, de la racine au parent ; `nodes` : la
- * sélection, dans l'ordre de lecture. Une sélection d'un seul nœud le montre déplié.
+ * `context` : rubriques ancêtres de la sélection qui n'en font pas partie ; `nodes` : la
+ * sélection. Une sélection d'un seul nœud le montre déplié.
  */
 export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: SubgraphNode[] }) {
-  const byId = new Map([...context, ...nodes].map((n) => [n.id, n]));
+  const shown = [...context, ...nodes].sort(
+    (a, b) => a.documentReadingOrder - b.documentReadingOrder,
+  );
+  const byId = new Map(shown.map((n) => [n.id, n]));
   // enfants de chaque nœud montré, dans l'ordre de lecture ; null : les nœuds sans parent montré
   const children = new Map<string | null, SubgraphNode[]>();
-  for (const n of byId.values()) {
+  for (const n of shown) {
     const key = n.parentId !== null && byId.has(n.parentId) ? n.parentId : null;
     const siblings = children.get(key);
     if (siblings) siblings.push(n);

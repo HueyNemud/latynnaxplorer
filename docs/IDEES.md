@@ -71,6 +71,27 @@ plusieurs volumes en base.
   Leviers notés : moins d'éléments par ligne, coût de `next/link`, fiche
   rendue au premier dépliage (un peu de JavaScript), `content-visibility`.
 
+## Recherche tolérante
+
+Sprint 7 : la recherche par texte est exacte (sans accents ni casse).
+Mesures sur 1807, avant ce choix :
+
+- Similarité par trigrammes (`<%`, seuil 0,6) : « paix » trouve aussi
+  Paille, Paillard, Paignon (102 nœuds contre 59) ; sur une phrase,
+  « rue de la paix » donne 1 682 nœuds (8 exacts), mot par mot 18.
+  « lefevre » ne trouve pas « Lefebvre » (similarité 0,55) ; au seuil
+  0,5, si, mais « boulanger » passe de 26 à 89 nœuds.
+- Plein texte de PostgreSQL (`tsvector`, configuration `french`) : des
+  mots plutôt que des morceaux, recherche de phrase, syntaxe de saisie
+  (`websearch_to_tsquery`) ; mais aucune tolérance aux graphies, et une
+  racinisation moderne incohérente ici (« boulanger » → `boulang`,
+  « boulangers » → `boulanger` : 11 et 4 nœuds). Changerait le modèle
+  (configuration avec `unaccent`, index GIN de plus).
+- Combinaison usuelle, à reprendre si les variantes de graphie manquent :
+  plein texte pour la structure de la requête, `pg_trgm` pour élargir
+  chaque mot à ses variantes, sur une table des mots distincts du corpus
+  calculée à l'import.
+
 ## Pistes tirées d'un guide des tables de données
 
 Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
@@ -78,7 +99,7 @@ Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
 - **Surligner les correspondances** d'une recherche dans les lignes (avec la
   recherche du sprint 7), distinct du fond des champs.
 - **Sélection multiple et actions groupées** (exporter quelques entrées) :
-  touche au modèle de sélection, à discuter avec l'export (sprint 8).
+  touche au modèle de sélection, à discuter avec l'export (sprint 9).
 - **Choix de densité** (serré, normal, aéré), hors de la liste et mémorisé.
 - **En-tête de colonnes fixé** au défilement, en tête de la pile des titres.
 
@@ -98,6 +119,9 @@ Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
 - À reprendre avec l'opération « filtrer » ; trancher alors entre `nuqs`
   à la place de `parseQuery` / `serializeQuery` (`lib/query/query.ts`) ou
   `nuqs` qui s'appuie sur eux.
+- Sprint 7 : la recherche passe par un formulaire GET natif, sans script ;
+  `nuqs` reste inutile tant qu'aucun critère ne change sans recharger la
+  page (recherche à la frappe, facettes interactives).
 
 ## Internationalisation de l'interface
 

@@ -108,26 +108,76 @@ Choix validés :
   suit le texte). La couleur ne porte jamais seule l'information (retrait,
   régions nommées).
 
-## Hors sprint : demande à numrev
+## Hors sprint : demandes à numrev
 
-`docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
-gardent des marques Markdown (`##` au milieu, `\` final). À transmettre
-par l'utilisateur ; rien n'est contourné ici.
+À transmettre par l'utilisateur ; rien n'est contourné ici.
 
-## Sprint 7 : sélectionner par le contenu
+- `docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
+  gardent des marques Markdown (`##` au milieu, `\` final).
+- `docs/demandes/numrev_noeud_racine.md` : un vrai nœud racine par volume.
+  Sans lui, 1807 a 133 racines : on ne peut ni ouvrir le volume entier, ni
+  (plus tard) le choisir dans une facette.
+
+## Sprint 7 : sélectionner par le contenu (PR #17)
+
+Réalisé : recherche par texte dans tout l'annuaire (`?text=`, exacte,
+sans accents ni casse), critères tous facultatifs et combinables,
+résultats regroupés sous toutes leurs rubriques, champ de recherche
+réutilisable (`components/SearchForm.tsx`) ; demande à numrev pour un vrai
+nœud racine. Détail dans `docs/JOURNAL.md`.
 
 But : une porte d'entrée sans uuid.
 
-- Recherche tolérante sur le texte et les champs (index trigrammes déjà
-  en place) : nouveau scénario de `docs/SCENARIOS.md`, combinable avec
-  `subtree`.
-- Première modification de la requête dans le navigateur : trancher alors
-  `nuqs` (`docs/IDEES.md`).
-- À discuter au début du sprint : une recherche peut renvoyer des milliers
-  de nœuds ; la pagination de la vue Liste (`docs/IDEES.md`, mesures du
-  sprint 5) pourrait devenir nécessaire.
+Étapes, validées une à une :
 
-## Sprint 8 : exporter
+1. Requête (fait) : scénario 2 de `docs/SCENARIOS.md`, `?text=<texte>`,
+   phrase entière sans accents ni casse, sur le texte de tous les nœuds
+   (index trigrammes en place). Tous les critères sont facultatifs et se
+   combinent (`subtree` + `text`). Tests.
+2. Contexte de résultats dispersés (fait) : les rubriques ancêtres de tous
+   les résultats ; la vue Liste regroupe les résultats sous leurs rubriques
+   communes. Sans changer le modèle de données.
+3. Champ de recherche (fait) : composant `SearchForm`, indépendant de la
+   vue, au-dessus de la liste ; il cherche dans tout l'annuaire.
+4. Journal, décisions, revue de ce fichier (fait).
+
+Choix validés :
+
+- Recherche sur le texte entier seulement ; par champ (sujet, activité,
+  adresse) plus tard si le besoin se confirme.
+- Recherche exacte, pas floue : mesurée sur 1807, la similarité par
+  trigrammes ramenait trop de bruit (« paix » → « Paille ») ; plein texte
+  de PostgreSQL écarté aussi (`docs/IDEES.md`).
+- Tout rendre, même une sélection plus grosse que le plus gros sous-arbre
+  (« rue » : 17 402 nœuds sur 22 158) ; pagination toujours reportée
+  (`docs/IDEES.md`).
+- Saisie par un formulaire natif (`<form method="get">`, sans script) :
+  `nuqs` reporté de nouveau.
+- La recherche porte sur tout l'annuaire, pas sur la rubrique ouverte
+  (essayé, jugé déroutant) : chaque point d'entrée commence une nouvelle
+  sélection. Choisir les rubriques où chercher viendra avec les facettes
+  (sprint 8).
+- Surlignage des correspondances hors sprint (`docs/IDEES.md`).
+
+## Sprint 8 : facettes à plusieurs niveaux
+
+But : restreindre la sélection par des facettes emboîtées, d'abord les
+volumes (un seul pour l'instant), puis les rubriques au sein des volumes ;
+la recherche par texte s'applique dans ce périmètre (`subtree` + `text`
+déjà valide dans l'URL). Prioritaire sur l'export.
+
+- Gros sprint, qui commence par une séance de design comme pour la vue
+  Liste (sprints 5 et 6) : concept dans `docs/DESIGN.md` (facettes comme
+  critères de sélection, place dans l'interface, lien avec les vues),
+  maquette revue à l'écran sous Chromium et Firefox, fiche de composant ;
+  puis implémentation.
+- À discuter au début du sprint : critères et paramètres d'URL (volume,
+  plusieurs rubriques), union dans une facette et conjonction entre
+  facettes, décomptes par valeur, `nuqs` si les facettes changent la
+  requête sans recharger la page (`docs/IDEES.md`), lien avec la demande
+  à numrev d'un vrai nœud racine par volume.
+
+## Sprint 9 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (section suivante).
@@ -141,7 +191,8 @@ pratique standard plutôt qu'un formalisme ad hoc (OpenAPI ou plus récent,
 
 ## Plus tard (non planifié)
 
-Vues Page (IIIF), Carte et Frise, avec leurs critères (page, zone,
-période) ; géocodage ; liens temporels, autres annuaires et « suivre » ;
+Recherche par champ (sujet, activité, adresse) ; surlignage des
+correspondances. Vues Page (IIIF), Carte et
+Frise, avec leurs critères (page, zone, période) ; géocodage ; liens temporels, autres annuaires et « suivre » ;
 deux vues côte à côte ; idées de performance (`docs/IDEES.md`). Chacun
 aura son sprint, proposé le moment venu.

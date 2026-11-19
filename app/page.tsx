@@ -1,7 +1,9 @@
-// La sélection désignée par l'URL, dans la vue Liste, entourée de son contexte.
+// La sélection désignée par l'URL, dans la vue Liste, entourée de son contexte, sous le champ de
+// recherche.
 
 import { notFound } from "next/navigation";
 import { NodeList } from "../components/NodeList.tsx";
+import { SearchForm } from "../components/SearchForm.tsx";
 import { db } from "../lib/db/server.ts";
 import { parseQuery } from "../lib/query/query.ts";
 import { context, NodeNotFoundError, resolve } from "../lib/query/resolve.ts";
@@ -20,17 +22,25 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     }),
     context(sql, query),
   ]);
-  const root = subgraph.nodes.find((n) => n.id === query.subtree);
+  // le nœud désigné, s'il y en a un : dans la sélection, ou dans le contexte s'il ne contient pas
+  // le texte
+  const root = [...subgraph.nodes, ...sections].find((n) => n.id === query.subtree);
   return (
     <>
-      {/* titre pour les lecteurs d'écran : le texte du nœud désigné */}
+      {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché */}
       <h1 className="visually-hidden" lang="fr">
-        {root &&
-          segments(root.text, [])
-            .map((s) => s.text)
-            .join("")}
+        {root
+          ? segments(root.text, [])
+              .map((s) => s.text)
+              .join("")
+          : query.text}
       </h1>
-      <NodeList context={sections} nodes={subgraph.nodes} />
+      <SearchForm text={query.text} />
+      {subgraph.nodes.length > 0 ? (
+        <NodeList context={sections} nodes={subgraph.nodes} />
+      ) : (
+        <p className="no-match">No match.</p>
+      )}
     </>
   );
 }

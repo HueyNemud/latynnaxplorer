@@ -88,7 +88,9 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
   même bord : la colonne des pages reste alignée à tous les niveaux.
 - **Contexte** : les rubriques ancêtres de la sélection sont des groupes
   comme les autres (le plus haut à l'extérieur) ; ils ne contiennent que la
-  sélection et ne sont jamais comptés dedans.
+  sélection et ne sont jamais comptés dedans. Résultats d'une recherche :
+  chacun sous toutes ses rubriques, chaque rubrique une fois ; nœuds de
+  même parent dans l'ordre de lecture.
 - **Titre** : la ligne de son propre nœud, avec une seule règle en plus :
   **fixé** en haut de l'écran tant que le groupe est visible, **empilé** sous
   les titres de ses parents (`top: profondeur × --title-height`). Les titres

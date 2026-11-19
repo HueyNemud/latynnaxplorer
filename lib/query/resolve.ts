@@ -90,19 +90,49 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
   });
 }
 
-/** Sous-graphe induit par le nœud `query.subtree` et tous ses descendants. */
-export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph> {
-  // Sous-arbre sans parcours : le nœud lui-même, plus les enfants de chacun de ses nœuds
-  // parents descendants, lus dans parent_closure (vide si le nœud n'a pas d'enfant). UNION ALL
-  // plutôt que OR : chaque branche garde son index. Les trois arcs sont portés par des
-  // colonnes (parent_id, next_entry_id) : rien à calculer en SQL.
-  const subtree = sql`
-    SELECT id, kind, parent_id, document_reading_order, text, next_entry_id
-    FROM node WHERE id = ${query.subtree}
+/**
+ * Nœuds que désigne la requête, avec les colonnes de `node` qui portent les trois arcs
+ * (parent_id, next_entry_id) : rien à calculer en SQL. Chaque critère présent restreint la
+ * sélection ; sans critère, tous les nœuds. Deux écritures, choisies pour l'index qui sert :
+ *
+ * - Avec un texte (scénario 2) : l'index trigrammes de `node.text` (expression écrite telle
+ *   quelle), puis, s'il est donné, le sous-arbre. Partir du sous-arbre et le filtrer par le
+ *   texte serait plus rapide au premier appel, mais PostgreSQL passe au plan générique des
+ *   requêtes préparées après cinq appels, qui relit alors l'index pour chaque sous-rubrique :
+ *   2 → 60 ms pour « rue de la paix » dans la plus grosse rubrique de 1807, contre 2 ms ici.
+ * - Sans texte, le sous-arbre (scénario 1), sans parcours : le nœud lui-même, plus les enfants
+ *   de chacun de ses nœuds parents descendants, lus dans parent_closure (vide si le nœud n'a
+ *   pas d'enfant) ; UNION ALL plutôt que OR, qui lirait toute la table.
+ */
+function selection(sql: postgres.Sql, { subtree, text }: Query) {
+  const columns = sql`n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id`;
+  if (text !== undefined) {
+    const inSubtree =
+      subtree === undefined
+        ? sql``
+        : sql`AND (n.id = ${subtree} OR n.parent_id IN (
+            SELECT c.descendant_id FROM parent_closure c WHERE c.ancestor_id = ${subtree}))`;
+    // Le texte cherché est pris tel quel : ses « % », « _ » et « \ » sont échappés pour ILIKE.
+    return sql`
+      SELECT ${columns} FROM node n
+      WHERE immutable_unaccent(n.text)
+              ILIKE '%' || immutable_unaccent(${text.replace(/[\\%_]/g, "\\$&")}) || '%'
+        ${inSubtree}`;
+  }
+  if (subtree === undefined) return sql`SELECT ${columns} FROM node n`;
+  return sql`
+    SELECT ${columns} FROM node n WHERE n.id = ${subtree}
     UNION ALL
-    SELECT n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id
-    FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
-    WHERE c.ancestor_id = ${query.subtree}`;
+    SELECT ${columns} FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
+    WHERE c.ancestor_id = ${subtree}`;
+}
+
+/**
+ * Sous-graphe induit par les nœuds que désigne la requête : conjonction de ses critères
+ * (docs/SCENARIOS.md). Une sélection vide n'est pas une erreur ; un `subtree` inconnu, si.
+ */
+export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph> {
+  const selected = selection(sql, query);
   // Trois requêtes en parallèle, en lignes simples : nœuds, empans, ancres, rattachés ensuite en
   // TypeScript. Regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent.
   // Mesures : docs/MODELE_DONNEES.md, section 4.
@@ -110,19 +140,22 @@ export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph
     sql<SelectedNode[]>`
       SELECT id, kind, parent_id AS "parentId", document_reading_order AS "documentReadingOrder",
              text, next_entry_id AS "nextEntryId"
-      FROM (${subtree}) n
+      FROM (${selected}) n
       ORDER BY document_reading_order`,
     sql<(Span & { nodeId: string })[]>`
       SELECT s.node_id AS "nodeId", s.id, s.label, s.char_start AS "charStart",
              s.char_end AS "charEnd", s.normalized
-      FROM (${subtree}) n JOIN span s ON s.node_id = n.id
+      FROM (${selected}) n JOIN span s ON s.node_id = n.id
       ORDER BY s.char_start, s.char_end`,
     sql<(Anchor & { nodeId: string })[]>`
       SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
-      FROM (${subtree}) n JOIN anchor a ON a.node_id = n.id
+      FROM (${selected}) n JOIN anchor a ON a.node_id = n.id
       ORDER BY a.page`,
   ]);
-  if (rows.length === 0) throw new NodeNotFoundError(query.subtree);
+  if (rows.length === 0 && query.subtree !== undefined) {
+    const [known] = await sql`SELECT 1 FROM node WHERE id = ${query.subtree}`;
+    if (!known) throw new NodeNotFoundError(query.subtree);
+  }
   const spansOf = groupByNode(spans);
   const anchorsOf = groupByNode(anchors);
   return {
@@ -147,24 +180,28 @@ function groupByNode<T extends { nodeId: string }>(rows: T[]): Map<string, Omit<
 }
 
 /**
- * Contexte du nœud `query.subtree` : ses rubriques ancêtres, de la racine à son parent (vide
- * pour un nœud racine ou inconnu ; `resolve` signale l'inconnu). Des nœuds complets, comme ceux
- * du sous-graphe (une rubrique n'a pas d'empans), pour être montrés de la même façon ; mais
- * rendus à part : le contexte entoure la sélection sans en faire partie (docs/DESIGN.md,
- * « Principes d'affichage »). Rangées par profondeur, comptée dans parent_closure, et non par
- * ordre de lecture : aucune hypothèse sur la place d'un intitulé par rapport à son contenu.
+ * Contexte de la sélection : les rubriques ancêtres de ses nœuds qui n'en font pas partie,
+ * chacune une fois, dans l'ordre de lecture, quels que soient les critères. Un sous-arbre seul
+ * a pour contexte les rubriques au-dessus de son nœud, de la racine à son parent. Vide pour une
+ * sélection vide. Des
+ * nœuds complets, comme ceux du sous-graphe (une rubrique n'a pas d'empans), pour être montrés
+ * de la même façon ; mais rendus à part : le contexte entoure la sélection sans en faire partie
+ * (docs/DESIGN.md, « Principes d'affichage »).
  */
 export async function context(sql: postgres.Sql, query: Query): Promise<SubgraphNode[]> {
+  // parent_closure relie aussi chaque nœud parent à lui-même : le parent est compris.
+  const selected = selection(sql, query);
   const ancestors = sql`
     SELECT c.ancestor_id AS id
-    FROM node n JOIN parent_closure c ON c.descendant_id = n.parent_id
-    WHERE n.id = ${query.subtree}`;
+    FROM (${selected}) n JOIN parent_closure c ON c.descendant_id = n.parent_id
+    EXCEPT
+    SELECT id FROM (${selected}) n`;
   const [rows, anchors] = await Promise.all([
     sql<Omit<SubgraphNode, "spans" | "anchors">[]>`
       SELECT a.id, a.kind, a.parent_id AS "parentId",
              a.document_reading_order AS "documentReadingOrder", a.text
       FROM (${ancestors}) x JOIN node a ON a.id = x.id
-      ORDER BY (SELECT count(*) FROM parent_closure d WHERE d.descendant_id = a.id)`,
+      ORDER BY a.document_reading_order`,
     sql<(Anchor & { nodeId: string })[]>`
       SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
       FROM (${ancestors}) x JOIN anchor a ON a.node_id = x.id
