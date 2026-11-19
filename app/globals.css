@@ -93,20 +93,35 @@ a {
   background: var(--tint-addr);
 }
 
-/* Fiche */
+/* Fiche. Fil d'Ariane en dernier, sur une ligne : chaque intitulé est borné, puis tronqué (« … »)
+   s'il le faut pour tenir dans la largeur, sauf la section la plus proche. */
 .breadcrumb {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-2);
-  margin: 0 0 var(--space-3);
+  margin: 0;
   padding: 0;
   list-style: none;
   font-size: var(--size-small);
 }
 
+.breadcrumb li,
+.breadcrumb .printed {
+  white-space: nowrap;
+}
+
+.breadcrumb li {
+  min-width: 0;
+  max-width: 16rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.breadcrumb li:last-child {
+  flex-shrink: 0;
+}
+
 .breadcrumb li + li::before {
   content: "›";
-  margin-right: var(--space-2);
+  margin: 0 var(--space-2);
   color: var(--color-muted);
 }
 
