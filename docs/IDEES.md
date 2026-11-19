@@ -63,6 +63,13 @@ plusieurs volumes en base.
   larges) : paginer, ou `content-visibility: auto` en CSS. La
   virtualisation est déconseillée (une dépendance, mal accordée aux groupes
   emboîtés, Ctrl+F cassé).
+- Sprint d'optimisation envisagé puis écarté (19 novembre, sprint 6) : la
+  lenteur ressentie venait du serveur de développement. Mesures : Libraires
+  (280 nœuds) 3,4 s en `pnpm dev`, 0,14 s en production ; Épiciers (759)
+  9,1 s contre 0,31 s jusqu'au premier affichage ; page d'Épiciers 3,5 Mo
+  en production, dont 70 % de charge RSC et 0,7 Mo de fiches repliées.
+  Leviers notés : moins d'éléments par ligne, coût de `next/link`, fiche
+  rendue au premier dépliage (un peu de JavaScript), `content-visibility`.
 
 ## Pistes tirées d'un guide des tables de données
 
