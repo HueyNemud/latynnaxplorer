@@ -6,8 +6,9 @@
   --color-background: #ffffff;
   /* survol et élément ouvert */
   --color-open: #f6f8fa;
-  /* guides de niveau */
+  /* guides de niveau : celui de la section la plus proche, les autres estompés */
   --color-guide: #3d434a;
+  --color-guide-faded: #c9ced4;
   /* champs : palette néon de colorhunt.co (#63c8ff, #4dffbe, #fff83f) adoucie à 45 % dans du blanc */
   --tint-subj: #b9e6ff;
   --tint-desc: #afffe2;
@@ -177,11 +178,6 @@ a {
   padding: 0 0 var(--space-1) calc(var(--guide-width) + var(--guide-gap));
 }
 
-/* le guide d'un sous-groupe tombe sous le chevron du titre parent */
-.group .group {
-  margin-left: var(--line-pad);
-}
-
 .group::before,
 .group::after {
   content: "";
@@ -202,6 +198,28 @@ a {
   width: var(--ball);
   height: var(--ball);
   border-radius: 50%;
+}
+
+/* Sous-groupe : son guide tombe sous le chevron du titre parent. Le long du sous-groupe, seul
+   son guide reste foncé : sa bordure gauche recouvre le guide parent en gris ; le sous-groupe
+   commence donc au guide parent (marge négative), et son contenu ne bouge pas. */
+.group .group {
+  margin-left: calc(-1 * (var(--guide-width) + var(--guide-gap)));
+  padding-left: calc(var(--line-pad) + 2 * var(--guide-gap) + var(--guide-width));
+  border-left: var(--guide-width) solid var(--color-guide-faded);
+}
+
+.group .group::before {
+  left: calc(var(--line-pad) + var(--guide-gap));
+}
+
+.group .group::after {
+  left: calc(var(--line-pad) + var(--guide-gap) + (var(--guide-width) - var(--ball)) / 2);
+}
+
+/* boule estompée si le groupe finit par un sous-groupe */
+.group:has(> .group:last-child)::after {
+  background: var(--color-guide-faded);
 }
 
 /* Élément : le même pour tout nœud. Le <details> ne forme pas de boîte : sa ligne peut ainsi
@@ -292,6 +310,11 @@ a {
   border: solid var(--color-guide);
   border-width: var(--guide-width) 0 0 var(--guide-width);
   border-top-left-radius: 0.25rem;
+}
+
+/* coude estompé s'il ne touche qu'un sous-groupe */
+.group:has(> .item:first-child + .group) > .item:first-child > .line::after {
+  border-color: var(--color-guide-faded);
 }
 
 /* Texte : chevron devant, lien après */
