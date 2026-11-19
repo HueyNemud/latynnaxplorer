@@ -1,15 +1,9 @@
 // Fiche d'un nœud dans la vue Liste : densité détaillée, en clé / valeur — texte, champs,
-// métadonnées — dépliée sous sa ligne (docs/composants/noeud-liste.md).
+// métadonnées —, puis le fil d'Ariane ; dépliée sous sa ligne (docs/composants/noeud-liste.md).
 
 import Link from "next/link";
 import { serializeQuery } from "../lib/query/query.ts";
-import type {
-  Anchor,
-  ContextSection,
-  NodeKind,
-  SpanLabel,
-  SubgraphNode,
-} from "../lib/query/resolve.ts";
+import type { Anchor, NodeKind, SpanLabel, SubgraphNode } from "../lib/query/resolve.ts";
 import { PrintedText } from "./PrintedText.tsx";
 
 const KIND_LABELS: Record<NodeKind, string> = {
@@ -24,22 +18,9 @@ const FIELD_LABELS: Record<SpanLabel, string> = {
   ADDR: "Address",
 };
 
-export function NodeDetail({ node, context }: { node: SubgraphNode; context: ContextSection[] }) {
+export function NodeDetail({ node, context }: { node: SubgraphNode; context: SubgraphNode[] }) {
   return (
     <article className="node-detail">
-      {context.length > 0 && (
-        <nav aria-label="Sections">
-          <ol className="breadcrumb">
-            {context.map((section) => (
-              <li key={section.id}>
-                <Link href={`/?${serializeQuery({ subtree: section.id })}`}>
-                  <PrintedText text={section.text} />
-                </Link>
-              </li>
-            ))}
-          </ol>
-        </nav>
-      )}
       <dl>
         <div>
           <dt>Text</dt>
@@ -75,6 +56,19 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Con
           </dd>
         </div>
       </dl>
+      {context.length > 0 && (
+        <nav aria-label="Sections">
+          <ol className="breadcrumb">
+            {context.map((section) => (
+              <li key={section.id}>
+                <Link href={`/?${serializeQuery({ subtree: section.id })}`}>
+                  <PrintedText text={section.text} />
+                </Link>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )}
     </article>
   );
 }

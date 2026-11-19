@@ -2,6 +2,13 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-19 — Guides de niveau en deux intensités : à hauteur de chaque ligne, seul le guide de sa section est gris foncé ; ceux des sections englobantes sont estompés (`#c9ced4`) le long de leurs sous-groupes, coude et boule compris. Précise « une seule couleur » (même jour).
+- 2026-11-19 — Fiche : fil d'Ariane en dernier, sur une ligne (« › »), intitulés bornés et tronqués sauf la section la plus proche. Remplace « fil d'Ariane, puis clés / valeurs » (18 novembre).
+- 2026-11-19 — Vue Liste à plat (sprint 6, `docs/composants/noeud-liste.md`) : plus de cartes de section ; la hiérarchie se lit par des guides de niveau (filet gris foncé de 2 px, une seule couleur, coudé vers le titre, boule à la fin), retrait d'environ 11 px par niveau ; titres toujours fixés et empilés, coude compris ; lignes jointives, sans écart. Remplace « sections en cartes emboîtées » (19 novembre, sprint 5).
+- 2026-11-19 — États de la vue Liste : survol = fond gris bleuté `#f6f8fa`, sans relief ; ouvert = ligne et fiche en une carte en relief sur ce même fond. Remplace le soulèvement au survol et le grège `#f6f6f4`.
+- 2026-11-19 — Ligne de la vue Liste : chevron devant le texte de tout élément, tourné quand il est ouvert ; colonnes texte | page. Remplace « Open » : lien vers `?subtree=<uuid>` en icône (↗) juste après le texte, nommé « Open on its own page », visible au survol, ouvert ou au focus, décrit par le texte de sa ligne.
+- 2026-11-19 — Texte de la vue Liste : titres de section tout en capitales grasses (la casse imprimée varie) ; sujet en petites capitales sur son fond bleu, plus en gras (il rivalisait avec les titres) ; les trois fonds de champs gardés à 45 % ; afficher ou masquer chacun : réglage pour plus tard (`docs/IDEES.md`).
+- 2026-11-19 — Police : Fira Sans pour toute l'interface (vraies petites capitales), chargée par `next/font/google` (fourni par Next : aucun paquet ajouté, police copiée sur le site au build, aucune requête à Google). Remplace « police du système » (18 novembre).
 - 2026-11-19 — Poids des très grosses rubriques accepté pour le sprint 5 (66 Mo et ~10 s pour 13 736 nœuds, 3 rubriques sur 602 au-delà de 1 000) : ni fiche chargée au dépliage ni pagination pour l'instant ; mesures dans `docs/IDEES.md`.
 - 2026-11-19 — Sélection d'un seul nœud : montrée comme toute sélection (ses cartes de contexte, sa ligne dépliée en sa fiche) ; plus de fiche seule en pleine page. Un seul chemin de rendu ; la page garde un seul `h1`, le texte du nœud désigné.
 - 2026-11-19 — `context` renvoie des nœuds complets (même type que `resolve`, ancres comprises, empans vides) au lieu de `{ id, text }` : le contexte se montre comme la sélection, toujours rendu à part.

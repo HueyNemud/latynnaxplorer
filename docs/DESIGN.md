@@ -83,14 +83,14 @@ champs) est porté par toutes.
 
 | Vue | Compacte | Détaillée (fiche) | Disponible |
 |---|---|---|---|
-| Liste | une ligne de texte imprimé, champs sur fond pastel, sujet en gras ; une section est une carte, son titre une ligne | la fiche (champs étiquetés, chemin des rubriques), dépliée sous la ligne | maintenant |
+| Liste | une ligne de texte imprimé, champs sur fond pastel, sujet en petites capitales ; une section est un groupe marqué par son guide de niveau, son titre une ligne fixée en haut | la fiche (champs étiquetés, chemin des rubriques), dépliée sous la ligne | maintenant |
 | Page | la boîte du nœud sur sa page (vignette) | la page, boîte surlignée | ancrages présents, images à venir (IIIF) |
 | Carte | un point | le point dans son quartier | après le géocodage |
 | Frise | un repère | sa date ; plus tard, ses entrées liées | date du volume maintenant, liens plus tard |
 
 **La fiche** : une sélection d'un seul nœud est ce nœud dans toutes ses
 représentations disponibles, en densité détaillée, côte à côte, chacune
-dans son contexte (vue Liste : ses cartes de rubriques, sa ligne dépliée).
+dans son contexte (vue Liste : ses rubriques, sa ligne dépliée).
 Il n'y a pas de page « fiche » à concevoir à part.
 
 ## Principes d'affichage
@@ -98,7 +98,7 @@ Il n'y a pas de page « fiche » à concevoir à part.
 - **Contexte** : chaque vue montre la sélection dans son contexte (la page
   autour des boîtes, la carte autour des points, la hiérarchie autour des
   entrées). Le contexte prend les mêmes représentations que la sélection
-  (vue Liste : les rubriques ancêtres sont des cartes comme les autres),
+  (vue Liste : les rubriques ancêtres sont des groupes comme les autres),
   n'en montre que ce qui mène à elle, et n'est jamais compté dedans.
 - **Densité** : automatique par défaut (un nœud → déplié en sa fiche,
   plusieurs → compacte) ; dans une vue compacte, chaque nœud peut se déplier en sa

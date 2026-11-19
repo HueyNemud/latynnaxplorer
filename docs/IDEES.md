@@ -63,17 +63,33 @@ plusieurs volumes en base.
   larges) : paginer, ou `content-visibility: auto` en CSS. La
   virtualisation est déconseillée (une dépendance, mal accordée aux groupes
   emboîtés, Ctrl+F cassé).
+- Sprint d'optimisation envisagé puis écarté (19 novembre, sprint 6) : la
+  lenteur ressentie venait du serveur de développement. Mesures : Libraires
+  (280 nœuds) 3,4 s en `pnpm dev`, 0,14 s en production ; Épiciers (759)
+  9,1 s contre 0,31 s jusqu'au premier affichage ; page d'Épiciers 3,5 Mo
+  en production, dont 70 % de charge RSC et 0,7 Mo de fiches repliées.
+  Leviers notés : moins d'éléments par ligne, coût de `next/link`, fiche
+  rendue au premier dépliage (un peu de JavaScript), `content-visibility`.
 
 ## Pistes tirées d'un guide des tables de données
 
 Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
 
 - **Surligner les correspondances** d'une recherche dans les lignes (avec la
-  recherche du sprint 6), distinct du fond des champs.
+  recherche du sprint 7), distinct du fond des champs.
 - **Sélection multiple et actions groupées** (exporter quelques entrées) :
-  touche au modèle de sélection, à discuter avec l'export (sprint 7).
+  touche au modèle de sélection, à discuter avec l'export (sprint 8).
 - **Choix de densité** (serré, normal, aéré), hors de la liste et mémorisé.
 - **En-tête de colonnes fixé** au défilement, en tête de la pile des titres.
+
+## Réglages d'affichage des champs
+
+- Sprint 6 : les trois champs (sujet, description, adresse) restent
+  surlignés, aux couleurs du sprint 5 ; des fonds plus pâles ont été
+  essayés et écartés.
+- Plus tard : un réglage pour afficher ou masquer la couleur de chaque
+  champ (par exemple ne surligner que les sujets), mémorisé, à côté du
+  choix de densité.
 
 ## État de la requête dans le navigateur : `nuqs`
 

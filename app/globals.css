@@ -4,14 +4,20 @@
   --color-text: #1f2328;
   --color-muted: #59636e;
   --color-background: #ffffff;
-  /* élément ouvert : grège */
-  --color-open: #f6f6f4;
+  /* survol et élément ouvert */
+  --color-open: #f6f8fa;
+  /* guides de niveau : celui de la section la plus proche, les autres estompés */
+  --color-guide: #3d434a;
+  --color-guide-faded: #c9ced4;
   /* champs : palette néon de colorhunt.co (#63c8ff, #4dffbe, #fff83f) adoucie à 45 % dans du blanc */
   --tint-subj: #b9e6ff;
   --tint-desc: #afffe2;
   --tint-addr: #fffca9;
 
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Fira Sans chargée par next/font (app/layout.tsx), pour ses vraies petites capitales */
+  --font:
+    var(--font-fira), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
   --size-small: 0.875rem;
 
   --space-1: 0.25rem;
@@ -19,15 +25,20 @@
   --space-3: 1rem;
   --space-4: 1.5rem;
 
-  --shadow-rest: 0 0 0 1px rgb(0 0 0 / 0.08), 0 1px 4px rgb(0 0 0 / 0.1);
   --shadow-raised: 0 0 0 1px rgb(0 0 0 / 0.14), 0 4px 14px rgb(0 0 0 / 0.14);
   --radius-card: 0.5rem;
 
-  /* vue Liste : hauteur d'une ligne de titre (pas de la pile), écart entre lignes, colonnes
-     texte | Open | page à largeurs fixes pour aligner l'en-tête et toutes les lignes */
-  --title-height: 1.875rem;
-  --row-gap: 0.375rem;
-  --columns: 1fr 4.5rem 2.5rem;
+  /* vue Liste : colonnes texte | page à largeurs fixes, pour aligner l'en-tête et toutes les
+     lignes ; hauteur d'une ligne de titre (pas de la pile) ; marge intérieure des lignes */
+  --columns: 1fr 2.5rem;
+  --title-height: 1.75rem;
+  --line-pad: 0.375rem;
+  /* guide : épaisseur (en pixels entiers : 1,5 px rendait des traits inégaux), écart avec les
+     lignes, boule finale ; icônes (chevron, lien) */
+  --guide-width: 2px;
+  --guide-gap: 0.25rem;
+  --ball: 6px;
+  --icon: 0.875rem;
 }
 
 body {
@@ -58,8 +69,8 @@ a {
   white-space: pre-line;
 }
 
-/* Champ : fond pastel aux coins arrondis, sujet en gras. Le fond déborde un peu de chaque côté
-   (marge négative) sans décaler le texte ; un filet blanc sépare deux champs voisins. */
+/* Champ : fond pastel aux coins arrondis. Le fond déborde un peu de chaque côté (marge négative) sans décaler le texte ;
+   un filet blanc sépare deux champs voisins. */
 .field {
   padding: 0.08em;
   margin: 0 -0.08em;
@@ -69,7 +80,7 @@ a {
 }
 
 .field-subj {
-  font-weight: 600;
+  font-variant: small-caps;
   background: var(--tint-subj);
 }
 
@@ -81,20 +92,43 @@ a {
   background: var(--tint-addr);
 }
 
-/* Fiche */
+/* Une ligne, « … » si le texte est trop long (entier ailleurs : fiche, nœud seul) */
+.breadcrumb,
+.text-section,
+.text-out_of_scope,
+:is(.breadcrumb, .text-section, .text-out_of_scope) .printed {
+  white-space: nowrap;
+}
+
+.breadcrumb li,
+.text-section .label,
+.text-out_of_scope .label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Fiche. Fil d'Ariane en dernier, sur une ligne : chaque intitulé est borné, puis tronqué s'il le
+   faut, sauf la section la plus proche. */
 .breadcrumb {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-1) var(--space-2);
-  margin: 0 0 var(--space-3);
+  margin: 0;
   padding: 0;
   list-style: none;
   font-size: var(--size-small);
 }
 
+.breadcrumb li {
+  min-width: 0;
+  max-width: 16rem;
+}
+
+.breadcrumb li:last-child {
+  flex-shrink: 0;
+}
+
 .breadcrumb li + li::before {
   content: "›";
-  margin-right: var(--space-2);
+  margin: 0 var(--space-2);
   color: var(--color-muted);
 }
 
@@ -149,42 +183,69 @@ a {
 
 /* ── Vue Liste (docs/composants/noeud-liste.md) ── */
 
-/* en-tête : seulement « Page », aligné sur les lignes (retrait de la carte + de la ligne) */
+/* en-tête : seulement « Page », aligné sur la colonne des pages */
 .columns {
   display: grid;
   grid-template-columns: var(--columns);
   gap: var(--space-3);
-  padding: 0 calc(2 * var(--space-2)) var(--space-1);
+  padding: 0 var(--line-pad) var(--space-1);
   font-size: var(--size-small);
   color: var(--color-muted);
 }
 
-/* Carte : une section, contexte compris, en léger relief */
-.card {
-  margin-top: var(--space-3);
-  padding: 0 var(--space-2) var(--space-3);
-  border-radius: var(--radius-card);
-  background: var(--color-background);
-  box-shadow: var(--shadow-rest);
+/* Groupe : une section, contexte compris, à plat ; marqué par son guide (à --guide-x), qui part
+   du titre et finit par une boule */
+.group {
+  --guide-x: 0rem;
+  position: relative;
+  padding: 0 0 var(--space-1) calc(var(--guide-width) + var(--guide-gap));
 }
 
-.selection > .card:first-child {
-  margin-top: 0;
+.group::before,
+.group::after {
+  content: "";
+  position: absolute;
+  background: var(--color-guide);
 }
 
-/* une carte emboîtée n'est en retrait qu'à gauche : à droite, elle rejoint le bord de sa
-   parente, et les colonnes de droite restent alignées à tous les niveaux */
-.card .card {
-  margin-right: calc(-1 * var(--space-2));
+.group::before {
+  left: var(--guide-x);
+  top: var(--title-height);
+  bottom: var(--ball);
+  width: var(--guide-width);
+}
+
+.group::after {
+  left: calc(var(--guide-x) + (var(--guide-width) - var(--ball)) / 2);
+  bottom: 0;
+  width: var(--ball);
+  height: var(--ball);
+  border-radius: 50%;
+}
+
+/* Sous-groupe : son guide tombe sous le chevron du titre parent. Le long du sous-groupe, seul
+   son guide reste foncé : sa bordure gauche recouvre le guide parent en gris ; le sous-groupe
+   commence donc au guide parent (marge négative), et son contenu ne bouge pas. */
+.group .group {
+  --guide-x: calc(var(--line-pad) + var(--guide-gap));
+  margin-left: calc(-1 * (var(--guide-width) + var(--guide-gap)));
+  padding-left: calc(var(--line-pad) + 2 * var(--guide-gap) + var(--guide-width));
+  border-left: var(--guide-width) solid var(--color-guide-faded);
+}
+
+/* boule estompée si le groupe finit par un sous-groupe */
+.group:has(> .group:last-child)::after {
+  background: var(--color-guide-faded);
 }
 
 /* Élément : le même pour tout nœud. Le <details> ne forme pas de boîte : sa ligne peut ainsi
-   être fixée par rapport à la carte (titre de section) ; en contrepartie, l'élément ouvert est
+   être fixée par rapport au groupe (titre de section) ; en contrepartie, l'élément ouvert est
    dessiné en deux morceaux jointifs, la ligne et la fiche. */
 .item {
   display: contents;
 }
 
+/* lignes jointives (une marge entre elles gênait la sélection du texte) */
 .line {
   box-sizing: border-box;
   display: grid;
@@ -192,8 +253,7 @@ a {
   gap: var(--space-3);
   align-items: baseline;
   width: 100%;
-  margin-top: var(--row-gap);
-  padding: var(--space-1) var(--space-2);
+  padding: 0.125rem var(--line-pad);
   border-radius: var(--radius-card);
   background: var(--color-background);
   list-style: none;
@@ -204,19 +264,20 @@ a {
   display: none;
 }
 
+/* marge sous la fiche seulement : au-dessus, elle décalait la ligne cliquée */
 .detail {
+  margin-bottom: var(--space-2);
   padding: var(--space-3) var(--space-3) var(--space-1) var(--space-4);
 }
 
 /* Deux règles d'état, pour tous les éléments.
-   1. Survol : l'élément se soulève, avec la carte la plus intérieure qui le contient. */
-.item:hover > .line,
-.card:hover:not(:has(.card:hover)) {
-  box-shadow: var(--shadow-raised);
+   1. Survol : la ligne prend le fond de l'élément ouvert, sans relief. */
+.item:hover > .line {
+  background: var(--color-open);
 }
 
-/* 2. Ouvert : ligne et fiche forment une carte en relief sur fond grège ; chaque morceau
-   coupe son ombre du côté où il touche l'autre. */
+/* 2. Ouvert : ligne et fiche forment une carte en relief ; chaque morceau coupe son ombre du
+   côté où il touche l'autre. */
 .item[open] > * {
   background: var(--color-open);
   box-shadow: var(--shadow-raised);
@@ -232,39 +293,117 @@ a {
   clip-path: inset(0 -1rem -1rem -1rem);
 }
 
-/* Titre de section (premier élément de sa carte) : fixé en haut tant que la carte est visible,
-   empilé sous ceux de ses parents. Sa fiche n'est pas fixée. */
-.card > .item:first-child > .line {
+/* Titre de section (premier élément de son groupe) : fixé en haut tant que le groupe est
+   visible, empilé sous ceux de ses parents ; sa fiche n'est pas fixée. Il porte le coude du
+   guide, pour que le coude le suive une fois fixé ; un cache masque le guide qui monte encore
+   derrière lui. */
+.group > .item:first-child > .line {
   position: sticky;
   top: calc(var(--depth) * var(--title-height));
   z-index: calc(10 - var(--depth));
   height: var(--title-height);
 }
 
-/* Ce qui distingue les types : seulement le texte */
+.group > .item:first-child > .line::before,
+.group > .item:first-child > .line::after {
+  content: "";
+  position: absolute;
+  left: calc(-1 * (var(--guide-gap) + var(--guide-width)));
+}
+
+.group > .item:first-child > .line::before {
+  top: 0;
+  bottom: 0;
+  width: var(--guide-width);
+  background: var(--color-background);
+}
+
+.group > .item:first-child > .line::after {
+  box-sizing: border-box;
+  top: calc(50% - var(--guide-width) / 2);
+  bottom: 0;
+  width: calc(var(--guide-width) + var(--guide-gap) + var(--line-pad) - 0.2rem);
+  border: solid var(--color-guide);
+  border-width: var(--guide-width) 0 0 var(--guide-width);
+  border-top-left-radius: 0.25rem;
+}
+
+/* coude estompé s'il ne touche qu'un sous-groupe */
+.group:has(> .item:first-child + .group) > .item:first-child > .line::after {
+  border-color: var(--color-guide-faded);
+}
+
+/* Texte : chevron devant, lien après */
+.text {
+  position: relative;
+  min-width: 0;
+  padding-left: calc(var(--icon) + 0.125rem);
+}
+
+/* Ce qui distingue les types : seulement le texte. Titres tout en capitales, quelle que soit la
+   casse imprimée. */
 .text-section {
   font-weight: 600;
-  font-variant: small-caps;
   letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 .text-out_of_scope {
   color: var(--color-muted);
 }
 
-/* titre et hors champ : une ligne, « … » si le texte est long (entier dans la fiche) */
-.text-section,
-.text-out_of_scope {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
+/* titre et hors champ : « … » sur l'intitulé seul, pour laisser la place au lien */
+.text-section .label,
+.text-out_of_scope .label {
+  display: inline-block;
+  max-width: calc(100% - 1.75rem);
+  vertical-align: top;
 }
 
-.text-section,
-.text-section .printed,
-.text-out_of_scope,
-.text-out_of_scope .printed {
-  white-space: nowrap;
+.icon {
+  width: var(--icon);
+  height: var(--icon);
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.chevron {
+  position: absolute;
+  left: -0.125rem;
+  top: calc((1lh - var(--icon)) / 2);
+  color: var(--color-muted);
+}
+
+.item[open] > .line .chevron {
+  transform: rotate(90deg);
+}
+
+/* Lien vers la nouvelle sélection : icône dans le fil du texte (en flex, les marges négatives
+   des champs faussaient la largeur sous Firefox), visible au survol de l'élément, quand il est
+   ouvert ou au focus clavier (opacity : il reste atteignable au clavier) */
+.own-page {
+  display: inline-flex;
+  vertical-align: -0.2rem;
+  margin-left: var(--space-1);
+  padding: 0.1875rem;
+  border-radius: 0.25rem;
+  color: var(--color-muted);
+  opacity: 0;
+}
+
+.own-page:hover,
+.own-page:focus-visible {
+  background: var(--color-text);
+  color: var(--color-background);
+}
+
+.item:hover > .line .own-page,
+.item[open] > .line .own-page,
+.own-page:focus-visible {
+  opacity: 1;
 }
 
 /* page : l'information la moins importante, en petit, tout à droite */
@@ -273,31 +412,4 @@ a {
   font-size: var(--size-small);
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
-}
-
-/* Open : pastille, visible au survol de l'élément, quand il est ouvert ou au focus clavier
-   (opacity et non visibility : elle reste atteignable au clavier) ; sa colonne garde sa
-   place. Zone de clic généreuse, pour ne pas déplier par erreur. */
-.open {
-  justify-self: center;
-  padding: 0.15rem 0.7rem;
-  border-radius: 999px;
-  background: var(--color-background);
-  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.18);
-  font-size: var(--size-small);
-  line-height: 1.4;
-  text-decoration: none;
-  opacity: 0;
-}
-
-.open:hover,
-.open:focus-visible {
-  background: var(--color-text);
-  color: var(--color-background);
-}
-
-.item:hover > .line .open,
-.item[open] > .line .open,
-.open:focus-visible {
-  opacity: 1;
 }

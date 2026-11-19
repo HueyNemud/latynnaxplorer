@@ -72,9 +72,41 @@ Choix validés :
   ligne.
 - Composition, états, couleurs, Open : `docs/composants/noeud-liste.md` et
   `docs/DECISIONS.md` (19 novembre).
-- Aucune nouvelle dépendance ; `nuqs` reste au sprint 6.
+- Aucune nouvelle dépendance ; `nuqs` reste au sprint 7.
 - Sélection d'un seul nœud montrée comme toute sélection (ses cartes de
   contexte, sa ligne dépliée).
+
+## Sprint 6 : la vue Liste à plat, guides de niveau (PR #16)
+
+But : une liste plate, plus légère que les cartes emboîtées, où l'on voit
+où l'on en est : la hiérarchie se lit par des filets verticaux à gauche
+(guides de niveau, *indent guides*), rattachés aux titres fixés.
+
+- Maquette d'abord (`app/maquette/`, non versionnée, supprimée à
+  l'implémentation), sur les rubriques du sprint 5 : « III.e Mairie » et
+  « Administration générale des Postes ». Revue à l'écran, Chromium et
+  Firefox.
+- Puis fiche de composant (`docs/composants/noeud-liste.md`) et décision
+  (`docs/DECISIONS.md`) qui remplace les cartes emboîtées ; implémentation
+  dans `NodeList.tsx` et `globals.css` ; mêmes vérifications qu'au
+  sprint 5.
+
+Choix validés :
+
+- Une seule couleur pour tous les guides de niveau.
+- Les cartes restent, mais seulement autour d'un élément (ligne et fiche) :
+  invisibles au repos, fond au survol, en relief une fois dépliées.
+- Maquette arrêtée (détail dans `docs/composants/noeud-liste.md` et
+  `docs/DECISIONS.md`) : guides coudés terminés par une boule, chevron,
+  lien en icône à la place d'Open, titres en capitales, sujet en petites
+  capitales, Fira Sans. L'intitulé le long du guide a été essayé et écarté.
+- Réglages après implémentation : seul le guide de la section la plus
+  proche reste foncé, les autres sont estompés ; fil d'Ariane en fin de
+  fiche, sur une ligne.
+- Inchangés : un seul `<details>` par nœud, sans script ; fiche dépliée ;
+  aucune nouvelle dépendance. Les colonnes passent à texte | page (le lien
+  suit le texte). La couleur ne porte jamais seule l'information (retrait,
+  régions nommées).
 
 ## Hors sprint : demande à numrev
 
@@ -82,7 +114,7 @@ Choix validés :
 gardent des marques Markdown (`##` au milieu, `\` final). À transmettre
 par l'utilisateur ; rien n'est contourné ici.
 
-## Sprint 6 : sélectionner par le contenu
+## Sprint 7 : sélectionner par le contenu
 
 But : une porte d'entrée sans uuid.
 
@@ -95,7 +127,7 @@ But : une porte d'entrée sans uuid.
   de nœuds ; la pagination de la vue Liste (`docs/IDEES.md`, mesures du
   sprint 5) pourrait devenir nécessaire.
 
-## Sprint 7 : exporter
+## Sprint 8 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (section suivante).
