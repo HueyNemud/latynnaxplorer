@@ -152,8 +152,8 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 - **Cocher** prend la rubrique avec tout son sous-arbre : les cases de ses
   descendants sont **couvertes**, cochées et grisées (`disabled` natif) ; la
   décocher les réactive, décochées.
-- **Dépliage par défaut** : tout replié. À l'implémentation, on pourra
-  déplier le chemin des rubriques cochées (à décider alors).
+- **Dépliage à l'arrivée** : le chemin des rubriques cochées est déplié,
+  le reste replié.
 
 | État | Rendu |
 |---|---|
@@ -214,15 +214,16 @@ Jetons existants (`app/globals.css`, voir `docs/composants/noeud-liste.md`) :
 
 ## Accessibilité
 
-- **Régions** : la colonne des panneaux est nommée « Selection » ; chaque
-  panneau est une `<section>` nommée par son titre.
+- **Régions** : les panneaux sont dans une `<section>` nommée « Selection » ;
+  chaque panneau est une `<section>` nommée par son titre.
 - **Bande** : bouton natif, `aria-expanded`, `aria-controls` vers le contenu
   du panneau ; infobulle « Collapse Volumes » / « Expand Volumes ».
 - **Vignette** : bouton natif, `aria-pressed` (volume au focus), nom
   « Show the contents of 1807 1807_AD75-PER292 ».
 - **Coche ronde** : case native, nom « Select 1807 1807_AD75-PER292 ».
 - **Arbre** : listes emboîtées et `<details>` natifs (rôle, état, clavier) ;
-  chaque case nommée par l'intitulé de sa rubrique. Case dans un `summary` :
+  chaque case nommée par l'intitulé de sa rubrique, chaque `summary` par
+  l'intitulé seul (`aria-labelledby`), sans la case ni le décompte. Case dans un `summary` :
   élément interactif dans un autre, comme le lien de la Liste ; accepté, à
   tester avec un lecteur d'écran.
 - **Couverte** : `disabled` natif, annoncé comme « indisponible » ; la raison
@@ -272,5 +273,5 @@ Sprint 8 :
 - **Lecteur d'écran réel** : case dans un `summary`, case couverte.
 - **Focus dans Contents** : une rubrique pourrait avoir le focus (atteindre
   sa place dans la vue) ; pas dans ce sprint.
-- **Dépliage de l'arbre à l'arrivée** : tout replié, ou le chemin des
-  rubriques cochées.
+- **Poids de l'arbre** : rendu entier, branches repliées comprises
+  (`docs/IDEES.md`).

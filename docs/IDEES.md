@@ -71,6 +71,23 @@ plusieurs volumes en base.
   Leviers notés : moins d'éléments par ligne, coût de `next/link`, fiche
   rendue au premier dépliage (un peu de JavaScript), `content-visibility`.
 
+## Poids de l'arbre des rubriques
+
+- Sprint 8 : Contents rend l'arbre entier du volume au focus (603
+  rubriques de 1807, branches repliées comprises) et passe toutes les
+  rubriques au composant client. Page par défaut (une entrée) : 415 Ko,
+  69 Ko compressés, dont 272 Ko de HTML pour l'arbre et environ 119 Ko de
+  données ; 53 ms en production.
+- Pistes si les volumes se multiplient : ne rendre que les branches
+  dépliées (le reste au dépliage), ne passer au client que les données (et
+  rendre l'arbre côté client seulement), ou charger l'arbre d'un volume au
+  focus seulement.
+
+## Facettes sur écran étroit
+
+- Les panneaux ouverts prennent 34,5 rem : sur un téléphone, ils devraient
+  passer par-dessus la vue (tiroir), repliés par défaut. À concevoir.
+
 ## Recherche tolérante
 
 Sprint 7 : la recherche par texte est exacte (sans accents ni casse).
