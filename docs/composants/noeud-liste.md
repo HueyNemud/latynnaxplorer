@@ -58,7 +58,7 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
 │ │ › Mairies du canton de Paris.                                200   ← ligne hors champ (gris)
 │ │ ┌› TRIBUNAL DE PAIX.                                         200
 │ │ │╭ ⌄ [Juge de paix.] [M. Véron fils], [rue …, 34.] ↗         200 ╮ ← ligne ouverte :
-│ │ ││   chemin · Text · champs · Type · Source · Identifier        │   ligne + fiche,
+│ │ ││   Text · champs · Type · Source · Identifier · chemin        │   ligne + fiche,
 │ │ │╰──────────────────────────────────────────────────────────────╯   une carte en relief
 │ │ •                                                                  ← fin du groupe
 ```
@@ -73,9 +73,14 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
 - Une section, contexte compris, est un **groupe** : sa ligne de titre, puis,
   dans l'ordre du document, ses lignes et ses sous-groupes. Pas de fond, pas
   de cadre, pas d'écart entre deux lignes ni entre deux groupes.
-- **Guide** : filet de 2 px, gris foncé (`--color-guide`), à gauche du groupe,
-  de sous sa ligne de titre jusqu'à la fin du groupe, terminé par une
-  **boule** (6 px). Une seule couleur pour tous les niveaux.
+- **Guide** : filet de 2 px à gauche du groupe, de sous sa ligne de titre
+  jusqu'à la fin du groupe, terminé par une **boule** (6 px). Une seule
+  teinte pour tous les niveaux, en deux intensités : à hauteur de chaque
+  ligne, seul le guide de sa section est gris foncé (`--color-guide`) ; ceux
+  des sections englobantes sont estompés (`--color-guide-faded`) le long de
+  leurs sous-groupes. Coude et boule suivent la même règle : estompés s'ils ne
+  touchent qu'un sous-groupe (section qui ne contient que des sections, fin
+  de groupe sur un sous-groupe).
 - **Coude** : le guide part de la mi-hauteur de la ligne de titre et se coude
   (rayon 0,25 rem) vers son chevron.
 - **Retrait** : un sous-groupe est en retrait à gauche seulement, son guide
@@ -129,9 +134,12 @@ pour rester atteignable au clavier) ; fond foncé au survol. Pour un titre ou
 un hors champ trop long, la coupure « … » porte sur l'intitulé seul : l'icône
 reste visible.
 
-**Vue détaillée** : la fiche du sprint 4 (`components/NodeDetail.tsx`),
-telle quelle : chemin des rubriques, Text, champs (valeur `normalized`),
-Type, Source, Identifier. Un peu d'air sous elle (`--space-2`) avant la ligne
+**Vue détaillée** : la fiche du sprint 4 (`components/NodeDetail.tsx`) :
+Text, champs (valeur `normalized`), Type, Source, Identifier, puis le chemin
+des rubriques en dernier, sur une ligne, intitulés séparés par « › ».
+Chaque intitulé est borné (16 rem) et tronqué (« … ») s'il le faut pour
+tenir dans la largeur, sauf le dernier, la section la plus proche, toujours
+entier. Un peu d'air sous elle (`--space-2`) avant la ligne
 suivante ; aucun au-dessus, pour que la ligne cliquée ne bouge pas.
 
 ## États
@@ -157,6 +165,9 @@ changent ni au survol ni au dépliage. Pas de transition.
 - **Coude porté par le titre** : le guide est dessiné par le groupe, le coude
   par la ligne de titre, pour suivre le titre une fois fixé. Un cache, sur la
   ligne de titre, masque le guide qui continue à monter derrière elle.
+- **Guide estompé par le sous-groupe** : un sous-groupe commence au guide de
+  son parent (marge négative, contenu inchangé) et le recouvre de sa bordure
+  gauche, estompée ; coude et boule estompés par `:has()`.
 - **Profondeur** : chaque groupe porte `--depth` (contexte compris), pour la
   pile des titres. Le titre d'un groupe est son premier élément : aucune
   classe à part.
@@ -177,7 +188,8 @@ sur `--color-open` et sur les fonds pastel.
 | `--color-muted` | `#59636e` | hors champ, page, en-tête, chevron, lien, clés de la fiche |
 | `--color-background` | `#ffffff` | page, lignes, cache du coude |
 | `--color-open` | `#f6f8fa` | survol, élément ouvert (gris bleuté) |
-| `--color-guide` | `#3d434a` | guides, coudes, boules |
+| `--color-guide` | `#3d434a` | guide de la section la plus proche, coude, boule |
+| `--color-guide-faded` | `#c9ced4` | guides des sections englobantes, le long de leurs sous-groupes |
 | `--tint-subj` / `--tint-desc` / `--tint-addr` | `#b9e6ff` / `#afffe2` / `#fffca9` | fonds des champs |
 | `--shadow-raised` | contour 1 px à 14 % + ombre 4 px / 14 px à 14 % | élément ouvert |
 | `--radius-card` | `0.5rem` | ligne survolée, élément ouvert |

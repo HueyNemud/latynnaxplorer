@@ -1,5 +1,37 @@
 # Journal de développement
 
+## 2026-11-19 — Sprint 6, étape 2 : la vue Liste à plat
+
+**Fait**
+- Fira Sans servie par `next/font/google` (`app/layout.tsx`, romain et
+  italique, 400 et 600, `latin` et `latin-ext`), en tête de `--font` par
+  une variable CSS. Aucune dépendance de plus.
+- `components/NodeList.tsx` d'après la maquette : groupes (`.group`) à la
+  place des cartes, chevron, intitulé (`.label`) et lien en icône dans le
+  texte de la ligne ; colonnes texte | page. Section « Vue Liste » de
+  `app/globals.css` remplacée par celle de la maquette, sans préfixe ni
+  bloc de neutralisation ; jetons `--shadow-rest` et `--row-gap` retirés,
+  `--color-open` passé à `#f6f8fa`, jetons des guides et des icônes
+  ajoutés. Maquette supprimée (route et ligne de `.git/info/exclude`).
+- Réglages après revue : guides des sections englobantes estompés le long
+  de leurs sous-groupes (seul le guide de la section la plus proche reste
+  foncé) ; fil d'Ariane de la fiche en dernier, sur une ligne, intitulés
+  tronqués sauf le plus proche. Fiche de composant et décisions à jour.
+- Vérifications : Biome, `tsc`, `next build` ; capture de « III.e Mairie »
+  identique au pixel à celle de la maquette (Chromium) ; élément ouvert et
+  titres empilés au défilement sous Chromium et Firefox ; arbre
+  d'accessibilité de Chromium inchangé depuis la maquette. Après les
+  réglages : raccords gris / foncé nets au gros plan et fiche identique
+  sous Chromium et Firefox.
+
+**Pièges relevés**
+- Biome (`noDescendingSpecificity`) veut les règles qui surchargent un
+  pseudo-élément après la règle de base.
+
+**Questions ouvertes**
+- Lien dans le `summary` (élément interactif imbriqué), titres annoncés en
+  capitales : toujours à tester avec un vrai lecteur d'écran.
+
 ## 2026-11-19 — Sprint 6, étape 1 : maquette de la vue Liste à plat
 
 **Fait**
