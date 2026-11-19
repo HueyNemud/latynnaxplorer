@@ -1,10 +1,11 @@
-// Scénario 1 (docs/SCENARIOS.md) sur la fixture : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } }, dans
+// Scénarios 1 et 2 (docs/SCENARIOS.md) sur la fixture : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } }, dans
 // l'ordre de lecture T1, E3, T2, E1, E2, O1 (scripts/fixture.ts). E1 a deux empans, E2 est sur
 // deux pages, E3 n'a pas d'ancre.
 
 import { afterAll, describe, expect, inject, it } from "vitest";
 import { E1, E2, E3, O1, T1, T2 } from "../../scripts/fixture.ts";
 import { connect } from "../db/client.ts";
+import type { Query } from "./query.ts";
 import { context, inducedArcs, NodeNotFoundError, resolve, type SelectedNode } from "./resolve.ts";
 
 const sql = connect(inject("databaseUrl"));
@@ -107,6 +108,46 @@ describe("resolve, sous-arbre", () => {
   it("refuse un nœud inconnu", async () => {
     const unknown = "99999999-0000-0000-0000-000000000000";
     await expect(resolve(sql, { subtree: unknown })).rejects.toThrow(NodeNotFoundError);
+  });
+});
+
+describe("resolve, texte", () => {
+  const ids = async (query: Query) => (await resolve(sql, query)).nodes.map((n) => n.id);
+
+  it("rend les nœuds de tout type qui contiennent le texte, et les arcs entre eux", async () => {
+    const { nodes, arcs } = await resolve(sql, { text: "rue" });
+    expect(nodes.map((n) => n.id)).toEqual([E1, E2]);
+    expect(nodes[0]?.spans).toHaveLength(2);
+    expect(arcs).toEqual([{ source: E1, target: E2, kind: "follows" }]);
+    expect(await ids({ text: "rubrique" })).toEqual([T2]);
+    expect(await ids({ text: "almanach" })).toEqual([O1]);
+  });
+
+  it("cherche la phrase entière, sans tenir compte des accents ni de la casse", async () => {
+    expect(await ids({ text: "RUE DE LA PÂIX" })).toEqual([E1]);
+    expect(await ids({ text: "Paix rue" })).toEqual([]);
+  });
+
+  it("ne tolère pas les fautes", async () => {
+    expect(await ids({ text: "Dupond" })).toEqual([]);
+  });
+
+  it("prend « % », « _ » et « \\ » à la lettre", async () => {
+    expect(await ids({ text: "%" })).toEqual([]);
+    expect(await ids({ text: "D_pont" })).toEqual([]);
+    expect(await ids({ text: "\\" })).toEqual([]);
+  });
+
+  it("se combine avec le sous-arbre", async () => {
+    expect(await ids({ subtree: T1, text: "Durand" })).toEqual([E3]);
+    expect(await ids({ subtree: T2, text: "Durand" })).toEqual([]);
+  });
+
+  it("refuse un sous-arbre inconnu, même sans résultat", async () => {
+    const unknown = "99999999-0000-0000-0000-000000000000";
+    await expect(resolve(sql, { subtree: unknown, text: "rue" })).rejects.toThrow(
+      NodeNotFoundError,
+    );
   });
 });
 

@@ -5,7 +5,8 @@ export default function BadRequest() {
     <>
       <h1>Invalid query</h1>
       <p>
-        The <code>subtree</code> parameter must be given once, as a node identifier (UUID).
+        The <code>subtree</code> and <code>text</code> parameters may each be given once;{" "}
+        <code>subtree</code> must be a node identifier (UUID).
       </p>
     </>
   );

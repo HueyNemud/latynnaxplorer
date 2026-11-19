@@ -23,12 +23,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
   const root = subgraph.nodes.find((n) => n.id === query.subtree);
   return (
     <>
-      {/* titre pour les lecteurs d'écran : le texte du nœud désigné */}
+      {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché */}
       <h1 className="visually-hidden" lang="fr">
-        {root &&
-          segments(root.text, [])
-            .map((s) => s.text)
-            .join("")}
+        {root
+          ? segments(root.text, [])
+              .map((s) => s.text)
+              .join("")
+          : query.text}
       </h1>
       <NodeList context={sections} nodes={subgraph.nodes} />
     </>

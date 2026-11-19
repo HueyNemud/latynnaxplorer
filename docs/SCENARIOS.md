@@ -35,3 +35,33 @@ descendants, récursivement (sous-rubriques, entrées, éléments hors champ).
 invalide) ; uuid inconnu de la base.
 
 **Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`.
+
+## 2. Les nœuds qui contiennent un texte
+
+**Demande** : tous les passages qui mentionnent un nom, une activité, une
+rue.
+
+**URL** : `?text=<texte>`, seul ou avec `subtree` (les deux critères
+doivent être remplis).
+
+**Résultat** : les nœuds de tout type dont le texte contient le texte
+cherché, comme une phrase entière, sans tenir compte des accents ni de la
+casse.
+
+- Pas de tolérance aux fautes : « Lefevre » ne trouve pas « Lefebvre ».
+  La recherche floue par trigrammes, essayée sur 1807, ramenait trop de
+  bruit (« paix » trouvait « Paille »).
+- `%`, `_` et `\` sont pris à la lettre.
+- Blancs en tête et en fin retirés, blancs intérieurs réduits à une
+  espace ; un texte vide ne filtre rien (un formulaire vide envoie
+  `text=`). Sans aucun critère, la page redirige vers la sélection par
+  défaut.
+- Nœuds, arcs et ordre comme au scénario 1 ; une sélection vide n'est pas
+  une erreur.
+- Servi par l'index trigrammes de `node.text` (« rue de la Paix » : 3 ms ;
+  « rue », 17 402 nœuds : 50 ms, en SQL).
+
+**Erreurs** : paramètre répété ; avec `subtree`, celles du scénario 1
+(un `subtree` inconnu reste une erreur, même sans résultat).
+
+**Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`.

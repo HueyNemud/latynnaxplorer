@@ -1,13 +1,16 @@
 // Requête : ce que l'utilisateur demande, lisible depuis l'URL et réécrite à l'identique.
 // Les noms de paramètres sont en anglais (application internationale).
-// Filtres et scénarios : docs/SCENARIOS.md.
+// Filtres et scénarios : docs/SCENARIOS.md. Les critères présents se combinent (conjonction) ;
+// sans critère, la requête est vide (proxy.ts la remplace par la sélection par défaut).
 
 export interface Query {
   /** Scénario 1 : uuid du nœud dont on veut tout le sous-arbre, lui compris. */
-  subtree: string;
+  subtree?: string;
+  /** Scénario 2 : texte que le nœud doit contenir, sans tenir compte des accents ni de la casse. */
+  text?: string;
 }
 
-/** Requête invalide : paramètre absent, répété ou mal formé. */
+/** Requête invalide : paramètre répété ou mal formé. */
 export class QueryError extends Error {
   override name = "QueryError";
 }
@@ -17,15 +20,29 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /** Lit la requête dans les paramètres d'une URL ; les paramètres inconnus sont ignorés. */
 export function parseQuery(params: URLSearchParams): Query {
-  const values = params.getAll("subtree");
-  const [value] = values;
-  if (value === undefined) throw new QueryError("paramètre « subtree » absent");
-  if (values.length > 1) throw new QueryError("paramètre « subtree » répété");
-  if (!UUID.test(value)) throw new QueryError(`« subtree » n'est pas un uuid : ${value}`);
-  return { subtree: value.toLowerCase() };
+  const query: Query = {};
+  const subtree = single(params, "subtree");
+  if (subtree !== undefined) {
+    if (!UUID.test(subtree)) throw new QueryError(`« subtree » n'est pas un uuid : ${subtree}`);
+    query.subtree = subtree.toLowerCase();
+  }
+  // Blancs réduits à une espace ; vide, le texte ne filtre rien (un formulaire envoie « text= »).
+  const text = single(params, "text")?.trim().replace(/\s+/g, " ");
+  if (text) query.text = text;
+  return query;
+}
+
+/** Valeur d'un paramètre donné au plus une fois. */
+function single(params: URLSearchParams, name: string): string | undefined {
+  const values = params.getAll(name);
+  if (values.length > 1) throw new QueryError(`paramètre « ${name} » répété`);
+  return values[0];
 }
 
 /** Écrit la requête en paramètres d'URL ; parseQuery la relit à l'identique. */
 export function serializeQuery(query: Query): URLSearchParams {
-  return new URLSearchParams({ subtree: query.subtree });
+  const params = new URLSearchParams();
+  if (query.subtree !== undefined) params.set("subtree", query.subtree);
+  if (query.text !== undefined) params.set("text", query.text);
+  return params;
 }
