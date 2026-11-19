@@ -44,6 +44,15 @@ plusieurs volumes en base.
   `next_entry_id` : 7,6 ms).
 - Coût : une colonne de plus, et une hypothèse sur numrev dans le modèle.
 
+## Pagination de la vue Liste
+
+- Sprint 5 : tout est rendu, même le plus gros sous-arbre de 1807
+  (13 737 nœuds).
+- À reprendre si le rendu devient lent (plusieurs volumes, sélections plus
+  larges) : paginer, ou `content-visibility: auto` en CSS. La
+  virtualisation est déconseillée (une dépendance, mal accordée aux groupes
+  emboîtés, Ctrl+F cassé).
+
 ## État de la requête dans le navigateur : `nuqs`
 
 - Prévu par le brief, reporté au sprint 3 (`docs/DECISIONS.md`) : rien ne

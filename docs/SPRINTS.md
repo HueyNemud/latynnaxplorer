@@ -21,9 +21,7 @@ code (périmètre, dépendances, choix discutables).
   profils, domaines, sélection et vues orthogonales, fonctionnalités,
   représentations d'un nœud, principes d'affichage), sans code.
 
-## Sprint 4 : la fiche d'un nœud (en cours)
-
-Branche `feat/fiche-noeud`, PR #14 ouverte, en attente de relecture.
+## Sprint 4 : la fiche d'un nœud (PR #14)
 
 Réalisé : fiche de composant (`docs/composants/noeud-liste.md`), `resolve`
 avec empans et ancres, `context`, Next.js, fiche en clés / valeurs (Text,
@@ -52,25 +50,37 @@ Choix validés au début du sprint :
   avec les images IIIF.
 - Requête mal formée : 400 ; uuid inconnu : 404.
 
-## Sprint 5 : la vue Liste
+## Sprint 5 : la vue Liste (en cours)
+
+Branche `feat/vue-liste`.
 
 But : une sélection de plusieurs nœuds, en densité compacte, dans son
 contexte.
 
-- Densité compacte : le texte souligné du sprint 4 (champs soulignés de la
-  couleur de leur libellé, nom `subj` / `desc` / `loc` sous le trait).
-  Avant le code, maquette sur une vraie rubrique : garder les noms sous
-  chaque trait (interligne plus grand) ou les montrer autrement (survol,
-  légende) ; compléter `docs/composants/noeud-liste.md` (états, structure
-  de liste accessible).
-- Disposition dans l'ordre du document ; arcs `member_of` / `child_of`
-  rendus par regroupement.
-- Contexte : chemin des rubriques au-dessus de la sélection.
-- Inspecter : le focus sur une ligne montre sa fiche (le composant du
-  sprint 4) à côté, sans changer la sélection ; ouvrir une entrée (nouvelle
-  URL).
-- Performance à surveiller : le plus gros sous-arbre compte 13 737 nœuds
-  (`resolve` : 90 ms) ; rendre des milliers de lignes d'un coup ou non.
+Étapes, chacune présentée et validée avant la suivante :
+
+1. Maquette sur une vraie rubrique (captures), puis
+   `docs/composants/noeud-liste.md` complété (états, structure accessible).
+2. La liste, rendue côté serveur : ordre du document, arcs `member_of` /
+   `child_of` rendus par regroupement, chemin des rubriques au-dessus, nombre
+   de nœuds sélectionnés.
+3. Inspecter : une ligne se déplie et montre sa fiche (le composant du
+   sprint 4) juste dessous, sans changer la sélection ni l'URL ; « Open »
+   (nouvelle sélection, `?subtree=<uuid>`) est un lien dans la fiche.
+4. Journal, décisions, revue des sprints, PR.
+
+Choix validés au début du sprint :
+
+- Tout rendre, même le plus gros sous-arbre (13 737 nœuds) : pagination
+  reportée (`docs/IDEES.md`).
+- La fiche se déplie sous la ligne, comme une ligne de liste qu'on ouvre,
+  et non à côté.
+- Liste ordonnée emboîtée plutôt qu'un `tree` ARIA.
+- Aucune nouvelle dépendance ; `nuqs` reste au sprint 6 (l'inspection
+  n'est pas dans l'URL).
+
+À trancher sur la maquette : noms `subj` / `desc` / `loc` sous le trait ou
+autrement ; rendu des titres de section et du hors champ.
 
 ## Hors sprint : demande à numrev
 
