@@ -1,5 +1,51 @@
 # Journal de développement
 
+## 2026-11-19 — Sprint 6, étape 1 : maquette de la vue Liste à plat
+
+**Fait**
+- PR #15 (sprint 5) fusionnée ; sprint 6 inséré (la recherche passe au
+  sprint 7, l'export au sprint 8) ; branche `feat/liste-guides`.
+- Maquette sur les rubriques du sprint 5 (route `app/maquette/`, non
+  versionnée : exclue par `.git/info/exclude`, supprimée à
+  l'implémentation). `FlatList.tsx` copie `NodeList.tsx` ; `maquette.css` est
+  écrit comme la future section « Vue Liste » de `globals.css` (préfixe
+  `.mq`), sauf un premier bloc qui neutralise les règles du sprint 5.
+  Revue à l'écran avec l'utilisateur, en de nombreux essais (liste en fin
+  de `docs/composants/noeud-liste.md`).
+- Résultat : liste à plat, guides de niveau (2 px, gris foncé, coude vers
+  le titre, boule à la fin), titres fixés et empilés en capitales grasses,
+  lignes jointives précédées d'un chevron, survol en `#f6f8fa`, lien vers
+  sa propre page en icône après le texte, sujet en petites capitales,
+  champs surlignés comme au sprint 5, Fira Sans.
+- CSS de la maquette élagué (275 → 183 lignes, rendu inchangé).
+- Vérifié sous Chromium et Firefox (raccord du coude, épaisseurs mesurées
+  au pixel, passage à la ligne) ; arbre d'accessibilité de Chromium : lien
+  décrit par le texte de sa ligne (`aria-describedby`).
+- Fiche de composant réécrite, `docs/DESIGN.md` revu, idée de réglages des
+  couleurs de champs dans `docs/IDEES.md`.
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (19 novembre, sprint 6) : liste à plat et
+  guides, états, chevron et lien, texte des titres et du sujet, Fira Sans.
+
+**Pièges relevés**
+- `calc()` refuse un `0` sans unité dans une somme (`0rem`).
+- Firefox fond la marge haute d'un premier enfant dans celle du groupe :
+  le coude se décalait (plus de marge entre les lignes, plus de souci).
+- 1,5 px s'affiche sur 1 ou 2 pixels selon la position : épaisseurs
+  entières.
+- Firefox sous-estime la largeur d'un texte dont les champs ont des marges
+  négatives (passage à la ligne prématuré en flexbox) : lien placé dans le
+  fil du texte.
+
+**Prochaine étape**
+- Implémenter : `components/NodeList.tsx` et section « Vue Liste » de
+  `app/globals.css` d'après la maquette ; `next/font/google` pour Fira Sans
+  dans `app/layout.tsx` ; jetons retirés (`--tint-*` gardés,
+  `--shadow-rest`, `--row-gap` retirés) ; supprimer la maquette ; mêmes
+  vérifications qu'au sprint 5 (`next build`, arbre d'accessibilité,
+  Firefox).
+
 ## 2026-11-19 — Sprint 5, étapes 2 à 4 : la vue Liste
 
 **Fait**

@@ -95,9 +95,11 @@ Choix validés :
 
 - Une seule couleur pour tous les guides de niveau.
 - Les cartes restent, mais seulement autour d'un élément (ligne et fiche) :
-  invisibles au repos, soulevées au survol, grèges une fois dépliées.
-- À essayer : l'intitulé des rubriques écrit le long de leur guide, si
-  c'est lisible.
+  invisibles au repos, fond au survol, en relief une fois dépliées.
+- Maquette arrêtée (détail dans `docs/composants/noeud-liste.md` et
+  `docs/DECISIONS.md`) : guides coudés terminés par une boule, chevron,
+  lien en icône à la place d'Open, titres en capitales, sujet en petites
+  capitales, Fira Sans. L'intitulé le long du guide a été essayé et écarté.
 - Inchangés : un seul `<details>` par nœud, sans script ; colonnes
   texte | Open | page ; fiche dépliée ; aucune nouvelle dépendance. La
   couleur ne porte jamais seule l'information (retrait, régions nommées).
