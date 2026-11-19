@@ -100,9 +100,13 @@ Choix validés :
   `docs/DECISIONS.md`) : guides coudés terminés par une boule, chevron,
   lien en icône à la place d'Open, titres en capitales, sujet en petites
   capitales, Fira Sans. L'intitulé le long du guide a été essayé et écarté.
-- Inchangés : un seul `<details>` par nœud, sans script ; colonnes
-  texte | Open | page ; fiche dépliée ; aucune nouvelle dépendance. La
-  couleur ne porte jamais seule l'information (retrait, régions nommées).
+- Réglages après implémentation : seul le guide de la section la plus
+  proche reste foncé, les autres sont estompés ; fil d'Ariane en fin de
+  fiche, sur une ligne.
+- Inchangés : un seul `<details>` par nœud, sans script ; fiche dépliée ;
+  aucune nouvelle dépendance. Les colonnes passent à texte | page (le lien
+  suit le texte). La couleur ne porte jamais seule l'information (retrait,
+  régions nommées).
 
 ## Hors sprint : demande à numrev
 
