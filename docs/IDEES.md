@@ -75,6 +75,15 @@ Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
 - **Choix de densité** (serré, normal, aéré), hors de la liste et mémorisé.
 - **En-tête de colonnes fixé** au défilement, en tête de la pile des titres.
 
+## Réglages d'affichage des champs
+
+- Sprint 6 : les trois champs (sujet, description, adresse) restent
+  surlignés, aux couleurs du sprint 5 ; des fonds plus pâles ont été
+  essayés et écartés.
+- Plus tard : un réglage pour afficher ou masquer la couleur de chaque
+  champ (par exemple ne surligner que les sujets), mémorisé, à côté du
+  choix de densité.
+
 ## État de la requête dans le navigateur : `nuqs`
 
 - Prévu par le brief, reporté au sprint 3 (`docs/DECISIONS.md`) : rien ne
