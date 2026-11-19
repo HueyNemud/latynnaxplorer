@@ -107,7 +107,8 @@ telle quelle : chemin des rubriques, Text, champs (valeur `normalized`),
 Type, Source, Identifier.
 
 **Open** : lien vers `?subtree=<uuid>`, nouvelle sélection. Une section ouvre
-sa liste ; un autre nœud, sa fiche. Pastille (fond blanc, contour léger,
+sa liste ; un autre nœud est montré seul, déplié, dans ses cartes de contexte
+(une sélection d'un seul nœud est une sélection comme les autres). Pastille (fond blanc, contour léger,
 inversée au survol), zone de clic généreuse pour ne pas déplier par erreur.
 Visible seulement au survol de l'élément, quand il est ouvert, ou au focus
 clavier (masqué par `opacity`, pas par `visibility`, pour rester atteignable
@@ -134,7 +135,8 @@ changent ni au survol ni au dépliage. Pas de couleur dans les états.
   bas ; vue détaillée : coins bas, ombre coupée en haut, `clip-path`). Même
   règle pour tous les éléments, titres ou non.
 - **Profondeur** : chaque carte porte `--depth` (contexte compris), pour la
-  pile des titres.
+  pile des titres. Le titre d'une carte est son premier élément : aucune
+  classe à part.
 
 ## Jetons
 
@@ -208,9 +210,6 @@ petits. Disparaissent : soulignement et noms sous le trait (`--color-subj`…,
 
 ## Questions ouvertes
 
-- **Sélection d'un seul nœud** : la montrer comme toute sélection (ses cartes
-  de contexte, l'élément ouvert), plutôt que la fiche seule du sprint 4 ? Un
-  seul chemin de rendu, cohérent avec « Open ». Proposé, à valider.
 - **Poids de la page** : chaque vue détaillée est dans le HTML (repliée). À
   mesurer sur le plus gros sous-arbre ; si c'est trop lourd, la rendre au
   premier dépliage.

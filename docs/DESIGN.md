@@ -89,8 +89,9 @@ champs) est porté par toutes.
 | Frise | un repère | sa date ; plus tard, ses entrées liées | date du volume maintenant, liens plus tard |
 
 **La fiche** : une sélection d'un seul nœud est ce nœud dans toutes ses
-représentations disponibles, en densité détaillée, côte à côte. Il n'y a
-pas de page « fiche » à concevoir à part.
+représentations disponibles, en densité détaillée, côte à côte, chacune
+dans son contexte (vue Liste : ses cartes de rubriques, sa ligne dépliée).
+Il n'y a pas de page « fiche » à concevoir à part.
 
 ## Principes d'affichage
 
@@ -99,8 +100,8 @@ pas de page « fiche » à concevoir à part.
   entrées). Le contexte prend les mêmes représentations que la sélection
   (vue Liste : les rubriques ancêtres sont des cartes comme les autres),
   n'en montre que ce qui mène à elle, et n'est jamais compté dedans.
-- **Densité** : automatique par défaut (un nœud → fiche, plusieurs →
-  compacte) ; dans une vue compacte, chaque nœud peut se déplier en sa
+- **Densité** : automatique par défaut (un nœud → déplié en sa fiche,
+  plusieurs → compacte) ; dans une vue compacte, chaque nœud peut se déplier en sa
   fiche (inspecter).
 - **Vues** : une à la fois pour commencer, avec un focus pensé dès le
   départ comme partagé ; à terme, deux vues côte à côte (Liste + Page,

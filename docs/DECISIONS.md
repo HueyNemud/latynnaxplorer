@@ -2,6 +2,8 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-19 — Sélection d'un seul nœud : montrée comme toute sélection (ses cartes de contexte, sa ligne dépliée en sa fiche) ; plus de fiche seule en pleine page. Un seul chemin de rendu ; la page garde un seul `h1`, le texte du nœud désigné.
+- 2026-11-19 — `context` renvoie des nœuds complets (même type que `resolve`, ancres comprises, empans vides) au lieu de `{ id, text }` : le contexte se montre comme la sélection, toujours rendu à part.
 - 2026-11-19 — Vue Liste (`docs/composants/noeud-liste.md`) : sections en cartes emboîtées (retrait à gauche seulement, colonnes de droite alignées) ; un seul élément pour tout nœud, ligne texte | Open | page qui déplie la fiche du sprint 4 juste dessous ; titres de section fixés en haut et empilés ; deux règles d'état communes (survol : l'élément et sa carte se soulèvent ; ouvert : ligne et fiche en une carte grège en relief) ; les types ne se distinguent que par leur texte.
 - 2026-11-19 — Densité compacte : champs sur fond pastel aux coins arrondis (SUBJ `#b9e6ff` en gras, DESC `#afffe2`, ADDR `#fffca9`), sans légende. Remplace le texte souligné avec noms sous le trait (18 novembre), jugé trop chargé.
 - 2026-11-19 — Dépliage natif `<details>` / `<summary>` pour tout nœud, titres compris, sans JavaScript ; le `<details>` est rendu transparent (`display: contents`) pour que la ligne d'un titre se fixe par rapport à sa carte.

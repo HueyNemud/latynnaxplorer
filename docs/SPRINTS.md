@@ -60,14 +60,10 @@ contexte.
 Étapes, chacune présentée et validée avant la suivante :
 
 1. ~~Maquette sur une vraie rubrique, fiche de composant complétée~~ :
-   fait (`docs/composants/noeud-liste.md`). La maquette (`app/maquette/`,
-   non versionnée) sert de référence jusqu'à l'implémentation, puis est
-   supprimée.
-2. La vue Liste, d'après la fiche de composant : cartes emboîtées (contexte
-   compris), élément unique `<details>` pour tout nœud, titres fixés,
-   champs sur fond pastel, Open, en-tête « Page » ; jetons dans
-   `app/globals.css` ; `PrintedText` sans soulignement ni noms ; `context`
-   renvoie aussi les ancres des rubriques.
+   fait (`docs/composants/noeud-liste.md`) ; maquette supprimée après
+   l'implémentation.
+2. ~~La vue Liste, d'après la fiche de composant~~ : fait
+   (`components/NodeList.tsx`) ; `context` renvoie des nœuds complets.
 3. Vérifications : poids et temps de rendu du plus gros sous-arbre ;
    `display: contents` sur `<details>` (arbre d'accessibilité, Firefox) ;
    captures.
@@ -82,9 +78,8 @@ Choix validés :
 - Composition, états, couleurs, Open : `docs/composants/noeud-liste.md` et
   `docs/DECISIONS.md` (19 novembre).
 - Aucune nouvelle dépendance ; `nuqs` reste au sprint 6.
-
-À valider : sélection d'un seul nœud montrée comme toute sélection (ses
-cartes de contexte, l'élément ouvert) plutôt que la fiche seule.
+- Sélection d'un seul nœud montrée comme toute sélection (ses cartes de
+  contexte, sa ligne dépliée).
 
 ## Hors sprint : demande à numrev
 
