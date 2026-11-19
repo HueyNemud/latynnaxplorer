@@ -1,4 +1,4 @@
-// Requête lue avant la page (Next 16 : proxy, ex-middleware). Sans « subtree » : sélection par
+// Requête lue avant la page (Next 16 : proxy, ex-middleware). Sans critère : sélection par
 // défaut, faute de page d'accueil. Requête invalide : page d'erreur avec le statut 400, qu'une
 // page de l'App Router ne sait pas donner elle-même.
 
@@ -9,15 +9,12 @@ import { parseQuery, QueryError, serializeQuery } from "./lib/query/query.ts";
 const DEFAULT_QUERY = { subtree: "6867d742-fad7-5be1-81a3-423c67729033" };
 
 export function proxy(request: NextRequest): NextResponse {
-  const params = request.nextUrl.searchParams;
   const url = request.nextUrl.clone();
-  if (!params.has("subtree")) {
+  try {
+    const query = parseQuery(request.nextUrl.searchParams);
+    if (Object.keys(query).length > 0) return NextResponse.next();
     url.search = serializeQuery(DEFAULT_QUERY).toString();
     return NextResponse.redirect(url);
-  }
-  try {
-    parseQuery(params);
-    return NextResponse.next();
   } catch (error) {
     if (!(error instanceof QueryError)) throw error;
     url.pathname = "/bad-request";

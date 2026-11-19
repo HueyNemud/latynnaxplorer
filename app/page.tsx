@@ -22,12 +22,12 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     }),
     context(sql, query),
   ]);
-  // le nœud désigné est dans la sélection, ou dans le contexte s'il ne contient pas le texte
+  // le nœud désigné, s'il y en a un : dans la sélection, ou dans le contexte s'il ne contient pas
+  // le texte
   const root = [...subgraph.nodes, ...sections].find((n) => n.id === query.subtree);
   return (
     <>
-      {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon (aucun résultat) le
-          texte cherché */}
+      {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché */}
       <h1 className="visually-hidden" lang="fr">
         {root
           ? segments(root.text, [])
@@ -35,7 +35,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
               .join("")
           : query.text}
       </h1>
-      <SearchForm query={query} />
+      <SearchForm text={query.text} />
       {subgraph.nodes.length > 0 ? (
         <NodeList context={sections} nodes={subgraph.nodes} />
       ) : (

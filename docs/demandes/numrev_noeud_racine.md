@@ -9,11 +9,11 @@ Prompt destiné à un agent qui travaille dans `../adresses_revolutionnaires`
 
 Le projet voisin `../latynnaxplorer` (site d'exploration des annuaires)
 importe le livrable de `numrev export` en lecture seule, sans rien corriger :
-numrev fait foi. Une sélection y est toujours **un nœud et tout son
-sous-arbre** (rubrique, entrée ou élément hors champ, avec tous ses
-descendants), éventuellement restreinte par d'autres critères, comme une
-recherche dans le texte. Pour chercher dans tout un annuaire, il faut donc
-un nœud dont tout le volume descend.
+numrev fait foi. On y sélectionne des nœuds par des critères qui se
+combinent ; l'un d'eux est **un nœud et tout son sous-arbre** (rubrique,
+entrée ou élément hors champ, avec tous ses descendants). Pour ouvrir un
+annuaire entier, ou, plus tard, restreindre une recherche à un volume parmi
+plusieurs, il faut un nœud dont tout le volume descend.
 
 ## Constat
 
@@ -29,7 +29,7 @@ latynnaxplorer importe donc les enfants de `root` comme des nœuds sans
 parent. Dans l'export de 1807 (`1807_AD75-PER292`, exporté le 2026-10-30),
 cela fait 133 racines : 43 titres de premier niveau (« LISTES
 PARTICULIÈRES… », « NOTAIRES. », « ERRATA. »…) et 90 éléments hors champ.
-Une recherche ne peut porter, au plus, que sur l'une de ces rubriques.
+Aucun nœud ne désigne le volume entier.
 
 ## Demande
 
@@ -47,6 +47,6 @@ Une recherche ne peut porter, au plus, que sur l'une de ces rubriques.
    `parent`), et dire si le schéma (`numrev-structure/2`) change de
    version.
 
-latynnaxplorer n'a rien contourné : en attendant un nouvel export, on ne
-cherche que dans une rubrique de premier niveau au plus. À réception,
-l'import y rangera la racine comme un nœud ordinaire.
+latynnaxplorer n'a rien contourné : en attendant un nouvel export, on
+n'ouvre au plus qu'une rubrique de premier niveau. À réception, l'import
+rangera la racine comme un nœud ordinaire.

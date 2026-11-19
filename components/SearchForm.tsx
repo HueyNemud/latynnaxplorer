@@ -1,18 +1,12 @@
-// Champ de recherche (scénario 2 de docs/SCENARIOS.md) : réécrit le critère `text` de la
-// requête et garde tous les autres, par un formulaire GET natif, sans script. Indépendant de la
-// vue : toute vue (Liste, plus tard Carte, Page…) peut le poser au-dessus d'elle ; sans
-// `action`, le formulaire renvoie à la page où il est posé.
+// Champ de recherche (scénario 2 de docs/SCENARIOS.md) : commence une nouvelle sélection, les
+// nœuds de tout l'annuaire qui contiennent le texte, par un formulaire GET natif, sans script.
+// Indépendant de la vue : toute vue (Liste, plus tard Carte, Page…) peut le poser au-dessus
+// d'elle ; sans `action`, le formulaire renvoie à la page où il est posé.
 
-import { type Query, serializeQuery } from "../lib/query/query.ts";
-
-export function SearchForm({ query }: { query: Query }) {
-  const { text, ...others } = query;
+export function SearchForm({ text }: { text: string | undefined }) {
   return (
     <search className="search">
       <form method="get">
-        {[...serializeQuery(others)].map(([name, value]) => (
-          <input key={name} type="hidden" name={name} value={value} />
-        ))}
         <label htmlFor="search-text" className="visually-hidden">
           Search text
         </label>

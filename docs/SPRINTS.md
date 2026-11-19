@@ -115,8 +115,8 @@ Choix validés :
 - `docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
   gardent des marques Markdown (`##` au milieu, `\` final).
 - `docs/demandes/numrev_noeud_racine.md` : un vrai nœud racine par volume.
-  Sans lui, 1807 a 133 racines et une recherche ne porte au plus que sur
-  une rubrique de premier niveau.
+  Sans lui, 1807 a 133 racines : on ne peut ni ouvrir le volume entier, ni
+  (plus tard) le choisir dans une facette.
 
 ## Sprint 7 : sélectionner par le contenu
 
@@ -126,12 +126,13 @@ But : une porte d'entrée sans uuid.
 
 1. Requête (fait) : scénario 2 de `docs/SCENARIOS.md`, `?text=<texte>`,
    phrase entière sans accents ni casse, sur le texte de tous les nœuds
-   (index trigrammes en place), toujours dans un sous-arbre : `subtree`
-   reste obligatoire. Tests.
+   (index trigrammes en place). Tous les critères sont facultatifs et se
+   combinent (`subtree` + `text`). Tests.
 2. Contexte de résultats dispersés (fait) : les rubriques ancêtres de tous
    les résultats ; la vue Liste regroupe les résultats sous leurs rubriques
    communes. Sans changer le modèle de données.
-3. Champ de recherche : maquette, puis implémentation.
+3. Champ de recherche (fait) : composant `SearchForm`, indépendant de la
+   vue, au-dessus de la liste ; il cherche dans tout l'annuaire.
 4. Journal, décisions, revue de ce fichier.
 
 Choix validés :
@@ -146,6 +147,9 @@ Choix validés :
   (`docs/IDEES.md`).
 - Saisie par un formulaire natif (`<form method="get">`, sans script) :
   `nuqs` reporté de nouveau.
+- La recherche porte sur tout l'annuaire, pas sur la rubrique ouverte
+  (essayé, jugé déroutant) : chaque point d'entrée commence une nouvelle
+  sélection. Choisir les rubriques où chercher viendra avec une facette.
 - Surlignage des correspondances hors sprint (`docs/IDEES.md`).
 
 ## Sprint 8 : exporter

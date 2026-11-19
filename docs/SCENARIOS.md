@@ -4,6 +4,11 @@ Chaque scénario décrit ce qu'un utilisateur demande et ce qu'il obtient.
 Il donne un filtre de `lib/query/` et au moins un test. Les filtres doivent
 pouvoir se combiner : un scénario n'est pas une fonction à part.
 
+Tous les critères sont facultatifs ; ceux qui sont présents se combinent
+(conjonction), sans cas particulier. Sans aucun critère, la page redirige
+vers une sélection par défaut. Chaque point d'entrée de l'interface (lien
+d'un nœud, champ de recherche) commence une nouvelle sélection.
+
 Principe : sans filtre explicite, le résultat contient tout ce que la
 requête désigne, quel que soit le type de nœud. `lib/query/` fait
 confiance aux données et ne décide pas de ce qui est pertinent.
@@ -36,17 +41,19 @@ invalide) ; uuid inconnu de la base.
 
 **Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`.
 
-## 2. Les nœuds d'un sous-arbre qui contiennent un texte
+## 2. Les nœuds qui contiennent un texte
 
-**Demande** : dans une rubrique, tous les passages qui mentionnent un nom,
-une activité, une rue.
+**Demande** : tous les passages de l'annuaire qui mentionnent un nom, une
+activité, une rue.
 
-**URL** : `?subtree=<uuid>&text=<texte>`. On cherche toujours dans un
-sous-arbre : `text` restreint le scénario 1, il ne s'emploie pas seul.
+**URL** : `?text=<texte>` ; avec `subtree`, la recherche est restreinte à
+ce sous-arbre (conjonction des deux critères). Le champ de recherche
+(`components/SearchForm.tsx`) envoie `text` seul : il cherche dans tout
+l'annuaire. Plus tard, une facette choisira les rubriques où chercher.
 
-**Résultat** : les nœuds du sous-arbre, de tout type, dont le texte
-contient le texte cherché, comme une phrase entière, sans tenir compte des
-accents ni de la casse.
+**Résultat** : les nœuds de tout type dont le texte contient le texte
+cherché, comme une phrase entière, sans tenir compte des accents ni de la
+casse.
 
 - Pas de tolérance aux fautes : « Lefevre » ne trouve pas « Lefebvre ».
   La recherche floue par trigrammes, essayée sur 1807, ramenait trop de
@@ -58,15 +65,13 @@ accents ni de la casse.
 - Nœuds, arcs et ordre comme au scénario 1 ; une sélection vide n'est pas
   une erreur.
 - Contexte : les rubriques ancêtres des résultats qui n'en font pas
-  partie, chacune une fois, dans l'ordre de lecture ; le nœud désigné en
-  est, s'il ne contient pas le texte, avec les rubriques entre lui et les
-  résultats. Vide sans résultat.
+  partie, chacune une fois, dans l'ordre de lecture. Vide sans résultat.
 - Servi par l'index trigrammes de `node.text`, puis restreint au
-  sous-arbre (raison dans `lib/query/resolve.ts`). Dans la plus grosse
-  rubrique de 1807, `resolve` en entier : « rue de la Paix » 2 ms,
-  « rue » (11 296 nœuds) 120 ms.
+  sous-arbre s'il est donné (raison dans `lib/query/resolve.ts`). Sur
+  1807, `resolve` : « rue de la Paix » (8 nœuds) 1 à 2 ms, « rue »
+  (17 402) 175 ms ; `context` en parallèle : 2 ms et 105 ms.
 
-**Erreurs** : celles du scénario 1, plus `text` répété ; un `subtree`
-inconnu reste une erreur, même sans résultat.
+**Erreurs** : paramètre répété ; avec `subtree`, celles du scénario 1 (un
+`subtree` inconnu reste une erreur, même sans résultat).
 
 **Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`.
