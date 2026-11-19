@@ -1,13 +1,26 @@
-// Champ de recherche (scénario 2 de docs/SCENARIOS.md) : commence une nouvelle sélection, les
-// nœuds de tout l'annuaire qui contiennent le texte, par un formulaire GET natif, sans script.
-// Indépendant de la vue : toute vue (Liste, plus tard Carte, Page…) peut le poser au-dessus
-// d'elle ; sans `action`, le formulaire renvoie à la page où il est posé, et le lien qui efface
-// la recherche aussi.
+// Formulaire de la requête (scénarios 1 et 2 de docs/SCENARIOS.md) : le champ de recherche, et
+// les cases des facettes qui s'y rattachent par l'attribut `form` (components/Facets.tsx). GET
+// natif, sans script : Entrée envoie le texte et les rubriques cochées ; sans rubrique cochée,
+// la recherche porte sur tout l'annuaire. Indépendant de la vue : toute vue (Liste, plus tard
+// Carte, Page…) peut le poser au-dessus d'elle ; sans `action`, il renvoie à la page où il est
+// posé, et le lien qui efface la recherche aussi.
 
-export function SearchForm({ text }: { text: string | undefined }) {
+import { serializeQuery } from "../lib/query/query.ts";
+
+/** Identifiant du formulaire de la requête, auquel les cases des facettes se rattachent. */
+export const QUERY_FORM = "query";
+
+export function SearchForm({
+  text,
+  subtree,
+}: {
+  text: string | undefined;
+  /** rubriques de la sélection affichée : effacer la recherche les garde */
+  subtree?: readonly string[];
+}) {
   return (
     <search className="search">
-      <form className="search-form" method="get">
+      <form id={QUERY_FORM} className="search-form" method="get">
         <svg className="icon search-icon" viewBox="0 0 16 16" aria-hidden="true">
           <circle cx="7" cy="7" r="4.5" />
           <path d="m10.5 10.5 3 3" />
@@ -27,9 +40,14 @@ export function SearchForm({ text }: { text: string | undefined }) {
           autoComplete="off"
           spellCheck={false}
         />
-        {/* effacer la recherche : la même page sans critère, donc la sélection par défaut */}
+        {/* effacer la recherche : la même sélection sans le texte (sans rien : la sélection par
+            défaut) */}
         {text !== undefined && (
-          <a className="search-clear" href="?" title="Clear search">
+          <a
+            className="search-clear"
+            href={`?${serializeQuery(subtree ? { subtree } : {})}`}
+            title="Clear search"
+          >
             <svg className="icon" viewBox="0 0 16 16" aria-hidden="true">
               <path d="m4.5 4.5 7 7m0-7-7 7" />
             </svg>
