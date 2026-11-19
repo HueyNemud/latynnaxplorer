@@ -11,7 +11,10 @@
   --tint-desc: #afffe2;
   --tint-addr: #fffca9;
 
-  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* Fira Sans chargée par next/font (app/layout.tsx), pour ses vraies petites capitales */
+  --font:
+    var(--font-fira), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    sans-serif;
   --size-small: 0.875rem;
 
   --space-1: 0.25rem;
