@@ -1,5 +1,5 @@
 // Fiche d'un nœud dans la vue Liste : densité détaillée, en clé / valeur — texte, champs,
-// métadonnées (docs/composants/noeud-liste.md). Le texte souligné est la densité compacte.
+// métadonnées — dépliée sous sa ligne (docs/composants/noeud-liste.md).
 
 import Link from "next/link";
 import { serializeQuery } from "../lib/query/query.ts";
@@ -10,7 +10,6 @@ import type {
   SpanLabel,
   SubgraphNode,
 } from "../lib/query/resolve.ts";
-import { segments } from "../lib/text/segments.ts";
 import { PrintedText } from "./PrintedText.tsx";
 
 const KIND_LABELS: Record<NodeKind, string> = {
@@ -41,12 +40,6 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Con
           </ol>
         </nav>
       )}
-      {/* titre pour les lecteurs d'écran ; à l'écran, le texte est la première valeur */}
-      <h1 className="visually-hidden" lang="fr">
-        {segments(node.text, [])
-          .map((s) => s.text)
-          .join("")}
-      </h1>
       <dl>
         <div>
           <dt>Text</dt>

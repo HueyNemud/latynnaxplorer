@@ -1,11 +1,11 @@
-// La sélection désignée par l'URL, dans la vue Liste. Densité automatique : un nœud → sa fiche ;
-// plusieurs → leur nombre, en attendant la vue Liste (sprint 5).
+// La sélection désignée par l'URL, dans la vue Liste, entourée de son contexte.
 
 import { notFound } from "next/navigation";
-import { NodeDetail } from "../components/NodeDetail.tsx";
+import { NodeList } from "../components/NodeList.tsx";
 import { db } from "../lib/db/server.ts";
 import { parseQuery } from "../lib/query/query.ts";
 import { context, NodeNotFoundError, resolve } from "../lib/query/resolve.ts";
+import { segments } from "../lib/text/segments.ts";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -20,13 +20,18 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     }),
     context(sql, query),
   ]);
-  const [node] = subgraph.nodes;
-  if (subgraph.nodes.length === 1 && node) return <NodeDetail node={node} context={sections} />;
+  const root = subgraph.nodes.find((n) => n.id === query.subtree);
   return (
-    <p>
-      {subgraph.nodes.length.toLocaleString("en")} nodes selected. The List view, which will show
-      them, is not available yet.
-    </p>
+    <>
+      {/* titre pour les lecteurs d'écran : le texte du nœud désigné */}
+      <h1 className="visually-hidden" lang="fr">
+        {root &&
+          segments(root.text, [])
+            .map((s) => s.text)
+            .join("")}
+      </h1>
+      <NodeList context={sections} nodes={subgraph.nodes} />
+    </>
   );
 }
 
