@@ -50,7 +50,7 @@ export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: S
         <span />
         <span className="page">Page</span>
       </div>
-      <div className="selection">{children.get(null)?.map((n) => render(n, []))}</div>
+      {children.get(null)?.map((n) => render(n, []))}
     </>
   );
 }
