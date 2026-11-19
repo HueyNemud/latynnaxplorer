@@ -120,6 +120,12 @@ Choix validés :
 
 ## Sprint 7 : sélectionner par le contenu
 
+Réalisé : recherche par texte dans tout l'annuaire (`?text=`, exacte,
+sans accents ni casse), critères tous facultatifs et combinables,
+résultats regroupés sous toutes leurs rubriques, champ de recherche
+réutilisable (`components/SearchForm.tsx`) ; demande à numrev pour un vrai
+nœud racine. Détail dans `docs/JOURNAL.md`.
+
 But : une porte d'entrée sans uuid.
 
 Étapes, validées une à une :
@@ -133,7 +139,7 @@ But : une porte d'entrée sans uuid.
    communes. Sans changer le modèle de données.
 3. Champ de recherche (fait) : composant `SearchForm`, indépendant de la
    vue, au-dessus de la liste ; il cherche dans tout l'annuaire.
-4. Journal, décisions, revue de ce fichier.
+4. Journal, décisions, revue de ce fichier (fait).
 
 Choix validés :
 
@@ -166,7 +172,9 @@ pratique standard plutôt qu'un formalisme ad hoc (OpenAPI ou plus récent,
 
 ## Plus tard (non planifié)
 
-Vues Page (IIIF), Carte et Frise, avec leurs critères (page, zone,
-période) ; géocodage ; liens temporels, autres annuaires et « suivre » ;
+Facette des rubriques (choisir les rubriques où chercher : `subtree` +
+`text`, déjà valide dans l'URL) ; recherche par champ (sujet, activité,
+adresse) ; surlignage des correspondances. Vues Page (IIIF), Carte et
+Frise, avec leurs critères (page, zone, période) ; géocodage ; liens temporels, autres annuaires et « suivre » ;
 deux vues côte à côte ; idées de performance (`docs/IDEES.md`). Chacun
 aura son sprint, proposé le moment venu.

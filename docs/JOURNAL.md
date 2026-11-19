@@ -1,5 +1,47 @@
 # Journal de développement
 
+## 2026-11-19 — Sprint 7 : sélectionner par le contenu
+
+**Fait**
+- PR #16 (sprint 6) fusionnée ; branche `feat/recherche`, étapes et choix
+  validés (`docs/SPRINTS.md`).
+- Recherche par texte (`?text=`, scénario 2 de `docs/SCENARIOS.md`) :
+  phrase entière, exacte, sans accents ni casse, sur l'index trigrammes en
+  place ; `%`, `_`, `\` pris à la lettre ; texte vide ignoré.
+- Tous les critères facultatifs, en conjonction ; le champ de recherche
+  cherche dans tout l'annuaire, le lien d'un nœud ouvre son sous-arbre.
+- `context` : rubriques ancêtres de tous les résultats ; `NodeList` trie
+  par ordre de lecture avant de regrouper (une ligne changée).
+- `components/SearchForm.tsx` : `<search>` et `<form method="get">`
+  natifs, indépendant de la vue ; « No match. » sans résultat.
+- Mesures sur 1807 (dix appels) : « rue de la Paix » `resolve` 1 à 2 ms ;
+  « rue » (17 402 nœuds) `resolve` 175 ms, `context` 105 ms en parallèle.
+- Vérifié sous Chromium et Firefox : regroupement sur cinq niveaux,
+  frères dans l'ordre de lecture, résultat unique déplié, envoi du
+  formulaire au clavier.
+- Demande à numrev : `docs/demandes/numrev_noeud_racine.md`.
+
+**Décisions**
+- Recherche exacte : la similarité par trigrammes ramenait trop de bruit,
+  le plein texte n'est pas tolérant aux graphies et sa racinisation est
+  incohérente sur ce corpus (mesures dans `docs/IDEES.md`).
+- `subtree` d'abord rendu facultatif, puis obligatoire (la recherche
+  restait dans la rubrique ouverte), puis de nouveau facultatif : chercher
+  dans la rubrique ouverte est déroutant. Une facette des rubriques
+  viendra plus tard.
+
+**Pièges relevés**
+- Requêtes préparées : après cinq appels, PostgreSQL peut passer à un plan
+  générique bien plus lent (2 → 60 ms) ; mesurer `resolve` répété, pas une
+  seule fois.
+- Biome (`useSemanticElements`) veut `<search>` plutôt que
+  `role="search"`.
+
+**Questions ouvertes**
+- Pas de racine unique dans 1807 : en attente de numrev.
+- Un champ vidé envoie `text=` : requête vide, retour à l'entrée par
+  défaut.
+
 ## 2026-11-19 — Sprint 6, étape 2 : la vue Liste à plat
 
 **Fait**

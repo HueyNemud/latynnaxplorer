@@ -119,6 +119,9 @@ Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
 - À reprendre avec l'opération « filtrer » ; trancher alors entre `nuqs`
   à la place de `parseQuery` / `serializeQuery` (`lib/query/query.ts`) ou
   `nuqs` qui s'appuie sur eux.
+- Sprint 7 : la recherche passe par un formulaire GET natif, sans script ;
+  `nuqs` reste inutile tant qu'aucun critère ne change sans recharger la
+  page (recherche à la frappe, facettes interactives).
 
 ## Internationalisation de l'interface
 
