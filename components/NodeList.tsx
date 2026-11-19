@@ -59,7 +59,7 @@ export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: S
 function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; open: boolean }) {
   return (
     <details className="item" open={open}>
-      <summary className="line">
+      <summary className="line" aria-labelledby={`text-${node.id}`}>
         <span id={`text-${node.id}`} className={`text text-${node.kind}`}>
           {node.kind === "out_of_scope" && <span className="visually-hidden">Out of scope: </span>}
           <PrintedText text={node.text} spans={node.spans} />
