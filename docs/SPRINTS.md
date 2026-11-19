@@ -155,10 +155,29 @@ Choix validés :
   `nuqs` reporté de nouveau.
 - La recherche porte sur tout l'annuaire, pas sur la rubrique ouverte
   (essayé, jugé déroutant) : chaque point d'entrée commence une nouvelle
-  sélection. Choisir les rubriques où chercher viendra avec une facette.
+  sélection. Choisir les rubriques où chercher viendra avec les facettes
+  (sprint 8).
 - Surlignage des correspondances hors sprint (`docs/IDEES.md`).
 
-## Sprint 8 : exporter
+## Sprint 8 : facettes à plusieurs niveaux
+
+But : restreindre la sélection par des facettes emboîtées, d'abord les
+volumes (un seul pour l'instant), puis les rubriques au sein des volumes ;
+la recherche par texte s'applique dans ce périmètre (`subtree` + `text`
+déjà valide dans l'URL). Prioritaire sur l'export.
+
+- Gros sprint, qui commence par une séance de design comme pour la vue
+  Liste (sprints 5 et 6) : concept dans `docs/DESIGN.md` (facettes comme
+  critères de sélection, place dans l'interface, lien avec les vues),
+  maquette revue à l'écran sous Chromium et Firefox, fiche de composant ;
+  puis implémentation.
+- À discuter au début du sprint : critères et paramètres d'URL (volume,
+  plusieurs rubriques), union dans une facette et conjonction entre
+  facettes, décomptes par valeur, `nuqs` si les facettes changent la
+  requête sans recharger la page (`docs/IDEES.md`), lien avec la demande
+  à numrev d'un vrai nœud racine par volume.
+
+## Sprint 9 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (section suivante).
@@ -172,9 +191,8 @@ pratique standard plutôt qu'un formalisme ad hoc (OpenAPI ou plus récent,
 
 ## Plus tard (non planifié)
 
-Facette des rubriques (choisir les rubriques où chercher : `subtree` +
-`text`, déjà valide dans l'URL) ; recherche par champ (sujet, activité,
-adresse) ; surlignage des correspondances. Vues Page (IIIF), Carte et
+Recherche par champ (sujet, activité, adresse) ; surlignage des
+correspondances. Vues Page (IIIF), Carte et
 Frise, avec leurs critères (page, zone, période) ; géocodage ; liens temporels, autres annuaires et « suivre » ;
 deux vues côte à côte ; idées de performance (`docs/IDEES.md`). Chacun
 aura son sprint, proposé le moment venu.
