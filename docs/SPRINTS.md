@@ -50,7 +50,7 @@ Choix validés au début du sprint :
   avec les images IIIF.
 - Requête mal formée : 400 ; uuid inconnu : 404.
 
-## Sprint 5 : la vue Liste
+## Sprint 5 : la vue Liste (PR #15)
 
 Réalisé : maquette revue à l'écran, fiche de composant réécrite
 (`docs/composants/noeud-liste.md`), vue Liste (`components/NodeList.tsx`) :
