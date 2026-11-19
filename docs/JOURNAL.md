@@ -17,6 +17,10 @@
   de leurs sous-groupes (seul le guide de la section la plus proche reste
   foncé) ; fil d'Ariane de la fiche en dernier, sur une ligne, intitulés
   tronqués sauf le plus proche. Fiche de composant et décisions à jour.
+- Audit du code : type `ContextSection` retiré (`context` renvoie des
+  `SubgraphNode`), position des guides par une variable, troncature
+  commune aux titres et au fil d'Ariane, conteneur sans règle et
+  commentaires d'historique retirés ; rendu identique au pixel.
 - Vérifications : Biome, `tsc`, `next build` ; capture de « III.e Mairie »
   identique au pixel à celle de la maquette (Chromium) ; élément ouvert et
   titres empilés au défilement sous Chromium et Firefox ; arbre
