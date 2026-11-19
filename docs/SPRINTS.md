@@ -72,9 +72,35 @@ Choix validés :
   ligne.
 - Composition, états, couleurs, Open : `docs/composants/noeud-liste.md` et
   `docs/DECISIONS.md` (19 novembre).
-- Aucune nouvelle dépendance ; `nuqs` reste au sprint 6.
+- Aucune nouvelle dépendance ; `nuqs` reste au sprint 7.
 - Sélection d'un seul nœud montrée comme toute sélection (ses cartes de
   contexte, sa ligne dépliée).
+
+## Sprint 6 : la vue Liste à plat, guides de niveau
+
+But : une liste plate, plus légère que les cartes emboîtées, où l'on voit
+où l'on en est : la hiérarchie se lit par des filets verticaux à gauche
+(guides de niveau, *indent guides*), rattachés aux titres fixés.
+
+- Maquette d'abord (`app/maquette/`, non versionnée, supprimée à
+  l'implémentation), sur les rubriques du sprint 5 : « III.e Mairie » et
+  « Administration générale des Postes ». Revue à l'écran, Chromium et
+  Firefox.
+- Puis fiche de composant (`docs/composants/noeud-liste.md`) et décision
+  (`docs/DECISIONS.md`) qui remplace les cartes emboîtées ; implémentation
+  dans `NodeList.tsx` et `globals.css` ; mêmes vérifications qu'au
+  sprint 5.
+
+Choix validés :
+
+- Une seule couleur pour tous les guides de niveau.
+- Les cartes restent, mais seulement autour d'un élément (ligne et fiche) :
+  invisibles au repos, soulevées au survol, grèges une fois dépliées.
+- À essayer : l'intitulé des rubriques écrit le long de leur guide, si
+  c'est lisible.
+- Inchangés : un seul `<details>` par nœud, sans script ; colonnes
+  texte | Open | page ; fiche dépliée ; aucune nouvelle dépendance. La
+  couleur ne porte jamais seule l'information (retrait, régions nommées).
 
 ## Hors sprint : demande à numrev
 
@@ -82,7 +108,7 @@ Choix validés :
 gardent des marques Markdown (`##` au milieu, `\` final). À transmettre
 par l'utilisateur ; rien n'est contourné ici.
 
-## Sprint 6 : sélectionner par le contenu
+## Sprint 7 : sélectionner par le contenu
 
 But : une porte d'entrée sans uuid.
 
@@ -95,7 +121,7 @@ But : une porte d'entrée sans uuid.
   de nœuds ; la pagination de la vue Liste (`docs/IDEES.md`, mesures du
   sprint 5) pourrait devenir nécessaire.
 
-## Sprint 7 : exporter
+## Sprint 8 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (section suivante).
