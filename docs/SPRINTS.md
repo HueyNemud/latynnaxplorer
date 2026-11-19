@@ -17,15 +17,19 @@ code (périmètre, dépendances, choix discutables).
   CI.
 - **Sprint d'entretien, mises à jour majeures** (PR #7, #8 et la PR de
   `docs/mises-a-jour-majeures`) : `postgres` v4, TypeScript 7.
+- **Sprint 3, concept de design** (PR #13) : `docs/DESIGN.md` (objectif,
+  profils, domaines, sélection et vues orthogonales, fonctionnalités,
+  représentations d'un nœud, principes d'affichage), sans code.
 
-## Sprint 3 : concept de design (en cours)
+## Sprint 4 : la fiche d'un nœud (en cours)
 
-Branche `docs/concept-design`, sans code. `docs/DESIGN.md` : objectif,
-profils, domaines, sélection et vues orthogonales, fonctionnalités,
-représentations d'un nœud, principes d'affichage. Remplace le sprint
-« première page, vue Liste » prévu jusqu'ici.
+Branche `feat/fiche-noeud`, PR #14 ouverte, en attente de relecture.
 
-## Sprint 4 : la fiche d'un nœud
+Réalisé : fiche de composant (`docs/composants/noeud-liste.md`), `resolve`
+avec empans et ancres, `context`, Next.js, fiche en clés / valeurs (Text,
+champs, métadonnées), entrée par défaut, 400 et 404 (détail dans
+`docs/JOURNAL.md`). Le texte souligné (`components/PrintedText.tsx`) est
+prêt pour la compacte du sprint 5.
 
 But : voir un nœud dans un navigateur, en densité détaillée (vue Liste
 seulement : les autres vues attendent leurs données).
@@ -37,20 +41,42 @@ seulement : les autres vues attendent leurs données).
   (`docs/DECISIONS.md`, 18 novembre). La page lit `?subtree=` côté
   serveur ; une sélection d'un seul nœud donne sa fiche.
 
-**À discuter** : ce que `resolve` doit renvoyer en plus (champs
-SUBJ/DESC/ADDR, page, chemin des rubriques comme contexte) ; ce que montre
-une sélection de plusieurs nœuds en attendant le sprint 5.
+Choix validés au début du sprint :
+
+- `resolve` renvoie en plus, pour chaque nœud, ses champs (empans) et ses
+  ancres (page, boîte) ; le chemin des rubriques est renvoyé à part du
+  sous-graphe, comme contexte ; rien de plus sur le volume pour l'instant.
+- Une sélection de plusieurs nœuds affiche seulement leur nombre et
+  signale que la vue Liste arrive au sprint 5.
+- La page source s'affiche en texte (« p. 60 ») ; elle deviendra un lien
+  avec les images IIIF.
+- Requête mal formée : 400 ; uuid inconnu : 404.
 
 ## Sprint 5 : la vue Liste
 
 But : une sélection de plusieurs nœuds, en densité compacte, dans son
 contexte.
 
+- Densité compacte : le texte souligné du sprint 4 (champs soulignés de la
+  couleur de leur libellé, nom `subj` / `desc` / `loc` sous le trait).
+  Avant le code, maquette sur une vraie rubrique : garder les noms sous
+  chaque trait (interligne plus grand) ou les montrer autrement (survol,
+  légende) ; compléter `docs/composants/noeud-liste.md` (états, structure
+  de liste accessible).
 - Disposition dans l'ordre du document ; arcs `member_of` / `child_of`
   rendus par regroupement.
 - Contexte : chemin des rubriques au-dessus de la sélection.
-- Inspecter : le focus sur une ligne montre sa fiche à côté, sans changer
-  la sélection ; ouvrir une entrée (nouvelle URL).
+- Inspecter : le focus sur une ligne montre sa fiche (le composant du
+  sprint 4) à côté, sans changer la sélection ; ouvrir une entrée (nouvelle
+  URL).
+- Performance à surveiller : le plus gros sous-arbre compte 13 737 nœuds
+  (`resolve` : 90 ms) ; rendre des milliers de lignes d'un coup ou non.
+
+## Hors sprint : demande à numrev
+
+`docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
+gardent des marques Markdown (`##` au milieu, `\` final). À transmettre
+par l'utilisateur ; rien n'est contourné ici.
 
 ## Sprint 6 : sélectionner par le contenu
 

@@ -3,7 +3,8 @@
 Exploration visuelle des annuaires commerciaux parisiens traités par la
 chaîne numrev (`../adresses_revolutionnaires`). Étape actuelle : modèle de
 données, import d'un annuaire en base et résolution des requêtes en
-sous-graphes (`lib/query/`) ; pas encore de site web.
+sous-graphes (`lib/query/`) ; site Next.js qui montre la fiche d'un nœud
+(`/?subtree=<uuid>`).
 
 ## Lancement
 
@@ -14,12 +15,18 @@ Prérequis : Node 26, pnpm 12, Docker, et un volume dans `data/<volume>/`
 pnpm install
 cp .env.example .env
 pnpm db:load      # base PostgreSQL (Docker), schéma, import de data/1807
+pnpm dev          # site sur http://localhost:3000
 ```
+
+Sans paramètre, `/` redirige vers une entrée de 1807 ; `?subtree=<uuid>`
+sélectionne un nœud et tout son sous-arbre (un seul nœud : sa fiche).
 
 ## Commandes
 
 | Commande | Effet |
 |---|---|
+| `pnpm dev` | site en développement (Next.js) |
+| `pnpm build` / `pnpm start` | site construit, puis servi |
 | `pnpm db:load` | démarre la base, applique le schéma, importe `data/1807` |
 | `pnpm db:push` | applique `lib/db/schema.ts` à la base (`drizzle-kit push`, sans migrations) |
 | `pnpm db:import data/<volume>` | valide puis importe un volume (le remplace s'il existe) |
@@ -46,6 +53,8 @@ L'import refuse un fichier non conforme à son schéma (`scripts/schemas/`).
 
 ## Documentation
 
+- [`docs/DESIGN.md`](docs/DESIGN.md) : concept de design (domaines, sélection et vues)
+- [`docs/composants/`](docs/composants/) : fiches de composant
 - [`docs/MODELE_DONNEES.md`](docs/MODELE_DONNEES.md) : sources, modèle, requêtes SQL du sous-graphe
 - [`docs/SCENARIOS.md`](docs/SCENARIOS.md) : scénarios de requête et leurs filtres
 - [`docs/SPRINTS.md`](docs/SPRINTS.md) : sprint en cours et suivants

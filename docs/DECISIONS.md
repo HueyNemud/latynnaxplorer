@@ -2,6 +2,15 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-18 — Fiche d'un nœud (vue Liste, densité détaillée) : fil d'Ariane des rubriques (liens vers leur sous-arbre), puis clés / valeurs en trois groupes : Text (texte complet, emphase en italique), champs (un par empan, valeur `normalized`), métadonnées (Type, Source, Identifier).
+- 2026-11-18 — Texte souligné (champs soulignés de la couleur de leur libellé, nom `subj` / `desc` / `loc` en petit sous le début du trait) : représentation de la densité compacte, pas de la fiche. Écartés : badges encadrés avant les champs (hachaient le texte).
+- 2026-11-18 — Arrivée sans requête : `proxy.ts` redirige vers une entrée par défaut (pas de page d'accueil pour l'instant) ; requête invalide : page d'erreur au statut 400 par le même proxy (une page de l'App Router ne sait pas répondre 400) ; uuid inconnu : 404 (`notFound()`).
+- 2026-11-18 — Organisation Next : `app/` (pages), `components/` (composants React), `lib/text/` (découpe du texte imprimé, testée par Vitest), `lib/db/server.ts` (pool partagé du serveur). Styles en CSS global, jetons en propriétés personnalisées ; police du système.
+- 2026-11-18 — `sharp` 0.35 n'a plus de script d'installation : rien à déclarer dans `allowBuilds` (contrairement à ce que prévoyait la décision du sprint 3).
+- 2026-11-18 — `resolve` lit le sous-graphe en trois requêtes parallèles (nœuds, empans, ancres), en lignes simples rattachées en TypeScript : regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent sur les gros sous-arbres (mesures : `docs/MODELE_DONNEES.md`, section 4). Remplace « une seule requête SQL par résolution ».
+- 2026-11-18 — Chaque nœud du sous-graphe porte ses empans et ses ancres ; le contexte (rubriques ancêtres, rangées par profondeur dans `parent_closure`) est lu à part par `context`, jamais compté dans la sélection.
+- 2026-11-18 — Interface en anglais par défaut, internationalisation plus tard (`docs/IDEES.md`) ; le texte des annuaires n'est jamais traduit.
+- 2026-11-18 — Fiche de composant du nœud dans la vue Liste (`docs/composants/noeud-liste.md`) : texte de numrev tel quel, emphase en italique, champs marqués d'un fin soulignement coloré par libellé, une seule police sans empattements.
 - 2026-11-18 — Concept de design (`docs/DESIGN.md`) : objectif = exploration visuelle, sélection et export du contenu des annuaires ; cinq domaines (Contenu, Structure, Document, Espace, Temps) qui servent indépendamment à sélectionner (critères combinés, dans l'URL) et à afficher (une vue dispose la sélection selon un domaine) ; fonctionnalités : sélectionner, suivre, inspecter, exporter.
 - 2026-11-18 — Principes d'affichage : chaque vue montre la sélection dans son contexte, distinct d'elle ; densité automatique (un nœud → fiche, plusieurs → compacte) ; une vue à la fois pour commencer, focus pensé comme partagé ; la page source à un clic depuis tout nœud.
 - 2026-11-18 — Mesurer et relier écartés (`docs/IDEES.md`) : l'analyse revient aux historiens, à partir de l'export.

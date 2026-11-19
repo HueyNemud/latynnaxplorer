@@ -1,5 +1,55 @@
 # Journal de développement
 
+## 2026-11-18 — Sprint 4 : la fiche d'un nœud
+
+**Fait**
+- PR #13 (sprint 3) fusionnée ; branche `feat/fiche-noeud`.
+- Fiche de composant du nœud dans la vue Liste, par type et par densité
+  (`docs/composants/noeud-liste.md`, skill `design:design-system`), à partir
+  d'un relevé des données de 1807 : emphase Markdown dans 4 525 nœuds,
+  24 empans qui coupent une emphase, 58 nœuds sur plusieurs lignes, ancres
+  absentes ou sur deux pages.
+- `resolve` renvoie empans et ancres de chaque nœud ; `context` lit les
+  rubriques ancêtres à part. Quatre écritures mesurées (JSON, tableaux,
+  lignes étiquetées, trois requêtes) : trois requêtes en lignes simples,
+  90 ms au lieu de 192 sur le plus gros sous-arbre ; sous-graphes
+  identiques sur les 803 sous-arbres habituels.
+- Next.js 16.4.6 et React 19.3.1 installés ; `next build` en CI.
+- Page `/` : fiche d'un nœud seul, nombre de nœuds sinon ; `proxy.ts`
+  pour l'entrée par défaut et le statut 400 ; 404 pour un uuid inconnu.
+- `lib/text/segments.ts` : découpe du texte aux bornes de l'emphase et
+  des empans (positions en points de code, `\*` échappé).
+- Fiche revue à l'écran avec l'utilisateur, en plusieurs essais : texte
+  souligné en titre, puis champs seuls, puis badges avant les champs, puis
+  nom du libellé sous le trait. Conclusion : le texte souligné est une
+  représentation compacte ; la fiche devient un ensemble de clés / valeurs
+  (Text, champs, métadonnées). `PrintedText` (texte souligné) est gardé
+  pour la compacte du sprint 5. Fil d'Ariane sans gris ni soulignement au
+  repos.
+
+**Décisions**
+- Trois requêtes pour `resolve`, contexte à part, interface en anglais,
+  fiche de composant, contenu de la fiche, proxy, organisation Next :
+  voir `docs/DECISIONS.md`.
+
+**Questions ouvertes**
+- Deux défauts de numrev, laissés tels quels (numrev fait foi) : la
+  section « LISTE DE NON-COMMERÇANS, ## CONTENANT ### … » (marques de titre
+  au milieu de l'intitulé) et « PRÉFECTURE DU DÉPARTEMENT DE LA SEINE,
+  Place de l'Hôtel-de-Ville.\ » (barre oblique d'un astérisque échappé).
+  Demande écrite : `docs/demandes/numrev_intitules_titres.md`, à
+  transmettre.
+- Densité compacte (sprint 5) : le texte souligné, avec les noms sous les
+  traits, demande un interligne plus grand ; à revoir sur des milliers de
+  lignes.
+
+**Suite**
+- `docs/SPRINTS.md` revu avec l'utilisateur (sprint 5 précisé, demande
+  numrev) ; PR #14 du sprint 4 ouverte, à relire et fusionner par
+  l'utilisateur.
+- Après la fusion : sprint 5, la vue Liste, sur une nouvelle branche depuis
+  `main` ; commencer par la maquette de la densité compacte.
+
 ## 2026-11-18 — Sprint 3 : concept de design
 
 **Fait**

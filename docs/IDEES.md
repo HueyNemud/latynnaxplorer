@@ -52,6 +52,12 @@ plusieurs volumes en base.
   à la place de `parseQuery` / `serializeQuery` (`lib/query/query.ts`) ou
   `nuqs` qui s'appuie sur eux.
 
+## Internationalisation de l'interface
+
+- Interface en anglais par défaut (sprint 4) ; d'autres langues plus tard.
+- À trancher le moment venu : bibliothèque (ou non), langue dans l'URL ou
+  préférence du navigateur. Le texte des annuaires n'est jamais traduit.
+
 ## Écartées : analyse dans le site
 
 Le site sert à explorer, sélectionner et exporter le contenu des annuaires
