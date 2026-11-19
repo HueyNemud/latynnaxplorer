@@ -76,7 +76,7 @@ Choix validés :
 - Sélection d'un seul nœud montrée comme toute sélection (ses cartes de
   contexte, sa ligne dépliée).
 
-## Sprint 6 : la vue Liste à plat, guides de niveau
+## Sprint 6 : la vue Liste à plat, guides de niveau (PR #16)
 
 But : une liste plate, plus légère que les cartes emboîtées, où l'on voit
 où l'on en est : la hiérarchie se lit par des filets verticaux à gauche
