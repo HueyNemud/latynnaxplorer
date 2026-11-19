@@ -160,7 +160,7 @@ Choix validés :
   (sprint 8).
 - Surlignage des correspondances hors sprint (`docs/IDEES.md`).
 
-## Sprint 8 : facettes de structure
+## Sprint 8 : facettes de structure (PR #18)
 
 Réalisé : concept (`docs/DESIGN.md`, « Sélection et focus » et
 « Facettes »), maquette revue à l'écran sous Chromium et Firefox, fiche de
