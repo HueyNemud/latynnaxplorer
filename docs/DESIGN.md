@@ -134,11 +134,14 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
   ce périmètre). Les nœuds hors de toute rubrique (1807 : 90 éléments
   hors champ à la racine) ne sont pas sélectionnables par les facettes,
   seulement par la recherche, en attendant un vrai nœud racine de numrev.
-- **Application** : par un bouton, qui envoie la requête ; la propagation
-  des coches demande un peu de script, sans `nuqs`.
-- Le critère de volume porte sur le volume de chaque nœud, déjà en base :
-  il n'attend pas le nœud racine demandé à numrev
-  (`docs/demandes/numrev_noeud_racine.md`).
+- **Application** : la requête est un seul formulaire GET natif, le champ
+  de recherche et les cases des rubriques (rattachées par l'attribut
+  `form`) ; une case grisée est désactivée, donc pas envoyée : seules
+  partent les rubriques cochées les plus hautes. Le bouton « Apply
+  selection », en bas de Contents, fixé, sur toute sa largeur, n'apparaît
+  que si les cases diffèrent de la sélection affichée ; Entrée dans le
+  champ de recherche applique aussi les cases. Un peu de script propage
+  les coches, sans `nuqs`.
 
 À trancher sur la maquette : apparence de l'arbre (casse, guides de
 niveau).
