@@ -100,9 +100,11 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
  *   texte serait plus rapide au premier appel, mais PostgreSQL passe au plan générique des
  *   requêtes préparées après cinq appels, qui relit alors l'index pour chaque sous-rubrique :
  *   2 → 60 ms pour « rue de la paix » dans la plus grosse rubrique de 1807, contre 2 ms ici.
- * - Sans texte, le sous-arbre (scénario 1), sans parcours : le nœud lui-même, plus les enfants
- *   de chacun de ses nœuds parents descendants, lus dans parent_closure (vide si le nœud n'a
- *   pas d'enfant) ; UNION ALL plutôt que OR, qui lirait toute la table.
+ * - Sans texte, le sous-arbre (scénario 1), sans parcours : les nœuds désignés, plus les
+ *   enfants de chacun de leurs nœuds parents descendants, lus dans parent_closure (vide si le
+ *   nœud n'a pas d'enfant) ; UNION plutôt que OR, qui lirait toute la table. UNION et non
+ *   UNION ALL : deux nœuds désignés peuvent être l'un sous l'autre, chaque nœud ne doit venir
+ *   qu'une fois (sur tout 1807, 43 rubriques : 11 ms contre 6).
  */
 function selection(sql: postgres.Sql, { subtree, text }: Query) {
   const columns = sql`n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id`;
@@ -110,8 +112,9 @@ function selection(sql: postgres.Sql, { subtree, text }: Query) {
     const inSubtree =
       subtree === undefined
         ? sql``
-        : sql`AND (n.id = ${subtree} OR n.parent_id IN (
-            SELECT c.descendant_id FROM parent_closure c WHERE c.ancestor_id = ${subtree}))`;
+        : sql`AND (n.id = ANY(${subtree}::uuid[]) OR n.parent_id IN (
+            SELECT c.descendant_id FROM parent_closure c
+            WHERE c.ancestor_id = ANY(${subtree}::uuid[])))`;
     // Le texte cherché est pris tel quel : ses « % », « _ » et « \ » sont échappés pour ILIKE.
     return sql`
       SELECT ${columns} FROM node n
@@ -121,22 +124,23 @@ function selection(sql: postgres.Sql, { subtree, text }: Query) {
   }
   if (subtree === undefined) return sql`SELECT ${columns} FROM node n`;
   return sql`
-    SELECT ${columns} FROM node n WHERE n.id = ${subtree}
-    UNION ALL
+    SELECT ${columns} FROM node n WHERE n.id = ANY(${subtree}::uuid[])
+    UNION
     SELECT ${columns} FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
-    WHERE c.ancestor_id = ${subtree}`;
+    WHERE c.ancestor_id = ANY(${subtree}::uuid[])`;
 }
 
 /**
  * Sous-graphe induit par les nœuds que désigne la requête : conjonction de ses critères
- * (docs/SCENARIOS.md). Une sélection vide n'est pas une erreur ; un `subtree` inconnu, si.
+ * (docs/SCENARIOS.md). Une sélection vide n'est pas une erreur ; un `subtree` inconnu, si, même
+ * à côté d'autres connus.
  */
 export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph> {
   const selected = selection(sql, query);
   // Trois requêtes en parallèle, en lignes simples : nœuds, empans, ancres, rattachés ensuite en
   // TypeScript. Regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent.
   // Mesures : docs/MODELE_DONNEES.md, section 4.
-  const [rows, spans, anchors] = await Promise.all([
+  const [rows, spans, anchors, known] = await Promise.all([
     sql<SelectedNode[]>`
       SELECT id, kind, parent_id AS "parentId", document_reading_order AS "documentReadingOrder",
              text, next_entry_id AS "nextEntryId"
@@ -151,11 +155,13 @@ export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph
       SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
       FROM (${selected}) n JOIN anchor a ON a.node_id = n.id
       ORDER BY a.page`,
+    query.subtree === undefined
+      ? []
+      : sql<{ id: string }[]>`SELECT id FROM node WHERE id = ANY(${query.subtree}::uuid[])`,
   ]);
-  if (rows.length === 0 && query.subtree !== undefined) {
-    const [known] = await sql`SELECT 1 FROM node WHERE id = ${query.subtree}`;
-    if (!known) throw new NodeNotFoundError(query.subtree);
-  }
+  const found = new Set(known.map((k) => k.id));
+  const unknown = query.subtree?.find((id) => !found.has(id));
+  if (unknown !== undefined) throw new NodeNotFoundError(unknown);
   const spansOf = groupByNode(spans);
   const anchorsOf = groupByNode(anchors);
   return {

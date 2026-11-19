@@ -6,7 +6,7 @@ import { type NextRequest, NextResponse } from "next/server";
 import { parseQuery, QueryError, serializeQuery } from "./lib/query/query.ts";
 
 /** Sélection à l'arrivée : une entrée de 1807 qui a ses trois champs et une emphase. */
-const DEFAULT_QUERY = { subtree: "6867d742-fad7-5be1-81a3-423c67729033" };
+const DEFAULT_QUERY = { subtree: ["6867d742-fad7-5be1-81a3-423c67729033"] };
 
 export function proxy(request: NextRequest): NextResponse {
   const url = request.nextUrl.clone();

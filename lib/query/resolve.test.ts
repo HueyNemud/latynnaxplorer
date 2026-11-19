@@ -13,7 +13,7 @@ afterAll(() => sql.end());
 
 describe("resolve, sous-arbre", () => {
   it("rend le nœud, ses descendants et les arcs entre eux, dans l'ordre de lecture", async () => {
-    expect(await resolve(sql, { subtree: T2 })).toEqual({
+    expect(await resolve(sql, { subtree: [T2] })).toEqual({
       nodes: [
         {
           id: T2,
@@ -81,7 +81,7 @@ describe("resolve, sous-arbre", () => {
   });
 
   it("descend récursivement dans les sous-rubriques", async () => {
-    const { nodes, arcs } = await resolve(sql, { subtree: T1 });
+    const { nodes, arcs } = await resolve(sql, { subtree: [T1] });
     expect(nodes.map((n) => n.id)).toEqual([T1, E3, T2, E1, E2, O1]);
     expect(arcs).toEqual([
       { source: E3, target: T1, kind: "member_of" },
@@ -95,19 +95,44 @@ describe("resolve, sous-arbre", () => {
   });
 
   it("réduit le sous-arbre d'une entrée à l'entrée seule", async () => {
-    const { nodes, arcs } = await resolve(sql, { subtree: E1 });
+    const { nodes, arcs } = await resolve(sql, { subtree: [E1] });
     expect(nodes.map((n) => n.id)).toEqual([E1]);
     expect(arcs).toEqual([]);
   });
 
   it("rend un nœud sans ligne boîtée avec des ancres vides", async () => {
-    const { nodes } = await resolve(sql, { subtree: E3 });
+    const { nodes } = await resolve(sql, { subtree: [E3] });
     expect(nodes).toMatchObject([{ id: E3, spans: [], anchors: [] }]);
   });
 
   it("refuse un nœud inconnu", async () => {
     const unknown = "99999999-0000-0000-0000-000000000000";
-    await expect(resolve(sql, { subtree: unknown })).rejects.toThrow(NodeNotFoundError);
+    await expect(resolve(sql, { subtree: [unknown] })).rejects.toThrow(NodeNotFoundError);
+  });
+});
+
+describe("resolve, plusieurs sous-arbres", () => {
+  it("rend leur union, dans l'ordre de lecture, avec les arcs entre eux", async () => {
+    const { nodes, arcs } = await resolve(sql, { subtree: [T2, E3] });
+    expect(nodes.map((n) => n.id)).toEqual([E3, T2, E1, E2, O1]);
+    // E3 → E1 : les deux sont sélectionnés ; ni E3 → T1 ni T2 → T1 : T1 ne l'est pas
+    expect(arcs).toContainEqual({ source: E3, target: E1, kind: "follows" });
+    expect(arcs.some((a) => a.target === T1)).toBe(false);
+  });
+
+  it("ne rend qu'une fois les nœuds de deux sous-arbres emboîtés", async () => {
+    const { nodes } = await resolve(sql, { subtree: [T2, T1, E1] });
+    expect(nodes.map((n) => n.id)).toEqual([T1, E3, T2, E1, E2, O1]);
+  });
+
+  it("se combine avec le texte", async () => {
+    const { nodes } = await resolve(sql, { subtree: [T2, E3], text: "u" });
+    expect(nodes.map((n) => n.id)).toEqual([E3, T2, E1, E2]); // Durand, RUBRIQUE., Dupont, Martin
+  });
+
+  it("refuse un nœud inconnu parmi des nœuds connus", async () => {
+    const unknown = "99999999-0000-0000-0000-000000000000";
+    await expect(resolve(sql, { subtree: [T2, unknown] })).rejects.toThrow(unknown);
   });
 });
 
@@ -139,13 +164,13 @@ describe("resolve, texte", () => {
   });
 
   it("se combine avec le sous-arbre", async () => {
-    expect(await ids({ subtree: T1, text: "Durand" })).toEqual([E3]);
-    expect(await ids({ subtree: T2, text: "Durand" })).toEqual([]);
+    expect(await ids({ subtree: [T1], text: "Durand" })).toEqual([E3]);
+    expect(await ids({ subtree: [T2], text: "Durand" })).toEqual([]);
   });
 
   it("refuse un sous-arbre inconnu, même sans résultat", async () => {
     const unknown = "99999999-0000-0000-0000-000000000000";
-    await expect(resolve(sql, { subtree: unknown, text: "rue" })).rejects.toThrow(
+    await expect(resolve(sql, { subtree: [unknown], text: "rue" })).rejects.toThrow(
       NodeNotFoundError,
     );
   });
@@ -179,15 +204,20 @@ describe("context", () => {
   };
 
   it("rend les rubriques ancêtres, nœuds complets, de la racine au parent", async () => {
-    expect(await context(sql, { subtree: E1 })).toEqual([t1, t2]);
+    expect(await context(sql, { subtree: [E1] })).toEqual([t1, t2]);
   });
 
   it("ne compte pas le nœud lui-même, même s'il a des enfants", async () => {
-    expect(await context(sql, { subtree: T2 })).toEqual([t1]);
+    expect(await context(sql, { subtree: [T2] })).toEqual([t1]);
   });
 
   it("est vide pour un nœud racine", async () => {
-    expect(await context(sql, { subtree: T1 })).toEqual([]);
+    expect(await context(sql, { subtree: [T1] })).toEqual([]);
+  });
+
+  it("rend une fois les rubriques au-dessus de plusieurs sous-arbres", async () => {
+    expect(await context(sql, { subtree: [T2, E3] })).toEqual([t1]);
+    expect(await context(sql, { subtree: [E1, E2] })).toEqual([t1, t2]);
   });
 
   describe("avec un texte", () => {
@@ -204,8 +234,8 @@ describe("context", () => {
     });
 
     it("est le même avec un sous-arbre qui contient les résultats", async () => {
-      expect(await ids({ subtree: T2, text: "Dupont" })).toEqual([T1, T2]);
-      expect(await ids({ subtree: E1, text: "Dupont" })).toEqual([T1, T2]);
+      expect(await ids({ subtree: [T2], text: "Dupont" })).toEqual([T1, T2]);
+      expect(await ids({ subtree: [E1], text: "Dupont" })).toEqual([T1, T2]);
     });
 
     it("est vide sans résultat", async () => {

@@ -22,9 +22,10 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
     }),
     context(sql, query),
   ]);
-  // le nœud désigné, s'il y en a un : dans la sélection, ou dans le contexte s'il ne contient pas
-  // le texte
-  const root = [...subgraph.nodes, ...sections].find((n) => n.id === query.subtree);
+  // le nœud désigné, s'il y en a un seul : dans la sélection, ou dans le contexte s'il ne
+  // contient pas le texte
+  const designated = query.subtree?.length === 1 ? query.subtree[0] : undefined;
+  const root = [...subgraph.nodes, ...sections].find((n) => n.id === designated);
   return (
     <>
       {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché */}
