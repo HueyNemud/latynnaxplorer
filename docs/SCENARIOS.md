@@ -55,8 +55,12 @@ accents ni de la casse.
 - Blancs en tête et en fin retirés, blancs intérieurs réduits à une
   espace ; un texte vide ne filtre rien (un formulaire vide envoie
   `text=`).
-- Nœuds, arcs, ordre et contexte comme au scénario 1 ; une sélection vide
-  n'est pas une erreur.
+- Nœuds, arcs et ordre comme au scénario 1 ; une sélection vide n'est pas
+  une erreur.
+- Contexte : les rubriques ancêtres des résultats qui n'en font pas
+  partie, chacune une fois, dans l'ordre de lecture ; le nœud désigné en
+  est, s'il ne contient pas le texte, avec les rubriques entre lui et les
+  résultats. Vide sans résultat.
 - Servi par l'index trigrammes de `node.text`, puis restreint au
   sous-arbre (raison dans `lib/query/resolve.ts`). Dans la plus grosse
   rubrique de 1807, `resolve` en entier : « rue de la Paix » 2 ms,

@@ -182,6 +182,33 @@ describe("context", () => {
   it("est vide pour un nœud racine", async () => {
     expect(await context(sql, { subtree: T1 })).toEqual([]);
   });
+
+  describe("avec un texte", () => {
+    const ids = async (text: string, subtree = T1) =>
+      (await context(sql, { subtree, text })).map((n) => n.id);
+
+    it("comprend le nœud désigné et les rubriques entre lui et les résultats", async () => {
+      expect(await context(sql, { subtree: T1, text: "Dupont" })).toEqual([t1, t2]);
+    });
+
+    it("ne compte pas les rubriques qui contiennent le texte : elles sont sélectionnées", async () => {
+      expect(await ids("rubrique")).toEqual([T1]);
+    });
+
+    it("rend chaque rubrique une fois, quel que soit le nombre de résultats", async () => {
+      expect(await ids("rue")).toEqual([T1, T2]);
+      expect(await ids("u")).toEqual([T1]); // Durand, Dupont, Martin, RUBRIQUE.
+    });
+
+    it("garde les ancêtres du nœud désigné", async () => {
+      expect(await ids("Dupont", T2)).toEqual([T1, T2]);
+      expect(await ids("Dupont", E1)).toEqual([T1, T2]);
+    });
+
+    it("est vide sans résultat", async () => {
+      expect(await ids("introuvable")).toEqual([]);
+    });
+  });
 });
 
 describe("inducedArcs", () => {

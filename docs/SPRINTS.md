@@ -128,8 +128,8 @@ But : une porte d'entrée sans uuid.
    phrase entière sans accents ni casse, sur le texte de tous les nœuds
    (index trigrammes en place), toujours dans un sous-arbre : `subtree`
    reste obligatoire. Tests.
-2. Contexte de résultats dispersés : les rubriques ancêtres de tous les
-   résultats ; la vue Liste regroupe les résultats sous leurs rubriques
+2. Contexte de résultats dispersés (fait) : les rubriques ancêtres de tous
+   les résultats ; la vue Liste regroupe les résultats sous leurs rubriques
    communes. Sans changer le modèle de données.
 3. Champ de recherche : maquette, puis implémentation.
 4. Journal, décisions, revue de ce fichier.
