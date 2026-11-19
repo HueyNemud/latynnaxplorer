@@ -91,6 +91,20 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
 }
 
 /**
+ * Condition « la colonne contient le texte », comme une phrase entière, sans accents ni casse
+ * (scénario 2), écrite comme l'expression de l'index trigrammes de `node.text`. Le texte cherché
+ * est pris tel quel : ses « % », « _ » et « \ » sont échappés pour ILIKE.
+ */
+export function contains(
+  sql: postgres.Sql,
+  column: postgres.PendingQuery<postgres.Row[]>,
+  text: string,
+) {
+  return sql`immutable_unaccent(${column})
+    ILIKE '%' || immutable_unaccent(${text.replace(/[\\%_]/g, "\\$&")}) || '%'`;
+}
+
+/**
  * Nœuds que désigne la requête, avec les colonnes de `node` qui portent les trois arcs
  * (parent_id, next_entry_id) : rien à calculer en SQL. Chaque critère présent restreint la
  * sélection ; sans critère, tous les nœuds. Deux écritures, choisies pour l'index qui sert :
@@ -115,11 +129,9 @@ function selection(sql: postgres.Sql, { subtree, text }: Query) {
         : sql`AND (n.id = ANY(${subtree}::uuid[]) OR n.parent_id IN (
             SELECT c.descendant_id FROM parent_closure c
             WHERE c.ancestor_id = ANY(${subtree}::uuid[])))`;
-    // Le texte cherché est pris tel quel : ses « % », « _ » et « \ » sont échappés pour ILIKE.
     return sql`
       SELECT ${columns} FROM node n
-      WHERE immutable_unaccent(n.text)
-              ILIKE '%' || immutable_unaccent(${text.replace(/[\\%_]/g, "\\$&")}) || '%'
+      WHERE ${contains(sql, sql`n.text`, text)}
         ${inSubtree}`;
   }
   if (subtree === undefined) return sql`SELECT ${columns} FROM node n`;
