@@ -187,22 +187,57 @@ a {
   margin-bottom: var(--space-2);
 }
 
-/* aligné sur le texte des lignes ; bordure discrète, foncée au focus */
+/* loupe à gauche du champ, « × » à droite quand une recherche est en cours */
+.search-form {
+  position: relative;
+  max-width: 24rem;
+}
+
+.search-icon,
+.search-clear {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  color: var(--color-muted);
+}
+
+.search-icon {
+  left: 0.25rem;
+  pointer-events: none;
+}
+
+.search-clear {
+  right: 0;
+  display: flex;
+  padding: var(--space-1);
+  border-radius: var(--radius-card);
+}
+
+.search-clear:hover {
+  color: var(--color-text);
+}
+
+/* un trait dessous, gris clair, foncé au focus ; ni fond ni cadre */
 .search-input {
   box-sizing: border-box;
   width: 100%;
-  max-width: 24rem;
-  padding: var(--space-1) var(--line-pad);
+  padding: 0.375rem 1.75rem;
   font: inherit;
   color: var(--color-text);
-  background: var(--color-background);
-  border: 1px solid var(--color-guide-faded);
-  border-radius: var(--radius-card);
+  background: transparent;
+  border: 0;
+  border-bottom: 1px solid var(--color-guide-faded);
+  border-radius: 0;
 }
 
 .search-input:focus-visible {
   outline: none;
-  border-color: var(--color-guide);
+  border-bottom-color: var(--color-guide);
+}
+
+/* le « × » du composant remplace celui de Chromium (Firefox n'en a pas) */
+.search-input::-webkit-search-cancel-button {
+  display: none;
 }
 
 .search-input::placeholder {
