@@ -59,28 +59,32 @@ contexte.
 
 Étapes, chacune présentée et validée avant la suivante :
 
-1. Maquette sur une vraie rubrique (captures), puis
-   `docs/composants/noeud-liste.md` complété (états, structure accessible).
-2. La liste, rendue côté serveur : ordre du document, arcs `member_of` /
-   `child_of` rendus par regroupement, chemin des rubriques au-dessus, nombre
-   de nœuds sélectionnés.
-3. Inspecter : une ligne se déplie et montre sa fiche (le composant du
-   sprint 4) juste dessous, sans changer la sélection ni l'URL ; « Open »
-   (nouvelle sélection, `?subtree=<uuid>`) est un lien dans la fiche.
+1. ~~Maquette sur une vraie rubrique, fiche de composant complétée~~ :
+   fait (`docs/composants/noeud-liste.md`). La maquette (`app/maquette/`,
+   non versionnée) sert de référence jusqu'à l'implémentation, puis est
+   supprimée.
+2. La vue Liste, d'après la fiche de composant : cartes emboîtées (contexte
+   compris), élément unique `<details>` pour tout nœud, titres fixés,
+   champs sur fond pastel, Open, en-tête « Page » ; jetons dans
+   `app/globals.css` ; `PrintedText` sans soulignement ni noms ; `context`
+   renvoie aussi les ancres des rubriques.
+3. Vérifications : poids et temps de rendu du plus gros sous-arbre ;
+   `display: contents` sur `<details>` (arbre d'accessibilité, Firefox) ;
+   captures.
 4. Journal, décisions, revue des sprints, PR.
 
-Choix validés au début du sprint :
+Choix validés :
 
 - Tout rendre, même le plus gros sous-arbre (13 737 nœuds) : pagination
   reportée (`docs/IDEES.md`).
-- La fiche se déplie sous la ligne, comme une ligne de liste qu'on ouvre,
-  et non à côté.
-- Liste ordonnée emboîtée plutôt qu'un `tree` ARIA.
-- Aucune nouvelle dépendance ; `nuqs` reste au sprint 6 (l'inspection
-  n'est pas dans l'URL).
+- La vue détaillée (la fiche du sprint 4, telle quelle) se déplie sous la
+  ligne.
+- Composition, états, couleurs, Open : `docs/composants/noeud-liste.md` et
+  `docs/DECISIONS.md` (19 novembre).
+- Aucune nouvelle dépendance ; `nuqs` reste au sprint 6.
 
-À trancher sur la maquette : noms `subj` / `desc` / `loc` sous le trait ou
-autrement ; rendu des titres de section et du hors champ.
+À valider : sélection d'un seul nœud montrée comme toute sélection (ses
+cartes de contexte, l'élément ouvert) plutôt que la fiche seule.
 
 ## Hors sprint : demande à numrev
 

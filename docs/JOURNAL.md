@@ -1,5 +1,40 @@
 # Journal de développement
 
+## 2026-11-19 — Sprint 5, étape 1 : maquette de la vue Liste
+
+**Fait**
+- PR #14 (sprint 4) fusionnée ; branche `feat/vue-liste`. Contenu du sprint
+  validé : tout rendre (pagination reportée), vue détaillée dépliée sous la
+  ligne.
+- Maquette sur de vraies rubriques (route `app/maquette/`, non versionnée,
+  supprimée à l'implémentation) : « III.e Mairie » (25 nœuds) et
+  « Administration générale des Postes » (303 nœuds, 6 niveaux). Revue à
+  l'écran avec l'utilisateur, en de nombreux essais (liste en fin de
+  `docs/composants/noeud-liste.md`).
+- Résultat : une table de cartes emboîtées ; un seul élément pour tout nœud
+  (ligne texte | Open | page, qui déplie la fiche dessous, `<details>`
+  natif) ; titres de section fixés et empilés ; champs sur fond pastel
+  (palette néon de colorhunt.co adoucie), sujet en gras ; deux règles
+  d'état (survol, ouvert) ; contexte en cartes comme le reste.
+- Simplification finale : mêmes règles et même composant pour tous les
+  types, couleurs en valeurs fixes, une seule règle de troncature, pas de
+  transition.
+- Fiche de composant réécrite, `docs/DESIGN.md` revu (contexte, densité,
+  ligne Liste), pistes tirées d'un guide des tables de données dans
+  `docs/IDEES.md`.
+- Captures après défilement : `chromium --screenshot` rend une page blanche
+  dès qu'elle défile ; on pilote Chromium par son protocole DevTools
+  (script Node, WebSocket intégré).
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (19 novembre).
+
+**Questions ouvertes**
+- Sélection d'un seul nœud montrée comme toute sélection (proposé).
+- Poids de la page avec toutes les fiches repliées dans le HTML : à mesurer.
+- `display: contents` sur `<details>` : navigateurs et arbre
+  d'accessibilité à vérifier.
+
 ## 2026-11-18 — Sprint 4 : la fiche d'un nœud
 
 **Fait**

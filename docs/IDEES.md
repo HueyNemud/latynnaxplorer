@@ -53,6 +53,17 @@ plusieurs volumes en base.
   virtualisation est déconseillée (une dépendance, mal accordée aux groupes
   emboîtés, Ctrl+F cassé).
 
+## Pistes tirées d'un guide des tables de données
+
+Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
+
+- **Surligner les correspondances** d'une recherche dans les lignes (avec la
+  recherche du sprint 6), distinct du fond des champs.
+- **Sélection multiple et actions groupées** (exporter quelques entrées) :
+  touche au modèle de sélection, à discuter avec l'export (sprint 7).
+- **Choix de densité** (serré, normal, aéré), hors de la liste et mémorisé.
+- **En-tête de colonnes fixé** au défilement, en tête de la pile des titres.
+
 ## État de la requête dans le navigateur : `nuqs`
 
 - Prévu par le brief, reporté au sprint 3 (`docs/DECISIONS.md`) : rien ne
