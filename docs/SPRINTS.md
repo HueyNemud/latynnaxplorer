@@ -108,11 +108,15 @@ Choix validés :
   suit le texte). La couleur ne porte jamais seule l'information (retrait,
   régions nommées).
 
-## Hors sprint : demande à numrev
+## Hors sprint : demandes à numrev
 
-`docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
-gardent des marques Markdown (`##` au milieu, `\` final). À transmettre
-par l'utilisateur ; rien n'est contourné ici.
+À transmettre par l'utilisateur ; rien n'est contourné ici.
+
+- `docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
+  gardent des marques Markdown (`##` au milieu, `\` final).
+- `docs/demandes/numrev_noeud_racine.md` : un vrai nœud racine par volume.
+  Sans lui, 1807 a 133 racines et une recherche ne porte au plus que sur
+  une rubrique de premier niveau.
 
 ## Sprint 7 : sélectionner par le contenu
 
