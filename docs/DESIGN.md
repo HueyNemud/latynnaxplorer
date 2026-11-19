@@ -73,6 +73,47 @@ critères) et **afficher** (une vue).
   données (formats à choisir, voir « format de l'API JSON » dans
   `docs/SPRINTS.md`).
 
+## Facettes
+
+Une facette montre **toutes les valeurs possibles** d'un critère, cochées
+ou non, là où la vue ne montre que la sélection (une rubrique exclue
+disparaît de la Liste : on ne pourrait pas l'y recocher). Les facettes
+servent à composer la sélection ; la vue sert à la regarder. Premier
+domaine couvert (sprint 8) : la Structure, volumes et rubriques.
+
+- **Place** : panneaux empilés à gauche, chacun dépliable ; la vue à
+  droite. La recherche par texte reste au-dessus de la liste.
+- **Panneau des volumes** : une carte cochable par volume, vignette (pour
+  l'instant un aplat, l'année en surimpression) ; une carte cochée
+  paraît enfoncée et porte une coche. Plusieurs volumes peuvent être
+  cochés.
+- **Panneau des rubriques** : l'arbre de **tous** les volumes, chacun
+  replié sous sa ligne de volume, une case à cocher à gauche de chaque
+  ligne. Les cartes du panneau des volumes sont les cases de ces lignes
+  racines, en plus visuel.
+- **Le volume est la racine de son arbre**, au-dessus de toutes ses
+  rubriques ; volume et rubriques suivent la même règle :
+  - cocher une ligne la sélectionne avec tout son sous-arbre, et grise
+    les cases de ses descendants (cochées, inactives) ;
+  - la décocher décoche et réactive ses descendants ;
+  - pour choisir des rubriques dans un volume, on laisse le volume
+    décoché.
+- **Sélection** : l'union des sous-arbres des lignes cochées les plus
+  hautes. Un volume coché comprend aussi ses nœuds hors de toute rubrique
+  (1807 : 90 éléments hors champ à la racine).
+- **Combinaison** : union à l'intérieur des facettes de structure,
+  conjonction avec les autres critères (le texte cherché dans ce
+  périmètre).
+- **Application** : par un bouton, qui envoie la requête ; la propagation
+  des coches demande un peu de script, sans `nuqs`.
+- Le volume racine ne demande pas le nœud racine attendu de numrev
+  (`docs/demandes/numrev_noeud_racine.md`) : le critère porte sur le
+  volume de chaque nœud, déjà en base.
+
+À trancher sur la maquette : nom du panneau des rubriques, décomptes par
+ligne, panneaux sur un écran étroit, apparence de l'arbre (proche des
+titres de la Liste, en plus compact).
+
 ## Représentation d'un nœud
 
 Un nœud a une représentation par vue, déclinée selon une **densité** :
