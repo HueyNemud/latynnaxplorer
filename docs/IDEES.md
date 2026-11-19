@@ -116,7 +116,7 @@ Source : pencilandpaper.io, « UX pattern analysis: enterprise data tables ».
 - **Surligner les correspondances** d'une recherche dans les lignes (avec la
   recherche du sprint 7), distinct du fond des champs.
 - **Sélection multiple et actions groupées** (exporter quelques entrées) :
-  touche au modèle de sélection, à discuter avec l'export (sprint 9).
+  touche au modèle de sélection, à discuter avec l'export (sprint 10).
 - **Choix de densité** (serré, normal, aéré), hors de la liste et mémorisé.
 - **En-tête de colonnes fixé** au défilement, en tête de la pile des titres.
 
