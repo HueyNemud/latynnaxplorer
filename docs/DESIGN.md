@@ -143,8 +143,10 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
   champ de recherche applique aussi les cases. Un peu de script propage
   les coches, sans `nuqs`.
 
-À trancher sur la maquette : apparence de l'arbre (casse, guides de
-niveau).
+Apparence de l'arbre de Contents : intitulés dans la casse imprimée (pas
+en capitales comme les titres de la Liste), simple retrait par niveau,
+sans guides de niveau ; chevron, case, intitulé tronqué sur une ligne,
+décompte à droite.
 
 ## Représentation d'un nœud
 
