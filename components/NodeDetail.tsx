@@ -3,13 +3,7 @@
 
 import Link from "next/link";
 import { serializeQuery } from "../lib/query/query.ts";
-import type {
-  Anchor,
-  ContextSection,
-  NodeKind,
-  SpanLabel,
-  SubgraphNode,
-} from "../lib/query/resolve.ts";
+import type { Anchor, NodeKind, SpanLabel, SubgraphNode } from "../lib/query/resolve.ts";
 import { PrintedText } from "./PrintedText.tsx";
 
 const KIND_LABELS: Record<NodeKind, string> = {
@@ -24,7 +18,7 @@ const FIELD_LABELS: Record<SpanLabel, string> = {
   ADDR: "Address",
 };
 
-export function NodeDetail({ node, context }: { node: SubgraphNode; context: ContextSection[] }) {
+export function NodeDetail({ node, context }: { node: SubgraphNode; context: SubgraphNode[] }) {
   return (
     <article className="node-detail">
       <dl>

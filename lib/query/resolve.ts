@@ -40,12 +40,6 @@ export interface SubgraphNode {
   anchors: Anchor[];
 }
 
-/** Rubrique du chemin d'un nœud (fil d'Ariane de la fiche). */
-export interface ContextSection {
-  id: string;
-  text: string;
-}
-
 export interface Arc {
   source: string;
   target: string;
