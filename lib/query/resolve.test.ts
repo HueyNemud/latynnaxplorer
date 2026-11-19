@@ -111,15 +111,31 @@ describe("resolve, sous-arbre", () => {
 });
 
 describe("context", () => {
-  it("rend les rubriques ancêtres, de la racine au parent", async () => {
-    expect(await context(sql, { subtree: E1 })).toEqual([
-      { id: T1, text: "PARTIE." },
-      { id: T2, text: "RUBRIQUE." },
-    ]);
+  const t1 = {
+    id: T1,
+    kind: "section",
+    parentId: null,
+    documentReadingOrder: 0,
+    text: "PARTIE.",
+    spans: [],
+    anchors: [{ page: 1, x0: 100, y0: 10, x1: 900, y1: 30 }],
+  };
+  const t2 = {
+    id: T2,
+    kind: "section",
+    parentId: T1,
+    documentReadingOrder: 2,
+    text: "RUBRIQUE.",
+    spans: [],
+    anchors: [{ page: 1, x0: 100, y0: 40, x1: 600, y1: 60 }],
+  };
+
+  it("rend les rubriques ancêtres, nœuds complets, de la racine au parent", async () => {
+    expect(await context(sql, { subtree: E1 })).toEqual([t1, t2]);
   });
 
   it("ne compte pas le nœud lui-même, même s'il a des enfants", async () => {
-    expect(await context(sql, { subtree: T2 })).toEqual([{ id: T1, text: "PARTIE." }]);
+    expect(await context(sql, { subtree: T2 })).toEqual([t1]);
   });
 
   it("est vide pour un nœud racine", async () => {

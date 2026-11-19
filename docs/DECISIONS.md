@@ -2,6 +2,15 @@
 
 Une ligne par décision, la plus récente en haut.
 
+- 2026-11-19 — Poids des très grosses rubriques accepté pour le sprint 5 (66 Mo et ~10 s pour 13 736 nœuds, 3 rubriques sur 602 au-delà de 1 000) : ni fiche chargée au dépliage ni pagination pour l'instant ; mesures dans `docs/IDEES.md`.
+- 2026-11-19 — Sélection d'un seul nœud : montrée comme toute sélection (ses cartes de contexte, sa ligne dépliée en sa fiche) ; plus de fiche seule en pleine page. Un seul chemin de rendu ; la page garde un seul `h1`, le texte du nœud désigné.
+- 2026-11-19 — `context` renvoie des nœuds complets (même type que `resolve`, ancres comprises, empans vides) au lieu de `{ id, text }` : le contexte se montre comme la sélection, toujours rendu à part.
+- 2026-11-19 — Vue Liste (`docs/composants/noeud-liste.md`) : sections en cartes emboîtées (retrait à gauche seulement, colonnes de droite alignées) ; un seul élément pour tout nœud, ligne texte | Open | page qui déplie la fiche du sprint 4 juste dessous ; titres de section fixés en haut et empilés ; deux règles d'état communes (survol : l'élément et sa carte se soulèvent ; ouvert : ligne et fiche en une carte grège en relief) ; les types ne se distinguent que par leur texte.
+- 2026-11-19 — Densité compacte : champs sur fond pastel aux coins arrondis (SUBJ `#b9e6ff` en gras, DESC `#afffe2`, ADDR `#fffca9`), sans légende. Remplace le texte souligné avec noms sous le trait (18 novembre), jugé trop chargé.
+- 2026-11-19 — Dépliage natif `<details>` / `<summary>` pour tout nœud, titres compris, sans JavaScript ; le `<details>` est rendu transparent (`display: contents`) pour que la ligne d'un titre se fixe par rapport à sa carte.
+- 2026-11-19 — « Open » : lien `?subtree=<uuid>` (une section ouvre sa liste, un autre nœud sa fiche), pastille visible au survol, ouvert ou au focus.
+- 2026-11-19 — Contexte : les rubriques ancêtres sont des cartes comme les autres, ne contenant que la sélection ; plus de fil d'Ariane ni de décompte au-dessus de la liste. Remplace « contexte visible, distinct de la sélection » (18 novembre) : le contexte prend les mêmes représentations, n'est jamais compté dedans.
+- 2026-11-19 — Pagination reportée : la vue Liste rend toute la sélection, même le plus gros sous-arbre (13 737 nœuds).
 - 2026-11-18 — Fiche d'un nœud (vue Liste, densité détaillée) : fil d'Ariane des rubriques (liens vers leur sous-arbre), puis clés / valeurs en trois groupes : Text (texte complet, emphase en italique), champs (un par empan, valeur `normalized`), métadonnées (Type, Source, Identifier).
 - 2026-11-18 — Texte souligné (champs soulignés de la couleur de leur libellé, nom `subj` / `desc` / `loc` en petit sous le début du trait) : représentation de la densité compacte, pas de la fiche. Écartés : badges encadrés avant les champs (hachaient le texte).
 - 2026-11-18 — Arrivée sans requête : `proxy.ts` redirige vers une entrée par défaut (pas de page d'accueil pour l'instant) ; requête invalide : page d'erreur au statut 400 par le même proxy (une page de l'App Router ne sait pas répondre 400) ; uuid inconnu : 404 (`notFound()`).

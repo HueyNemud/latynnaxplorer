@@ -1,24 +1,33 @@
-/* Jetons de la fiche de composant (docs/composants/noeud-liste.md). Contrastes sur fond blanc :
-   texte et texte atténué ≥ 4,5:1, soulignements ≥ 3:1. */
+/* Jetons de la fiche de composant (docs/composants/noeud-liste.md). Contrastes : texte et texte
+   atténué ≥ 4,5:1 sur blanc et sur les fonds pastel. */
 :root {
   --color-text: #1f2328;
   --color-muted: #59636e;
   --color-background: #ffffff;
-  --color-subj: #2563eb;
-  --color-desc: #0f766e;
-  --color-addr: #c2410c;
-  --color-focus: #2563eb;
+  /* élément ouvert : grège */
+  --color-open: #f6f6f4;
+  /* champs : palette néon de colorhunt.co (#63c8ff, #4dffbe, #fff83f) adoucie à 45 % dans du blanc */
+  --tint-subj: #b9e6ff;
+  --tint-desc: #afffe2;
+  --tint-addr: #fffca9;
 
   --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --size-small: 0.875rem;
-
-  --underline-thickness: 2px;
-  --underline-offset: 0.25em;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 1rem;
   --space-4: 1.5rem;
+
+  --shadow-rest: 0 0 0 1px rgb(0 0 0 / 0.08), 0 1px 4px rgb(0 0 0 / 0.1);
+  --shadow-raised: 0 0 0 1px rgb(0 0 0 / 0.14), 0 4px 14px rgb(0 0 0 / 0.14);
+  --radius-card: 0.5rem;
+
+  /* vue Liste : hauteur d'une ligne de titre (pas de la pile), écart entre lignes, colonnes
+     texte | Open | page à largeurs fixes pour aligner l'en-tête et toutes les lignes */
+  --title-height: 1.875rem;
+  --row-gap: 0.375rem;
+  --columns: 1fr 4.5rem 2.5rem;
 }
 
 body {
@@ -30,7 +39,7 @@ body {
 }
 
 main {
-  max-width: 48rem;
+  max-width: 64rem;
   margin: 0 auto;
   padding: var(--space-4) var(--space-3);
 }
@@ -40,7 +49,7 @@ a {
 }
 
 :focus-visible {
-  outline: 2px solid var(--color-focus);
+  outline: 2px solid var(--color-text);
   outline-offset: 2px;
 }
 
@@ -49,54 +58,27 @@ a {
   white-space: pre-line;
 }
 
+/* Champ : fond pastel aux coins arrondis, sujet en gras. Le fond déborde un peu de chaque côté
+   (marge négative) sans décaler le texte ; un filet blanc sépare deux champs voisins. */
 .field {
-  text-decoration-line: underline;
-  text-decoration-thickness: var(--underline-thickness);
-  text-underline-offset: var(--underline-offset);
+  padding: 0.08em;
+  margin: 0 -0.08em;
+  border-radius: 0.35em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
 }
 
 .field-subj {
-  text-decoration-color: var(--color-subj);
+  font-weight: 600;
+  background: var(--tint-subj);
 }
 
 .field-desc {
-  text-decoration-color: var(--color-desc);
+  background: var(--tint-desc);
 }
 
 .field-addr {
-  text-decoration-color: var(--color-addr);
-}
-
-/* Libellé du champ, en petit sous le début de son trait. Boîte de largeur nulle posée au
-   début du champ : le libellé ne décale pas le texte et suit le champ quand la ligne se coupe.
-   Hors de la sélection de texte : un copier-coller rend le texte imprimé seul. */
-.badge {
-  position: relative;
-  display: inline-block;
-  width: 0;
-  font-style: normal;
-  user-select: none;
-}
-
-.badge > span {
-  position: absolute;
-  top: 0.75em;
-  left: 0;
-  font-size: 0.55em;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.badge-subj {
-  color: var(--color-subj);
-}
-
-.badge-desc {
-  color: var(--color-desc);
-}
-
-.badge-addr {
-  color: var(--color-addr);
+  background: var(--tint-addr);
 }
 
 /* Fiche */
@@ -163,4 +145,159 @@ a {
 
 .identifier {
   user-select: all;
+}
+
+/* ── Vue Liste (docs/composants/noeud-liste.md) ── */
+
+/* en-tête : seulement « Page », aligné sur les lignes (retrait de la carte + de la ligne) */
+.columns {
+  display: grid;
+  grid-template-columns: var(--columns);
+  gap: var(--space-3);
+  padding: 0 calc(2 * var(--space-2)) var(--space-1);
+  font-size: var(--size-small);
+  color: var(--color-muted);
+}
+
+/* Carte : une section, contexte compris, en léger relief */
+.card {
+  margin-top: var(--space-3);
+  padding: 0 var(--space-2) var(--space-3);
+  border-radius: var(--radius-card);
+  background: var(--color-background);
+  box-shadow: var(--shadow-rest);
+}
+
+.selection > .card:first-child {
+  margin-top: 0;
+}
+
+/* une carte emboîtée n'est en retrait qu'à gauche : à droite, elle rejoint le bord de sa
+   parente, et les colonnes de droite restent alignées à tous les niveaux */
+.card .card {
+  margin-right: calc(-1 * var(--space-2));
+}
+
+/* Élément : le même pour tout nœud. Le <details> ne forme pas de boîte : sa ligne peut ainsi
+   être fixée par rapport à la carte (titre de section) ; en contrepartie, l'élément ouvert est
+   dessiné en deux morceaux jointifs, la ligne et la fiche. */
+.item {
+  display: contents;
+}
+
+.line {
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: var(--columns);
+  gap: var(--space-3);
+  align-items: baseline;
+  width: 100%;
+  margin-top: var(--row-gap);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-card);
+  background: var(--color-background);
+  list-style: none;
+  cursor: pointer;
+}
+
+.line::-webkit-details-marker {
+  display: none;
+}
+
+.detail {
+  padding: var(--space-3) var(--space-3) var(--space-1) var(--space-4);
+}
+
+/* Deux règles d'état, pour tous les éléments.
+   1. Survol : l'élément se soulève, avec la carte la plus intérieure qui le contient. */
+.item:hover > .line,
+.card:hover:not(:has(.card:hover)) {
+  box-shadow: var(--shadow-raised);
+}
+
+/* 2. Ouvert : ligne et fiche forment une carte en relief sur fond grège ; chaque morceau
+   coupe son ombre du côté où il touche l'autre. */
+.item[open] > * {
+  background: var(--color-open);
+  box-shadow: var(--shadow-raised);
+}
+
+.item[open] > .line {
+  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  clip-path: inset(-1rem -1rem 0 -1rem);
+}
+
+.item[open] > .detail {
+  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  clip-path: inset(0 -1rem -1rem -1rem);
+}
+
+/* Titre de section (premier élément de sa carte) : fixé en haut tant que la carte est visible,
+   empilé sous ceux de ses parents. Sa fiche n'est pas fixée. */
+.card > .item:first-child > .line {
+  position: sticky;
+  top: calc(var(--depth) * var(--title-height));
+  z-index: calc(10 - var(--depth));
+  height: var(--title-height);
+}
+
+/* Ce qui distingue les types : seulement le texte */
+.text-section {
+  font-weight: 600;
+  font-variant: small-caps;
+  letter-spacing: 0.03em;
+}
+
+.text-out_of_scope {
+  color: var(--color-muted);
+}
+
+/* titre et hors champ : une ligne, « … » si le texte est long (entier dans la fiche) */
+.text-section,
+.text-out_of_scope {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.text-section,
+.text-section .printed,
+.text-out_of_scope,
+.text-out_of_scope .printed {
+  white-space: nowrap;
+}
+
+/* page : l'information la moins importante, en petit, tout à droite */
+.page {
+  text-align: right;
+  font-size: var(--size-small);
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Open : pastille, visible au survol de l'élément, quand il est ouvert ou au focus clavier
+   (opacity et non visibility : elle reste atteignable au clavier) ; sa colonne garde sa
+   place. Zone de clic généreuse, pour ne pas déplier par erreur. */
+.open {
+  justify-self: center;
+  padding: 0.15rem 0.7rem;
+  border-radius: 999px;
+  background: var(--color-background);
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.18);
+  font-size: var(--size-small);
+  line-height: 1.4;
+  text-decoration: none;
+  opacity: 0;
+}
+
+.open:hover,
+.open:focus-visible {
+  background: var(--color-text);
+  color: var(--color-background);
+}
+
+.item:hover > .line .open,
+.item[open] > .line .open,
+.open:focus-visible {
+  opacity: 1;
 }

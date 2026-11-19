@@ -40,7 +40,7 @@ export interface SubgraphNode {
   anchors: Anchor[];
 }
 
-/** Rubrique du contexte d'un nœud. */
+/** Rubrique du chemin d'un nœud (fil d'Ariane de la fiche). */
 export interface ContextSection {
   id: string;
   text: string;
@@ -154,17 +154,28 @@ function groupByNode<T extends { nodeId: string }>(rows: T[]): Map<string, Omit<
 
 /**
  * Contexte du nœud `query.subtree` : ses rubriques ancêtres, de la racine à son parent (vide
- * pour un nœud racine ou inconnu ; `resolve` signale l'inconnu). À part du sous-graphe : le
- * contexte entoure la sélection sans en faire partie (docs/DESIGN.md, « Principes
- * d'affichage »). Rangées par profondeur, comptée dans parent_closure, et non par ordre de
- * lecture : aucune hypothèse sur la place d'un intitulé par rapport à son contenu.
+ * pour un nœud racine ou inconnu ; `resolve` signale l'inconnu). Des nœuds complets, comme ceux
+ * du sous-graphe (une rubrique n'a pas d'empans), pour être montrés de la même façon ; mais
+ * rendus à part : le contexte entoure la sélection sans en faire partie (docs/DESIGN.md,
+ * « Principes d'affichage »). Rangées par profondeur, comptée dans parent_closure, et non par
+ * ordre de lecture : aucune hypothèse sur la place d'un intitulé par rapport à son contenu.
  */
-export async function context(sql: postgres.Sql, query: Query): Promise<ContextSection[]> {
-  return sql<ContextSection[]>`
-    SELECT a.id, a.text
-    FROM node n
-    JOIN parent_closure c ON c.descendant_id = n.parent_id
-    JOIN node a ON a.id = c.ancestor_id
-    WHERE n.id = ${query.subtree}
-    ORDER BY (SELECT count(*) FROM parent_closure d WHERE d.descendant_id = a.id)`;
+export async function context(sql: postgres.Sql, query: Query): Promise<SubgraphNode[]> {
+  const ancestors = sql`
+    SELECT c.ancestor_id AS id
+    FROM node n JOIN parent_closure c ON c.descendant_id = n.parent_id
+    WHERE n.id = ${query.subtree}`;
+  const [rows, anchors] = await Promise.all([
+    sql<Omit<SubgraphNode, "spans" | "anchors">[]>`
+      SELECT a.id, a.kind, a.parent_id AS "parentId",
+             a.document_reading_order AS "documentReadingOrder", a.text
+      FROM (${ancestors}) x JOIN node a ON a.id = x.id
+      ORDER BY (SELECT count(*) FROM parent_closure d WHERE d.descendant_id = a.id)`,
+    sql<(Anchor & { nodeId: string })[]>`
+      SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
+      FROM (${ancestors}) x JOIN anchor a ON a.node_id = x.id
+      ORDER BY a.page`,
+  ]);
+  const anchorsOf = groupByNode(anchors);
+  return rows.map((node) => ({ ...node, spans: [], anchors: anchorsOf.get(node.id) ?? [] }));
 }

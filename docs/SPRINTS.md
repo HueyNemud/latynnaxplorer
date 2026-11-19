@@ -21,9 +21,7 @@ code (périmètre, dépendances, choix discutables).
   profils, domaines, sélection et vues orthogonales, fonctionnalités,
   représentations d'un nœud, principes d'affichage), sans code.
 
-## Sprint 4 : la fiche d'un nœud (en cours)
-
-Branche `feat/fiche-noeud`, PR #14 ouverte, en attente de relecture.
+## Sprint 4 : la fiche d'un nœud (PR #14)
 
 Réalisé : fiche de composant (`docs/composants/noeud-liste.md`), `resolve`
 avec empans et ancres, `context`, Next.js, fiche en clés / valeurs (Text,
@@ -52,25 +50,31 @@ Choix validés au début du sprint :
   avec les images IIIF.
 - Requête mal formée : 400 ; uuid inconnu : 404.
 
-## Sprint 5 : la vue Liste
+## Sprint 5 : la vue Liste (PR #15)
+
+Réalisé : maquette revue à l'écran, fiche de composant réécrite
+(`docs/composants/noeud-liste.md`), vue Liste (`components/NodeList.tsx`) :
+cartes emboîtées, contexte compris, un seul élément `<details>` pour tout
+nœud, titres fixés et empilés, champs sur fond pastel, Open ; `context`
+renvoie des nœuds complets ; vérifié sous Chromium et Firefox, arbre
+d'accessibilité compris. Poids des très grosses rubriques mesuré et
+accepté pour l'instant (`docs/IDEES.md`, « Pagination »). Détail dans
+`docs/JOURNAL.md`.
 
 But : une sélection de plusieurs nœuds, en densité compacte, dans son
 contexte.
 
-- Densité compacte : le texte souligné du sprint 4 (champs soulignés de la
-  couleur de leur libellé, nom `subj` / `desc` / `loc` sous le trait).
-  Avant le code, maquette sur une vraie rubrique : garder les noms sous
-  chaque trait (interligne plus grand) ou les montrer autrement (survol,
-  légende) ; compléter `docs/composants/noeud-liste.md` (états, structure
-  de liste accessible).
-- Disposition dans l'ordre du document ; arcs `member_of` / `child_of`
-  rendus par regroupement.
-- Contexte : chemin des rubriques au-dessus de la sélection.
-- Inspecter : le focus sur une ligne montre sa fiche (le composant du
-  sprint 4) à côté, sans changer la sélection ; ouvrir une entrée (nouvelle
-  URL).
-- Performance à surveiller : le plus gros sous-arbre compte 13 737 nœuds
-  (`resolve` : 90 ms) ; rendre des milliers de lignes d'un coup ou non.
+Choix validés :
+
+- Tout rendre, même le plus gros sous-arbre (13 737 nœuds) : pagination
+  reportée (`docs/IDEES.md`).
+- La vue détaillée (la fiche du sprint 4, telle quelle) se déplie sous la
+  ligne.
+- Composition, états, couleurs, Open : `docs/composants/noeud-liste.md` et
+  `docs/DECISIONS.md` (19 novembre).
+- Aucune nouvelle dépendance ; `nuqs` reste au sprint 6.
+- Sélection d'un seul nœud montrée comme toute sélection (ses cartes de
+  contexte, sa ligne dépliée).
 
 ## Hors sprint : demande à numrev
 
@@ -87,6 +91,9 @@ But : une porte d'entrée sans uuid.
   `subtree`.
 - Première modification de la requête dans le navigateur : trancher alors
   `nuqs` (`docs/IDEES.md`).
+- À discuter au début du sprint : une recherche peut renvoyer des milliers
+  de nœuds ; la pagination de la vue Liste (`docs/IDEES.md`, mesures du
+  sprint 5) pourrait devenir nécessaire.
 
 ## Sprint 7 : exporter
 
