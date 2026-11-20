@@ -194,7 +194,7 @@ Choix validés :
   rubriques cochées.
 - Reportés (`docs/IDEES.md`) : écran étroit, poids de l'arbre.
 
-## Sprint 9 : nettoyage du code
+## Sprint 9 : nettoyage du code (PR #19)
 
 Réalisé : doublons retirés (texte sans emphase, icônes, regroupements),
 règles des coches en fonctions pures testées (`lib/facets/selection.ts`),
