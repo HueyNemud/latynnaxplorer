@@ -9,7 +9,6 @@
 :root {
   --color-text: #1f2328;
   --color-muted: #59636e;
-  --color-background: #ffffff;
   /* survol et élément ouvert */
   --color-open: #f6f8fa;
   /* survol d'une surface déjà sur --color-open (bande, vignette) : un cran plus foncé */
@@ -31,11 +30,6 @@
   --size-small: 0.875rem;
   /* titres : espacement des capitales */
   --tracking-caps: 0.03em;
-
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 1rem;
-  --space-4: 1.5rem;
 
   /* largeur de la vue (contenu, hors gouttières) */
   --width-view: 64rem;
@@ -77,6 +71,12 @@
 
 /* ── Base ── */
 
+/* thème Radix (app/layout.tsx) : ses composants prennent notre police ; ses jetons d'espacement
+   (--space-1 à --space-9 : 4, 8, 12, 16, 24 px…) remplacent les nôtres */
+.radix-themes {
+  --default-font-family: var(--font);
+}
+
 body {
   margin: 0;
   font-family: var(--font);
@@ -90,9 +90,9 @@ main,
 .view {
   box-sizing: border-box;
   width: 100%;
-  max-width: calc(var(--width-view) + 2 * var(--space-4));
+  max-width: calc(var(--width-view) + 2 * var(--space-5));
   margin: 0 auto;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
 }
 
 /* page d'exploration : toute la fenêtre, panneaux collés à gauche (la vue garde la largeur) */
@@ -376,7 +376,7 @@ details[open] > summary .chevron {
 .line {
   display: grid;
   grid-template-columns: var(--columns);
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .columns {
@@ -445,7 +445,7 @@ details[open] > summary .chevron {
 /* marge sous la fiche seulement : au-dessus, elle décalait la ligne cliquée */
 .detail {
   margin-bottom: var(--space-2);
-  padding: var(--space-3) var(--space-3) var(--space-1) var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-1) var(--space-5);
 }
 
 /* Ouvert : ligne et fiche forment une carte en relief ; chaque morceau coupe son ombre du côté
@@ -544,8 +544,8 @@ details[open] > summary .chevron {
 .node-detail dl {
   display: grid;
   grid-template-columns: 7rem 1fr;
-  gap: var(--space-2) var(--space-3);
-  margin: 0 0 var(--space-4);
+  gap: var(--space-2) var(--space-4);
+  margin: 0 0 var(--space-5);
 }
 
 .node-detail dl > div {
@@ -627,7 +627,7 @@ details[open] > summary .chevron {
 .panel-body {
   box-sizing: border-box;
   overflow-y: auto;
-  padding: var(--space-3) var(--space-2);
+  padding: var(--space-4) var(--space-2);
 }
 
 .panel-volumes {
@@ -645,7 +645,7 @@ details[open] > summary .chevron {
   align-items: center;
   gap: var(--space-2);
   width: var(--strip-width);
-  padding: var(--space-3) 0;
+  padding: var(--space-4) 0;
   background: var(--color-open);
   border: 0;
 }
@@ -659,7 +659,7 @@ details[open] > summary .chevron {
 .volume-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .volume-card {
@@ -751,12 +751,12 @@ details[open] > summary .chevron {
    sinon. Clear est dans son propre formulaire, transparent pour la grille. */
 .facet-actions {
   position: sticky;
-  top: calc(-1 * var(--space-3));
+  top: calc(-1 * var(--space-4));
   z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin-top: calc(-1 * var(--space-3));
-  padding: var(--space-3) 0 var(--space-2);
+  margin-top: calc(-1 * var(--space-4));
+  padding: var(--space-4) 0 var(--space-2);
   background: var(--color-background);
 }
 
