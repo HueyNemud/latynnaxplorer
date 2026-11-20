@@ -13,7 +13,7 @@
 
 import { type ReactNode, useMemo, useState } from "react";
 import type { FacetSection, FacetVolume } from "../lib/query/facets.ts";
-import { segments } from "../lib/text/segments.ts";
+import { plainText } from "../lib/text/segments.ts";
 import { QUERY_FORM } from "./SearchForm.tsx";
 
 export function Facets({
@@ -107,7 +107,7 @@ export function Facets({
   const row = (s: FacetSection): ReactNode => {
     const kids = children.get(s.id) ?? [];
     const isCovered = covered(s.id);
-    const label = plain(s.text);
+    const label = plainText(s.text);
     const line = (
       <>
         {kids.length > 0 && (
@@ -236,12 +236,4 @@ function Panel({
       </button>
     </section>
   );
-}
-
-/** Intitulé sans marques d'emphase, sur une ligne. */
-function plain(text: string): string {
-  return segments(text, [])
-    .map((s) => s.text)
-    .join("")
-    .replace(/\s+/g, " ");
 }

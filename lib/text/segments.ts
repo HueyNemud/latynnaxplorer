@@ -42,3 +42,11 @@ export function segments(
   }
   return result;
 }
+
+/** Texte tel qu'on le lit, sur une ligne : sans marques d'emphase, blancs réduits à une espace. */
+export function plainText(text: string): string {
+  return segments(text, [])
+    .map((s) => s.text)
+    .join("")
+    .replace(/\s+/g, " ");
+}

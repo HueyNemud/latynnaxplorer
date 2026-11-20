@@ -3,7 +3,8 @@
 
 import Link from "next/link";
 import { serializeQuery } from "../lib/query/query.ts";
-import type { Anchor, NodeKind, SpanLabel, SubgraphNode } from "../lib/query/resolve.ts";
+import type { NodeKind, SpanLabel, SubgraphNode } from "../lib/query/resolve.ts";
+import { pages } from "../lib/text/pages.ts";
 import { PrintedText } from "./PrintedText.tsx";
 
 const KIND_LABELS: Record<NodeKind, string> = {
@@ -47,7 +48,7 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Sub
         </div>
         <div>
           <dt>Source</dt>
-          <dd>{pages(node.anchors)}</dd>
+          <dd>{pages(node.anchors.map((a) => a.page))}</dd>
         </div>
         <div>
           <dt>Identifier</dt>
@@ -71,15 +72,4 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Sub
       )}
     </article>
   );
-}
-
-/** « p. 60 », « pp. 60–61 », « pp. 60, 62 » ; « unknown page » sans ancre. */
-function pages(anchors: readonly Anchor[]): string {
-  const numbers = anchors.map((a) => a.page);
-  const [first] = numbers;
-  if (first === undefined) return "unknown page";
-  if (numbers.length === 1) return `p. ${first}`;
-  const consecutive = numbers.every((n, i) => n === first + i);
-  const last = numbers.at(-1);
-  return consecutive ? `pp. ${first}–${last}` : `pp. ${numbers.join(", ")}`;
 }
