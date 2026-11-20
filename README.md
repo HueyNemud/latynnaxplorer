@@ -19,6 +19,17 @@ pnpm volume:export data/1807   # public/volumes/<volume>.json et index.json
 pnpm dev                       # site sur http://localhost:3000
 ```
 
+L'export se refait seulement quand le volume change (nouvel export numrev)
+ou pour en ajouter un autre ; `public/volumes/` n'est pas versionné.
+
+Pour essayer le site tel qu'il sera mis en ligne, plus rapide que
+`pnpm dev` :
+
+```bash
+pnpm build                            # site statique dans out/
+python3 -m http.server -d out 3000    # http://localhost:3000
+```
+
 La requête est dans l'URL (`docs/SCENARIOS.md`) :
 
 - `?subtree=<uuid>` sélectionne un nœud et tout son sous-arbre ; répété,
