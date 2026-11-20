@@ -5,14 +5,16 @@ import { describe, expect, it } from "vitest";
 import type { FacetSection } from "../query/types.ts";
 import {
   checkedOf,
-  focusFor,
-  isCovered,
+  coveredBy,
+  isVolumeFull,
   isVolumeSelected,
+  keepOnly,
   pathTo,
-  sameChecks,
   sectionTree,
+  setVolume,
   toggleSection,
   toggleVolume,
+  volumeState,
 } from "./selection.ts";
 
 const section = (id: string, parentId: string | null, volumeId = "V"): FacetSection => ({
@@ -50,16 +52,23 @@ describe("checkedOf", () => {
   });
 });
 
-describe("isCovered", () => {
+describe("coveredBy", () => {
   it("couvre tout le sous-arbre d'une rubrique cochée, pas la rubrique elle-même", () => {
     const checked = set("A");
-    expect(["A", "A1", "A2", "A2a", "B"].map((id) => isCovered(tree, checked, id))).toEqual([
-      false,
-      true,
-      true,
-      true,
-      false,
+    expect(["A", "A1", "A2", "A2a", "B"].map((id) => coveredBy(tree, checked, id))).toEqual([
+      undefined,
+      "A",
+      "A",
+      "A",
+      undefined,
     ]);
+  });
+});
+
+describe("keepOnly", () => {
+  it("décoche la rubrique qui couvre et ne coche que celle-ci, même plus bas", () => {
+    expect(keepOnly(tree, set("A", "B"), "A2")).toEqual(set("B", "A2"));
+    expect(keepOnly(tree, set("A", "C"), "A2a")).toEqual(set("C", "A2a"));
   });
 });
 
@@ -71,7 +80,7 @@ describe("toggleSection", () => {
   it("décoche une rubrique : ses descendants redeviennent libres, décochés", () => {
     const checked = toggleSection(tree, set("A", "B"), "A");
     expect(checked).toEqual(set("B"));
-    expect(isCovered(tree, checked, "A1")).toBe(false);
+    expect(coveredBy(tree, checked, "A1")).toBeUndefined();
   });
 
   it("ne modifie pas les coches reçues", () => {
@@ -91,40 +100,35 @@ describe("volumes", () => {
     expect(toggleVolume(tree, set("C"), "V")).toEqual(set("C", "A", "B"));
   });
 
-  it("décocher un volume retire toutes ses coches", () => {
-    expect(toggleVolume(tree, set("A2a", "C"), "V")).toEqual(set("C"));
+  it("un volume en partie coché se coche entier, un volume entier se vide", () => {
+    expect(toggleVolume(tree, set("A2a", "C"), "V")).toEqual(set("C", "A", "B"));
+    expect(toggleVolume(tree, set("A", "B", "C"), "V")).toEqual(set("C"));
+  });
+
+  it("état de la coche d'un volume : entier, en partie ou rien", () => {
+    expect(volumeState(tree, set("A", "B"), "V")).toBe(true);
+    expect(volumeState(tree, set("A2a"), "V")).toBe("indeterminate");
+    expect(volumeState(tree, set("C"), "V")).toBe(false);
   });
 });
 
-describe("sameChecks", () => {
-  it("compare les coches sans tenir compte de l'ordre", () => {
-    expect(sameChecks(set("A", "B"), set("B", "A"))).toBe(true);
-    expect(sameChecks(set("A"), set("A", "B"))).toBe(false);
-    expect(sameChecks(set("A", "C"), set("A", "B"))).toBe(false);
+describe("All et Clear (volume regardé)", () => {
+  it("All coche les rubriques de premier niveau du volume, sans toucher aux autres", () => {
+    expect(setVolume(tree, set("A2a", "C"), "V", true)).toEqual(set("C", "A", "B"));
+  });
+
+  it("Clear décoche tout le volume, sans toucher aux autres", () => {
+    expect(setVolume(tree, set("A", "A2a", "C"), "V", false)).toEqual(set("C"));
+  });
+
+  it("un volume est entier quand toutes ses rubriques de premier niveau sont cochées", () => {
+    expect(isVolumeFull(tree, set("A", "B"), "V")).toBe(true);
+    expect(isVolumeFull(tree, set("A", "A2a"), "V")).toBe(false);
   });
 });
 
 describe("pathTo", () => {
   it("déplie les rubriques au-dessus de chaque coche", () => {
     expect(pathTo(tree, set("A2a", "B"))).toEqual(set("A2", "A"));
-  });
-
-  it("déplie aussi la rubrique qui contient un nœud désigné, et celles au-dessus d'elle", () => {
-    expect(pathTo(tree, set(), ["A2", "inconnue"])).toEqual(set("A2", "A"));
-  });
-});
-
-describe("focusFor", () => {
-  it("garde le volume regardé s'il contient une des rubriques", () => {
-    expect(focusFor(tree, ["C", "A1"], "V")).toBe("V");
-  });
-
-  it("passe au volume de la première rubrique sinon", () => {
-    expect(focusFor(tree, ["C", "A1"], "X")).toBe("W");
-  });
-
-  it("garde le volume regardé sans rubrique connue", () => {
-    expect(focusFor(tree, ["inconnue"], "V")).toBe("V");
-    expect(focusFor(tree, [], undefined)).toBeUndefined();
   });
 });

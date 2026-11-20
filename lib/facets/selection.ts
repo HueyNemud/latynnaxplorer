@@ -28,10 +28,23 @@ export function checkedOf(tree: SectionTree, subtree: readonly string[]): Set<st
   return new Set(subtree.filter((id) => tree.byId.has(id)));
 }
 
-/** Rubrique couverte : une rubrique au-dessus d'elle est cochée. */
-export function isCovered(tree: SectionTree, checked: ReadonlySet<string>, id: string): boolean {
-  for (const p of ancestors(tree, id)) if (checked.has(p)) return true;
-  return false;
+/** Rubrique couverte : la rubrique cochée au-dessus d'elle qui la couvre, s'il y en a une. */
+export function coveredBy(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  id: string,
+): string | undefined {
+  for (const p of ancestors(tree, id)) if (checked.has(p)) return p;
+  return undefined;
+}
+
+/** Ne garder que cette rubrique couverte : la rubrique qui la couvre est décochée, elle seule est
+ * cochée à sa place ; les autres coches ne changent pas. */
+export function keepOnly(tree: SectionTree, checked: ReadonlySet<string>, id: string): Set<string> {
+  const next = new Set(checked);
+  for (const p of ancestors(tree, id)) next.delete(p);
+  next.add(id);
+  return next;
 }
 
 /** Cocher ou décocher une rubrique. Cochée, elle couvre tout son sous-arbre : ses descendants
@@ -64,48 +77,52 @@ export function isVolumeSelected(
   return false;
 }
 
-/** Tout le volume (ses rubriques de premier niveau), ou plus rien. */
+/** Tout le volume est sélectionné : toutes ses rubriques de premier niveau sont cochées. */
+export function isVolumeFull(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  volumeId: string,
+): boolean {
+  return (tree.children.get(volumeId) ?? []).every((s) => checked.has(s.id));
+}
+
+/** Tout le volume (ses rubriques de premier niveau), ou plus rien ; les autres volumes ne
+ * changent pas. */
+export function setVolume(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  volumeId: string,
+  all: boolean,
+): Set<string> {
+  const next = new Set([...checked].filter((id) => tree.byId.get(id)?.volumeId !== volumeId));
+  if (all) for (const s of tree.children.get(volumeId) ?? []) next.add(s.id);
+  return next;
+}
+
+/** État de la coche d'un volume : entier, en partie (une partie de ses rubriques), ou rien. */
+export function volumeState(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  volumeId: string,
+): boolean | "indeterminate" {
+  if (isVolumeFull(tree, checked, volumeId)) return true;
+  return isVolumeSelected(tree, checked, volumeId) && "indeterminate";
+}
+
+/** La coche ronde d'un volume : tout le volume s'il ne l'est pas entier (rien ou en partie),
+ * sinon plus rien. */
 export function toggleVolume(
   tree: SectionTree,
   checked: ReadonlySet<string>,
   volumeId: string,
 ): Set<string> {
-  const selected = isVolumeSelected(tree, checked, volumeId);
-  const next = new Set([...checked].filter((id) => tree.byId.get(id)?.volumeId !== volumeId));
-  if (!selected) for (const s of tree.children.get(volumeId) ?? []) next.add(s.id);
-  return next;
+  return setVolume(tree, checked, volumeId, !isVolumeFull(tree, checked, volumeId));
 }
 
-/** Mêmes coches : rien à appliquer. */
-export function sameChecks(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
-  return a.size === b.size && [...a].every((id) => b.has(id));
-}
-
-/** Rubriques à déplier pour montrer la sélection : celles au-dessus de chaque coche ; et, pour
- * un nœud désigné qui n'est pas une rubrique, la rubrique qui le contient (`places`) avec celles
- * au-dessus d'elle. */
-export function pathTo(
-  tree: SectionTree,
-  checked: Iterable<string>,
-  places: readonly string[] = [],
-): Set<string> {
+/** Rubriques au-dessus des coches : à déplier à l'arrivée pour les montrer ; semi-sélectionnées
+ * (une rubrique en dessous d'elles est cochée). */
+export function pathTo(tree: SectionTree, checked: ReadonlySet<string>): Set<string> {
   const path = new Set<string>();
   for (const id of checked) for (const p of ancestors(tree, id)) path.add(p);
-  for (const id of places) {
-    if (!tree.byId.has(id)) continue;
-    path.add(id);
-    for (const p of ancestors(tree, id)) path.add(p);
-  }
   return path;
-}
-
-/** Volume à regarder pour montrer des rubriques : le volume regardé s'il en contient une, sinon
- * celui de la première ; sans rubrique connue, le volume regardé. */
-export function focusFor(
-  tree: SectionTree,
-  sections: Iterable<string>,
-  current: string | undefined,
-): string | undefined {
-  const volumes = [...sections].flatMap((id) => tree.byId.get(id)?.volumeId ?? []);
-  return current !== undefined && volumes.includes(current) ? current : (volumes[0] ?? current);
 }

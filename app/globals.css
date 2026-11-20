@@ -1,114 +1,64 @@
-/* Feuille de style unique. Ordre : jetons, base, texte imprimé, styles partagés (ce qui se
-   répète d'un composant à l'autre, écrit une fois), puis chaque composant : recherche, vue
-   Liste, fiche, facettes. Fiches de composant : docs/composants/. */
+/* Feuille de style unique, par-dessus celle de Radix Themes (app/layout.tsx) : seulement ce que
+   Radix n'a pas. Ordre : jetons, base, texte imprimé, styles partagés (ce qui se répète d'un
+   composant à l'autre, écrit une fois), puis chaque composant : recherche, vue Liste, fiche,
+   facettes. Fiches de composant : docs/composants/. */
 
 /* ── Jetons ── */
 
-/* Contrastes : texte et texte atténué ≥ 4,5:1 sur blanc, sur --color-open et sur les fonds
-   pastel. */
-:root {
-  --color-text: #1f2328;
-  --color-muted: #59636e;
-  --color-background: #ffffff;
-  /* survol et élément ouvert */
-  --color-open: #f6f8fa;
-  /* survol d'une surface déjà sur --color-open (bande, vignette) : un cran plus foncé */
-  --color-press: #eef1f4;
-  /* guides de niveau : celui de la section la plus proche, les autres estompés */
-  --color-guide: #3d434a;
-  --color-guide-faded: #c9ced4;
-  /* champs : palette néon de colorhunt.co (#63c8ff, #4dffbe, #fff83f) adoucie à 45 % dans du blanc */
-  --tint-subj: #b9e6ff;
-  --tint-desc: #afffe2;
-  --tint-addr: #fffca9;
-  /* boutons des facettes (Apply, Clear) quand ils servent */
-  --color-action: var(--tint-subj);
-
-  /* Fira Sans chargée par next/font (app/layout.tsx), pour ses vraies petites capitales */
-  --font:
+/* Couleurs, espacements, rayons, ombres, tailles de texte : ceux du thème Radix :
+   - --gray-12 texte, --gray-11 texte atténué (≥ 4,5:1 sur blanc, sur --gray-2 et sur les
+     teintes des champs) ; --gray-2 survol et élément ouvert, --gray-3 survol d'une surface déjà
+     sur --gray-2 ; --gray-11 guide de la section la plus proche, --gray-7 guides estompés ;
+   - --radius-4 lignes et cartes, --radius-2 coude du guide ; --shadow-4 relief ;
+     --font-size-2 texte petit ; --focus-8 anneau du focus clavier.
+   Ici, seulement nos jetons, ceux qui servent plusieurs fois ; définis sur le thème, où les
+   variables de Radix existent. */
+.radix-themes {
+  /* Fira Sans (next/font, app/layout.tsx), pour ses vraies petites capitales */
+  --default-font-family:
     var(--font-fira), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
-  --size-small: 0.875rem;
-  /* titres : espacement des capitales */
-  --tracking-caps: 0.03em;
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 1rem;
-  --space-4: 1.5rem;
+  /* champs : teintes transparentes de Radix, qui se fondent dans le fond d'une ligne survolée ou
+     ouverte (deux planches, sprint 11) */
+  --tint-subj: var(--violet-a4);
+  --tint-desc: var(--teal-a4);
+  --tint-addr: var(--yellow-a4);
 
-  /* largeur de la vue (contenu, hors gouttières) */
-  --width-view: 64rem;
-
-  /* anneau du focus, clavier ou de l'application */
-  --ring: 2px solid var(--color-text);
-  --ring-offset: 2px;
-
-  --shadow-raised: 0 0 0 1px rgb(0 0 0 / 0.14), 0 4px 14px rgb(0 0 0 / 0.14);
-  /* cartes et lignes ; petits éléments (bouton d'icône, coude du guide) */
-  --radius-card: 0.5rem;
-  --radius-small: 0.25rem;
-
-  /* lignes (vue Liste, arbre des facettes) : marges intérieures, à gauche et à droite, en haut
-     et en bas ; icônes (chevron, lien) */
+  /* lignes (Liste, arbre des facettes) : marges intérieures horizontale et verticale ; icônes */
   --line-pad: 0.375rem;
   --line-pad-y: 0.125rem;
   --icon: 0.875rem;
 
-  /* vue Liste : colonnes texte | page à largeurs fixes, pour aligner l'en-tête et toutes les
-     lignes ; hauteur d'une ligne de titre (pas de la pile) */
-  --columns: 1fr 2.5rem;
+  /* Liste : hauteur d'une ligne de titre (pas de la pile des titres fixés) ; guide : épaisseur
+     (en pixels entiers : 1,5 px rendait des traits inégaux), écart avec les lignes, boule */
   --title-height: 1.75rem;
-  /* guide : épaisseur (en pixels entiers : 1,5 px rendait des traits inégaux), écart avec les
-     lignes, boule finale */
   --guide-width: 2px;
   --guide-gap: 0.25rem;
   --ball: 6px;
-
-  /* facettes (docs/composants/facettes.md) : largeurs des panneaux (contenu, hors bande), de la
-     bande, d'une carte de volume ; coche ronde ; retrait d'un niveau de l'arbre */
-  --panel-volumes: 9.5rem;
-  --panel-contents: 22rem;
-  --strip-width: 1.5rem;
-  --card-width: 8rem;
-  --select-size: 1.5rem;
-  --tree-indent: 1.25rem;
 }
 
 /* ── Base ── */
 
+/* police, taille, interligne, couleur et fond : ceux du thème */
 body {
   margin: 0;
-  font-family: var(--font);
-  line-height: 1.5;
-  color: var(--color-text);
-  background: var(--color-background);
 }
 
-/* Contenu de la page, et la vue à côté des facettes : à la largeur de la vue, centrés */
+/* Contenu de la page, et la vue à côté des facettes : 64 rem de large au plus, centrés */
 main,
 .view {
   box-sizing: border-box;
   width: 100%;
-  max-width: calc(var(--width-view) + 2 * var(--space-4));
+  max-width: calc(64rem + 2 * var(--space-5));
   margin: 0 auto;
-  padding: var(--space-3) var(--space-4);
+  padding: var(--space-4) var(--space-5);
 }
 
 /* page d'exploration : toute la fenêtre, panneaux collés à gauche (la vue garde la largeur) */
 main:has(> .explorer) {
   max-width: none;
   padding: 0;
-}
-
-a {
-  color: inherit;
-}
-
-button {
-  font: inherit;
-  color: inherit;
-  cursor: pointer;
 }
 
 /* listes : rien de la typographie par défaut (le site n'a pas de listes à puces) */
@@ -129,10 +79,10 @@ summary::-webkit-details-marker {
   display: none;
 }
 
-/* Focus clavier ; le focus de l'application (vignette au focus) prend le même anneau */
-:focus-visible {
-  outline: var(--ring);
-  outline-offset: var(--ring-offset);
+/* Focus clavier de nos éléments : l'anneau des composants de Radix (.rt-reset), qui ont le leur */
+:focus-visible:not(.rt-reset) {
+  outline: 2px solid var(--focus-8);
+  outline-offset: 2px;
 }
 
 /* Lu par les lecteurs d'écran, invisible à l'écran */
@@ -163,7 +113,7 @@ summary::-webkit-details-marker {
   white-space: pre-line;
 }
 
-/* Champ : fond pastel aux coins arrondis. Le fond déborde un peu de chaque côté (marge
+/* Champ : fond teinté aux coins arrondis. Le fond déborde un peu de chaque côté (marge
    négative) sans décaler le texte ; un filet blanc sépare deux champs voisins. */
 .field {
   padding: 0.08em;
@@ -196,8 +146,8 @@ summary::-webkit-details-marker {
 .tree-count,
 .volume-name,
 .panel-strip {
-  font-size: var(--size-small);
-  color: var(--color-muted);
+  font-size: var(--font-size-2);
+  color: var(--gray-11);
 }
 
 .page,
@@ -210,7 +160,7 @@ summary::-webkit-details-marker {
 .text-section,
 .volume-year {
   font-weight: 600;
-  letter-spacing: var(--tracking-caps);
+  letter-spacing: 0.03em;
   text-transform: uppercase;
 }
 
@@ -241,132 +191,42 @@ summary::-webkit-details-marker {
   align-items: baseline;
   padding: var(--line-pad-y) var(--line-pad) var(--line-pad-y)
     calc(var(--line-pad) + var(--icon) + 0.125rem);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-4);
 }
 
 .row:hover {
-  background: var(--color-open);
+  background: var(--gray-2);
 }
 
 .chevron {
   position: absolute;
   left: calc(var(--line-pad) - 0.125rem);
   top: calc(var(--line-pad-y) + (1lh - var(--icon)) / 2);
-  color: var(--color-muted);
+  color: var(--gray-11);
 }
 
 details[open] > summary .chevron {
   transform: rotate(90deg);
 }
 
-/* Surface en relief (élément ouvert de la Liste, vignette d'un volume) */
-.item[open] > *,
-.volume-thumb {
-  background: var(--color-open);
-  box-shadow: var(--shadow-raised);
-}
-
-/* survol d'une surface déjà grise (bande de repli, vignette) : un cran plus foncé */
-.panel-strip:hover,
-.volume-thumb:hover {
-  color: var(--color-text);
-  background: var(--color-press);
-}
-
-/* Bouton d'icône (effacer la recherche, ouvrir un nœud à part) : atténué au repos */
-.icon-button {
-  display: inline-flex;
-  padding: var(--space-1);
-  border-radius: var(--radius-small);
-  color: var(--color-muted);
-}
-
-/* Inversé au survol (boutons des facettes, lien vers un nœud) : fond du texte, texte du fond */
-.own-page:hover,
-.own-page:focus-visible,
-.facet-action:enabled:hover {
-  color: var(--color-background);
-  background: var(--color-text);
+/* Surface en relief (élément ouvert de la Liste) */
+.item[open] > * {
+  background: var(--gray-2);
+  box-shadow: var(--shadow-4);
 }
 
 /* ── Champ de recherche (components/SearchForm.tsx), au-dessus de la vue ── */
 
-.search {
+/* le champ de Radix, à une largeur raisonnable */
+.search-form {
+  max-width: 24rem;
   margin-bottom: var(--space-2);
 }
 
-/* loupe à gauche du champ, « × » à droite quand une recherche est en cours */
-.search-form {
-  position: relative;
-  max-width: 24rem;
-}
-
-.search-icon,
-.search-clear {
-  position: absolute;
-  top: 50%;
-  translate: 0 -50%;
-  color: var(--color-muted);
-}
-
-.search-icon {
-  left: var(--space-1);
-  pointer-events: none;
-}
-
-.search-clear {
-  right: 0;
-}
-
-.search-clear:hover {
-  color: var(--color-text);
-}
-
-/* un trait dessous, gris clair, foncé au focus ; ni fond ni cadre */
-.search-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.375rem 1.75rem;
-  font: inherit;
-  color: var(--color-text);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--color-guide-faded);
-  border-radius: 0;
-}
-
-.search-input:focus-visible {
-  outline: none;
-  border-bottom-color: var(--color-guide);
-}
-
-/* le « × » du composant remplace celui de Chromium (Firefox n'en a pas) */
-.search-input::-webkit-search-cancel-button {
-  display: none;
-}
-
-.search-input::placeholder {
-  color: var(--color-muted);
-}
-
-/* vue vide (app/page.tsx) : un grand aplat, le signe ∅ et une ligne */
+/* vue vide (app/page.tsx, mise en page par Flex de Radix) : un grand aplat */
 .empty {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  min-height: 60vh;
-  margin: 0;
-  border-radius: var(--radius-card);
-  background: var(--color-open);
-  color: var(--color-muted);
-  font-size: var(--size-small);
-}
-
-.empty-sign {
-  font-size: 1.5rem;
-  line-height: 1;
+  border-radius: var(--radius-4);
+  background: var(--gray-2);
 }
 
 /* ── Vue Liste (components/NodeList.tsx, docs/composants/noeud-liste.md) ── */
@@ -375,8 +235,8 @@ details[open] > summary .chevron {
 .columns,
 .line {
   display: grid;
-  grid-template-columns: var(--columns);
-  gap: var(--space-3);
+  grid-template-columns: 1fr 2.5rem;
+  gap: var(--space-4);
 }
 
 .columns {
@@ -395,7 +255,7 @@ details[open] > summary .chevron {
 .group::after {
   content: "";
   position: absolute;
-  background: var(--color-guide);
+  background: var(--gray-11);
 }
 
 .group::before {
@@ -420,12 +280,12 @@ details[open] > summary .chevron {
   --guide-x: calc(var(--line-pad) + var(--guide-gap));
   margin-left: calc(-1 * (var(--guide-width) + var(--guide-gap)));
   padding-left: calc(var(--line-pad) + 2 * var(--guide-gap) + var(--guide-width));
-  border-left: var(--guide-width) solid var(--color-guide-faded);
+  border-left: var(--guide-width) solid var(--gray-7);
 }
 
 /* boule estompée si le groupe finit par un sous-groupe */
 .group:has(> .group:last-child)::after {
-  background: var(--color-guide-faded);
+  background: var(--gray-7);
 }
 
 /* Élément : le même pour tout nœud. Le <details> ne forme pas de boîte : sa ligne peut ainsi
@@ -445,18 +305,18 @@ details[open] > summary .chevron {
 /* marge sous la fiche seulement : au-dessus, elle décalait la ligne cliquée */
 .detail {
   margin-bottom: var(--space-2);
-  padding: var(--space-3) var(--space-3) var(--space-1) var(--space-4);
+  padding: var(--space-4) var(--space-4) var(--space-1) var(--space-5);
 }
 
 /* Ouvert : ligne et fiche forment une carte en relief ; chaque morceau coupe son ombre du côté
    où il touche l'autre. */
 .item[open] > .line {
-  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  border-radius: var(--radius-4) var(--radius-4) 0 0;
   clip-path: inset(-1rem -1rem 0 -1rem);
 }
 
 .item[open] > .detail {
-  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  border-radius: 0 0 var(--radius-4) var(--radius-4);
   clip-path: inset(0 -1rem -1rem -1rem);
 }
 
@@ -490,47 +350,32 @@ details[open] > summary .chevron {
   top: calc(50% - var(--guide-width) / 2);
   bottom: 0;
   width: calc(var(--guide-width) + var(--guide-gap) + var(--line-pad) - 0.2rem);
-  border: solid var(--color-guide);
+  border: solid var(--gray-11);
   border-width: var(--guide-width) 0 0 var(--guide-width);
-  border-top-left-radius: var(--radius-small);
+  border-top-left-radius: var(--radius-2);
 }
 
 /* coude estompé s'il ne touche qu'un sous-groupe */
 .group:has(> .item:first-child + .group) > .item:first-child > .line::after {
-  border-color: var(--color-guide-faded);
+  border-color: var(--gray-7);
 }
 
-/* Texte, puis le lien. Ce qui distingue les types : seulement le texte (titres : voir
+/* Texte. Ce qui distingue les types : seulement le texte (titres : voir
    « Titres », plus haut). */
 .text {
   min-width: 0;
 }
 
 .text-out_of_scope {
-  color: var(--color-muted);
+  color: var(--gray-11);
 }
 
-/* titre et hors champ : « … » sur l'intitulé seul, pour laisser la place au lien */
+/* titre et hors champ : « … » sur l'intitulé */
 .text-section .label,
 .text-out_of_scope .label {
   display: inline-block;
-  max-width: calc(100% - 1.75rem);
+  max-width: 100%;
   vertical-align: top;
-}
-
-/* Lien vers la nouvelle sélection : icône dans le fil du texte (en flex, les marges négatives
-   des champs faussaient la largeur sous Firefox), visible au survol de l'élément, quand il est
-   ouvert ou au focus clavier (opacity : il reste atteignable au clavier) */
-.own-page {
-  vertical-align: -0.2rem;
-  margin-left: var(--space-1);
-  opacity: 0;
-}
-
-.item:hover > .line .own-page,
-.item[open] > .line .own-page,
-.own-page:focus-visible {
-  opacity: 1;
 }
 
 /* page : l'information la moins importante, en petit, tout à droite */
@@ -540,24 +385,11 @@ details[open] > summary .chevron {
 
 /* ── Fiche (components/NodeDetail.tsx) ── */
 
-/* groupes clé / valeur (texte, champs, métadonnées), colonnes des clés alignées */
-.node-detail dl {
-  display: grid;
-  grid-template-columns: 7rem 1fr;
-  gap: var(--space-2) var(--space-3);
-  margin: 0 0 var(--space-4);
-}
-
-.node-detail dl > div {
-  display: contents;
-}
-
-.node-detail dd {
-  margin: 0;
-}
-
-.meta {
-  font-size: var(--size-small);
+/* groupes clé / valeur (DataList de Radix : texte, champs, métadonnées), espacés ; même écart
+   entre clés et valeurs quelle que soit leur taille, pour aligner les valeurs */
+.detail-group {
+  column-gap: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
 .identifier {
@@ -568,7 +400,7 @@ details[open] > summary .chevron {
    sauf la section la plus proche. */
 .breadcrumb {
   display: flex;
-  font-size: var(--size-small);
+  font-size: var(--font-size-2);
 }
 
 .breadcrumb li {
@@ -583,17 +415,7 @@ details[open] > summary .chevron {
 .breadcrumb li + li::before {
   content: "›";
   margin: 0 var(--space-2);
-  color: var(--color-muted);
-}
-
-/* liens sans soulignement au repos ; souligné au survol et au focus clavier */
-.breadcrumb a {
-  text-decoration: none;
-}
-
-.breadcrumb a:hover,
-.breadcrumb a:focus-visible {
-  text-decoration: underline;
+  color: var(--gray-11);
 }
 
 /* ── Facettes de structure (components/Facets.tsx, docs/composants/facettes.md) ── */
@@ -615,8 +437,8 @@ details[open] > summary .chevron {
   min-width: 0;
 }
 
-/* Panneau (components/Panel.tsx) : son contenu, puis à droite la bande qui le replie ; replié,
-   il ne reste que la bande */
+/* Panneau (components/Panel.tsx) : son contenu (Volumes 9,5 rem, Contents 22 rem), puis à
+   droite la bande qui le replie ; replié, il ne reste que la bande */
 .panel {
   position: sticky;
   top: 0;
@@ -627,27 +449,35 @@ details[open] > summary .chevron {
 .panel-body {
   box-sizing: border-box;
   overflow-y: auto;
-  padding: var(--space-3) var(--space-2);
+  padding: var(--space-4) var(--space-2);
 }
 
 .panel-volumes {
-  width: var(--panel-volumes);
+  width: 9.5rem;
 }
 
 .panel-contents {
-  width: var(--panel-contents);
+  width: 22rem;
 }
 
-/* bande de repli : chevron, puis titre écrit de bas en haut ; sépare aussi les colonnes */
+/* bande de repli : chevron, puis titre écrit de bas en haut ; sépare aussi les colonnes ; un
+   cran plus foncée au survol */
 .panel-strip {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  width: var(--strip-width);
-  padding: var(--space-3) 0;
-  background: var(--color-open);
+  width: 1.5rem;
+  padding: var(--space-4) 0;
+  font-family: inherit;
+  background: var(--gray-2);
   border: 0;
+  cursor: pointer;
+}
+
+.panel-strip:hover {
+  color: var(--gray-12);
+  background: var(--gray-3);
 }
 
 .panel-strip-title {
@@ -659,18 +489,17 @@ details[open] > summary .chevron {
 .volume-cards {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-4);
 }
 
 .volume-card {
   position: relative;
-  width: var(--card-width);
+  width: 8rem;
 }
 
-/* vignette provisoire : un aplat en relief, l'année et le nom du volume dessus ; un clic met le
-   focus sur le volume */
+/* vignette provisoire : une carte de Radix (relief, survol), l'année et le nom du volume dessus ;
+   un clic met le focus sur le volume */
 .volume-thumb {
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -679,19 +508,18 @@ details[open] > summary .chevron {
   width: 100%;
   aspect-ratio: 3 / 4;
   padding: var(--space-2);
-  border: 0;
-  border-radius: var(--radius-card);
+  text-align: center;
 }
 
 .volume-name {
   overflow-wrap: anywhere;
 }
 
-/* focus : vignette cernée de l'anneau du focus clavier, encoche pointée vers Contents, qui
-   montre son arbre */
+/* focus (le volume regardé) : vignette cernée, encoche pointée vers Contents, qui montre son
+   arbre */
 .volume-card[data-focus] .volume-thumb {
-  outline: var(--ring);
-  outline-offset: var(--ring-offset);
+  outline: 2px solid var(--gray-12);
+  outline-offset: 2px;
 }
 
 .volume-card[data-focus]::after {
@@ -701,93 +529,46 @@ details[open] > summary .chevron {
   right: -0.75rem;
   border: 0.5rem solid transparent;
   border-right-width: 0;
-  border-left-color: var(--color-text);
+  border-left-color: var(--gray-12);
 }
 
-/* sélection : une grosse coche ronde sur la vignette, case native redessinée */
+/* sélection : une grosse coche ronde sur la vignette ; la case de Radix, ronde */
 .volume-box {
   position: absolute;
   top: var(--space-2);
   left: var(--space-2);
-  appearance: none;
-  width: var(--select-size);
-  height: var(--select-size);
-  margin: 0;
-  border: 2px solid var(--color-muted);
-  border-radius: 50%;
-  background: var(--color-background) center / 1rem no-repeat;
-  cursor: pointer;
-}
-
-.volume-box:hover {
-  border-color: var(--color-text);
-}
-
-.volume-box:checked {
-  border-color: var(--color-text);
-  background-color: var(--color-text);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.5 3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --checkbox-size: 1.5rem;
+  --checkbox-border-radius: 50%;
 }
 
 /* Arbre des rubriques (Contents) : simple retrait par niveau, sans guides */
 .tree .tree {
-  padding-left: var(--tree-indent);
+  padding-left: 1.25rem;
 }
 
-/* ligne de l'arbre (voir « Ligne ») : case | intitulé | décompte */
+/* ligne de l'arbre (voir « Ligne ») : case | intitulé | décompte, centrés (intitulé sur une
+   ligne) */
 .tree-line {
   grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
   gap: var(--space-2);
 }
 
-.tree-box {
-  margin: 0;
-  accent-color: var(--color-text);
-  translate: 0 0.125rem;
-}
-
-/* Apply et Clear : en haut de Contents, fixés au-dessus de l'arbre qui défile, toujours là ;
-   les deux moitiés d'un même bouton. Colorés quand ils servent, inversés au survol ; estompés
-   sinon. Clear est dans son propre formulaire, transparent pour la grille. */
+/* All et Clear (boutons de Radix Themes) : en haut de Contents, fixés au-dessus de l'arbre qui
+   défile, toujours là, chacun sur la moitié de la largeur */
 .facet-actions {
   position: sticky;
-  top: calc(-1 * var(--space-3));
+  top: calc(-1 * var(--space-4));
   z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  margin-top: calc(-1 * var(--space-3));
-  padding: var(--space-3) 0 var(--space-2);
+  gap: var(--space-2);
+  margin-top: calc(-1 * var(--space-4));
+  padding: var(--space-4) 0 var(--space-2);
   background: var(--color-background);
 }
 
-.facet-actions > form {
-  display: contents;
-}
-
-.facet-action {
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--size-small);
-  color: var(--color-text);
-  background: var(--color-action);
-  border: 1px solid var(--color-text);
-}
-
-.facet-apply {
-  border-radius: var(--radius-card) 0 0 var(--radius-card);
-}
-
-/* les deux traits du milieu superposés ; celui d'un bouton actif passe devant */
-.facet-actions > form > .facet-action {
-  margin-left: -1px;
-  border-radius: 0 var(--radius-card) var(--radius-card) 0;
-}
-
-.facet-action:enabled {
-  position: relative;
-}
-
-.facet-action:disabled {
-  color: var(--color-muted);
-  background: var(--color-background);
-  border-color: var(--color-guide-faded);
+/* pendant qu'une nouvelle sélection se charge, la vue est estompée */
+.explorer:has(> .facets[aria-busy="true"]) > .view {
+  opacity: 0.5;
 }

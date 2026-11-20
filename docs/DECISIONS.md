@@ -1,96 +1,130 @@
 # Décisions structurantes
 
-Une ligne par décision, la plus récente en haut.
+Les décisions en vigueur, par thème. Une décision remplacée est réécrite, pas
+empilée : l'historique est dans `git log` et les PR. Une alternative écartée
+n'est notée que si elle risque de revenir sur la table.
 
-- 2026-11-20 — Interface : passage à Radix Themes (sprint 11) pour une interface stylée et homogène : ses composants pour les contrôles (boutons, cases, champ de recherche), la fiche (DataList) et les vignettes (Card) ; ses jetons (couleurs, espacements, rayons) partout, y compris dans ce qui reste fait main (arbre de Contents, lignes de la Liste, guides). Allège « natif d'abord » : une case Radix n'est pas une case native, les facettes demandent du script. Écartés après une maquette : Primer React (actif et inactif mal distingués, identité de GitHub, erreur d'hydratation) et shadcn/ui (Tailwind obligatoire, feuille de style à réécrire, code copié à entretenir).
-- 2026-11-20 — Facettes toujours conformes à l'URL, seule source de la sélection : après toute navigation, les cases reprennent les coches de l'URL ; focus et dépliage gardés, chemin de la sélection déplié en plus ; une sélection qui n'est pas une rubrique est située (sa rubrique dépliée), pas cochée. Apply et Clear en haut de Contents, toujours là, inactifs quand ils ne servent pas ; Clear applique aussitôt une sélection sans coche en gardant le texte. Pas de filtre à la coche (`docs/IDEES.md`). Remplace « Apply en bas de Contents, visible seulement s'il y a des changements » (20 novembre).
-- 2026-11-20 — Requête vide : rien n'est sélectionné, la vue le dit (« Nothing to show ») ; plus d'entrée par défaut ni de redirection. Avec un texte sans rubrique cochée, la recherche porte toujours sur tout l'annuaire. Remplace « requête vide → sélection par défaut » (18 et 19 novembre).
-- 2026-11-20 — Styles : ce qui se ressemble d'un composant à l'autre est écrit une fois (classe partagée, sélecteurs groupés, jeton), quitte à accepter une faible différence de rendu ; la feuille est rangée par sections (jetons, base, texte imprimé, styles partagés, composants). Les règles d'état sans rendu (coches des facettes) sont des fonctions pures dans `lib/`, testées sans navigateur ; les types rendus par les requêtes sont séparés du SQL (`lib/query/types.ts`).
-- 2026-11-20 — Facettes de structure (`docs/DESIGN.md`, `docs/composants/facettes.md`) : panneaux Volumes et Contents en colonnes de Miller, collés à gauche, repliables par une bande à droite et liés par niveau ; vue centrée dans la place restante. Coche ronde sur la vignette = sélection du volume (tout ou rien), clic sur la vignette = focus (Contents montre son arbre). Une rubrique cochée prend tout son sous-arbre, cases des descendants couvertes ; volume sélectionné si une rubrique au moins l'est ; nœuds hors de toute rubrique sélectionnables par la recherche seulement. Intitulés dans la casse imprimée, retrait simple, décompte des entrées (filtré par le texte cherché). Arbre déplié jusqu'aux rubriques cochées ; focus sur le volume de la première.
-- 2026-11-20 — Requête : `subtree` répétable, union des sous-arbres (chaque nœud une fois). Le champ de recherche et les cases des facettes forment un seul formulaire GET natif (`form="query"`) : la recherche porte sur les rubriques cochées, sur tout l'annuaire si aucune ne l'est. Remplace « le champ de recherche envoie `text` seul » (19 novembre). « Apply selection » en bas de Contents, visible seulement s'il y a des changements ; un peu de script pour propager les coches, toujours sans `nuqs`.
-- 2026-11-20 — Sélection et focus distingués dans toute l'application (`docs/DESIGN.md`) : la sélection est ce que l'on retient (critères, dans l'URL, montrée par les vues, exportée) ; le focus est ce que l'on regarde (volume dont Contents montre l'arbre, nœud déplié dans la Liste), sans changer la sélection, hors de l'URL pour l'instant. Cases à cocher pour la sélection, état cerné ou ouvert pour le focus.
-- 2026-11-19 — Requête : tous les critères sont facultatifs et se combinent (conjonction), sans cas particulier ; requête vide → sélection par défaut (`proxy.ts`). Chaque point d'entrée commence une nouvelle sélection : le lien d'un nœud envoie `subtree` seul, le champ de recherche `text` seul, qui cherche donc dans tout l'annuaire. Restreindre la recherche à des rubriques viendra par une facette (`subtree` + `text`, déjà valide). Remplace « paramètre absent : requête invalide » (18 novembre). Chercher dans la rubrique ouverte a été essayé et jugé déroutant.
-- 2026-11-19 — Recherche par texte (`?text=`, scénario 2) : phrase entière, exacte, sans accents ni casse (`ILIKE` sur `immutable_unaccent`, servi par l'index trigrammes en place), sur tous les types de nœud. Écartées après mesure (`docs/IDEES.md`) : similarité par trigrammes (trop de bruit : « paix » → « Paille ») et plein texte de PostgreSQL (aucune tolérance aux graphies, racinisation incohérente, changement de modèle).
-- 2026-11-19 — Avec un texte, la sélection part de l'index trigrammes puis garde le sous-arbre : partir du sous-arbre passait de 2 à 60 ms au plan générique des requêtes préparées (après cinq appels).
-- 2026-11-19 — Contexte : les rubriques ancêtres de tous les nœuds sélectionnés qui n'en font pas partie, chacune une fois, dans l'ordre de lecture ; la vue Liste trie contexte et sélection par ordre de lecture avant de regrouper par parent. Remplace « rubriques ancêtres du nœud désigné, rangées par profondeur » (18 novembre).
-- 2026-11-19 — Champ de recherche : composant `SearchForm` indépendant de la vue (Liste aujourd'hui, Carte ou Page plus tard), élément natif `<search>` et `<form method="get">` sans script ni `action` ; « No match. » quand la sélection est vide. `nuqs` reporté de nouveau. Apparence choisie parmi trois variantes : un trait dessous (gris clair, foncé au focus), ni fond ni cadre, loupe à gauche ; « × » à droite pendant une recherche, lien natif vers `?` (sans critère, donc la sélection par défaut), à la place de celui de Chromium.
-- 2026-11-19 — Tout rendre, même une recherche plus grosse que le plus gros sous-arbre (« rue » : 17 402 nœuds) ; pagination toujours reportée.
-- 2026-11-19 — Pas de racine unique dans l'export de 1807 (133 racines) : demandée à numrev (`docs/demandes/numrev_noeud_racine.md`), rien de contourné.
-- 2026-11-19 — Guides de niveau en deux intensités : à hauteur de chaque ligne, seul le guide de sa section est gris foncé ; ceux des sections englobantes sont estompés (`#c9ced4`) le long de leurs sous-groupes, coude et boule compris. Précise « une seule couleur » (même jour).
-- 2026-11-19 — Fiche : fil d'Ariane en dernier, sur une ligne (« › »), intitulés bornés et tronqués sauf la section la plus proche. Remplace « fil d'Ariane, puis clés / valeurs » (18 novembre).
-- 2026-11-19 — Vue Liste à plat (sprint 6, `docs/composants/noeud-liste.md`) : plus de cartes de section ; la hiérarchie se lit par des guides de niveau (filet gris foncé de 2 px, une seule couleur, coudé vers le titre, boule à la fin), retrait d'environ 11 px par niveau ; titres toujours fixés et empilés, coude compris ; lignes jointives, sans écart. Remplace « sections en cartes emboîtées » (19 novembre, sprint 5).
-- 2026-11-19 — États de la vue Liste : survol = fond gris bleuté `#f6f8fa`, sans relief ; ouvert = ligne et fiche en une carte en relief sur ce même fond. Remplace le soulèvement au survol et le grège `#f6f6f4`.
-- 2026-11-19 — Ligne de la vue Liste : chevron devant le texte de tout élément, tourné quand il est ouvert ; colonnes texte | page. Remplace « Open » : lien vers `?subtree=<uuid>` en icône (↗) juste après le texte, nommé « Open on its own page », visible au survol, ouvert ou au focus, décrit par le texte de sa ligne.
-- 2026-11-19 — Texte de la vue Liste : titres de section tout en capitales grasses (la casse imprimée varie) ; sujet en petites capitales sur son fond bleu, plus en gras (il rivalisait avec les titres) ; les trois fonds de champs gardés à 45 % ; afficher ou masquer chacun : réglage pour plus tard (`docs/IDEES.md`).
-- 2026-11-19 — Police : Fira Sans pour toute l'interface (vraies petites capitales), chargée par `next/font/google` (fourni par Next : aucun paquet ajouté, police copiée sur le site au build, aucune requête à Google). Remplace « police du système » (18 novembre).
-- 2026-11-19 — Poids des très grosses rubriques accepté pour le sprint 5 (66 Mo et ~10 s pour 13 736 nœuds, 3 rubriques sur 602 au-delà de 1 000) : ni fiche chargée au dépliage ni pagination pour l'instant ; mesures dans `docs/IDEES.md`.
-- 2026-11-19 — Sélection d'un seul nœud : montrée comme toute sélection (ses cartes de contexte, sa ligne dépliée en sa fiche) ; plus de fiche seule en pleine page. Un seul chemin de rendu ; la page garde un seul `h1`, le texte du nœud désigné.
-- 2026-11-19 — `context` renvoie des nœuds complets (même type que `resolve`, ancres comprises, empans vides) au lieu de `{ id, text }` : le contexte se montre comme la sélection, toujours rendu à part.
-- 2026-11-19 — Vue Liste (`docs/composants/noeud-liste.md`) : sections en cartes emboîtées (retrait à gauche seulement, colonnes de droite alignées) ; un seul élément pour tout nœud, ligne texte | Open | page qui déplie la fiche du sprint 4 juste dessous ; titres de section fixés en haut et empilés ; deux règles d'état communes (survol : l'élément et sa carte se soulèvent ; ouvert : ligne et fiche en une carte grège en relief) ; les types ne se distinguent que par leur texte.
-- 2026-11-19 — Densité compacte : champs sur fond pastel aux coins arrondis (SUBJ `#b9e6ff` en gras, DESC `#afffe2`, ADDR `#fffca9`), sans légende. Remplace le texte souligné avec noms sous le trait (18 novembre), jugé trop chargé.
-- 2026-11-19 — Dépliage natif `<details>` / `<summary>` pour tout nœud, titres compris, sans JavaScript ; le `<details>` est rendu transparent (`display: contents`) pour que la ligne d'un titre se fixe par rapport à sa carte.
-- 2026-11-19 — « Open » : lien `?subtree=<uuid>` (une section ouvre sa liste, un autre nœud sa fiche), pastille visible au survol, ouvert ou au focus.
-- 2026-11-19 — Contexte : les rubriques ancêtres sont des cartes comme les autres, ne contenant que la sélection ; plus de fil d'Ariane ni de décompte au-dessus de la liste. Remplace « contexte visible, distinct de la sélection » (18 novembre) : le contexte prend les mêmes représentations, n'est jamais compté dedans.
-- 2026-11-19 — Pagination reportée : la vue Liste rend toute la sélection, même le plus gros sous-arbre (13 737 nœuds).
-- 2026-11-18 — Fiche d'un nœud (vue Liste, densité détaillée) : fil d'Ariane des rubriques (liens vers leur sous-arbre), puis clés / valeurs en trois groupes : Text (texte complet, emphase en italique), champs (un par empan, valeur `normalized`), métadonnées (Type, Source, Identifier).
-- 2026-11-18 — Texte souligné (champs soulignés de la couleur de leur libellé, nom `subj` / `desc` / `loc` en petit sous le début du trait) : représentation de la densité compacte, pas de la fiche. Écartés : badges encadrés avant les champs (hachaient le texte).
-- 2026-11-18 — Arrivée sans requête : `proxy.ts` redirige vers une entrée par défaut (pas de page d'accueil pour l'instant) ; requête invalide : page d'erreur au statut 400 par le même proxy (une page de l'App Router ne sait pas répondre 400) ; uuid inconnu : 404 (`notFound()`).
-- 2026-11-18 — Organisation Next : `app/` (pages), `components/` (composants React), `lib/text/` (découpe du texte imprimé, testée par Vitest), `lib/db/server.ts` (pool partagé du serveur). Styles en CSS global, jetons en propriétés personnalisées ; police du système.
-- 2026-11-18 — `sharp` 0.35 n'a plus de script d'installation : rien à déclarer dans `allowBuilds` (contrairement à ce que prévoyait la décision du sprint 3).
-- 2026-11-18 — `resolve` lit le sous-graphe en trois requêtes parallèles (nœuds, empans, ancres), en lignes simples rattachées en TypeScript : regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent sur les gros sous-arbres (mesures : `docs/MODELE_DONNEES.md`, section 4). Remplace « une seule requête SQL par résolution ».
-- 2026-11-18 — Chaque nœud du sous-graphe porte ses empans et ses ancres ; le contexte (rubriques ancêtres, rangées par profondeur dans `parent_closure`) est lu à part par `context`, jamais compté dans la sélection.
-- 2026-11-18 — Interface en anglais par défaut, internationalisation plus tard (`docs/IDEES.md`) ; le texte des annuaires n'est jamais traduit.
-- 2026-11-18 — Fiche de composant du nœud dans la vue Liste (`docs/composants/noeud-liste.md`) : texte de numrev tel quel, emphase en italique, champs marqués d'un fin soulignement coloré par libellé, une seule police sans empattements.
-- 2026-11-18 — Concept de design (`docs/DESIGN.md`) : objectif = exploration visuelle, sélection et export du contenu des annuaires ; cinq domaines (Contenu, Structure, Document, Espace, Temps) qui servent indépendamment à sélectionner (critères combinés, dans l'URL) et à afficher (une vue dispose la sélection selon un domaine) ; fonctionnalités : sélectionner, suivre, inspecter, exporter.
-- 2026-11-18 — Principes d'affichage : chaque vue montre la sélection dans son contexte, distinct d'elle ; densité automatique (un nœud → fiche, plusieurs → compacte) ; une vue à la fois pour commencer, focus pensé comme partagé ; la page source à un clic depuis tout nœud.
-- 2026-11-18 — Mesurer et relier écartés (`docs/IDEES.md`) : l'analyse revient aux historiens, à partir de l'export.
-- 2026-11-18 — Sprint 3, dépendances : `next`, `react`, `react-dom`, et en développement `@types/react`, `@types/react-dom` (versions exactes, prises au début du sprint) ; rien d'autre (pas d'ESLint, de bibliothèque de styles ni de tests React). Next.js 16.4.6 vérifié avec TypeScript 7 et `postgres` v4 sur une application d'essai.
-- 2026-11-18 — `nuqs` reporté : au sprint 3 la page ne fait que lire `?subtree=` côté serveur, ce que fait déjà `lib/query/query.ts`. À reprendre à la première modification de la requête dans le navigateur (voir `docs/IDEES.md`).
-- 2026-11-18 — Avec Next.js, `tsconfig.json` passe à `module: esnext` et `moduleResolution: bundler` (Next impose `bundler`, incompatible avec `nodenext`), plus `jsx`, `lib` `dom`, le plugin `next` et les options que Next ajoute d'office (`allowJs`, `incremental`, `esModuleInterop`, `isolatedModules`). La règle Biome `useImportExtensions` garde les extensions `.ts` dont Node a besoin pour les scripts. CI : étape `pnpm build` ; `.next/` et `next-env.d.ts` ignorés ; `sharp` (optionnel de Next) déclaré dans `allowBuilds`.
-- 2026-11-18 — `follows` stocké dans `node.next_entry_id` (clé étrangère sans cascade), calculé à l'import : `member_of`, `child_of` et `follows` sont tous trois portés par une colonne. Remplace « `follows` calculé, non stocké » (30 octobre), revu une fois mesurées les requêtes de `lib/query/`.
-- 2026-11-18 — Nœuds d'un volume insérés en une seule instruction (`jsonb_to_recordset`) : clé étrangère vers l'entrée suivante vérifiée en fin d'instruction (Drizzle ne déclare pas de contrainte différée).
-- 2026-11-18 — Table `parent_closure (ancestor_id, descendant_id)` : fermeture des nœuds qui ont des enfants (les sections, dans numrev), calculée à l'import, pour lire un sous-arbre sans parcours récursif ; exacte sans hypothèse sur le type des parents ni sur l'ordre de lecture.
-- 2026-11-18 — Pas de colonne fondée sur l'hypothèse « rubriques d'un seul tenant » : à mieux vérifier dans numrev d'abord.
-- 2026-11-18 — Format de l'API JSON : à décider à la première API HTTP, selon une pratique standard (OpenAPI ou plus récent), pas un formalisme ad hoc.
-- 2026-11-18 — Tests contre une vraie base : `<base>_test` recréée par Vitest à chaque lancement, en local (conteneur Docker) et en CI (service PostgreSQL) ; `lib/db/client.ts` partagé par l'import, les tests et `lib/query/`.
-- 2026-11-18 — Arcs du sous-graphe déduits en TypeScript des lignes de la requête (parent, entrée suivante) : une seule requête SQL par résolution.
-- 2026-11-18 — Uuid inconnu : erreur (`NodeNotFoundError`) ; uuid mal formé, paramètre absent ou répété : requête invalide (`QueryError`).
-- 2026-11-18 — Filtre `subtree` générique : un nœud de n'importe quel type et tous ses descendants ; sans filtre explicite, tout ce qui est désigné est rendu (`lib/query/` ne juge pas de la pertinence).
-- 2026-11-18 — Motifs d'URL en anglais (application internationale) : `?subtree=<uuid>`.
-- 2026-11-18 — Requêtes conçues par scénarios (`docs/SCENARIOS.md`) : chacun donne un filtre combinable et ses tests.
-- 2026-11-18 — PR fusionnées par merge commit (ni squash ni rebase) : les hashes cités dans le journal restent valides.
-- 2026-11-18 — Renovate : chaque lundi matin (heure de Paris), mises à jour mineures et correctifs en une PR, majeures à part, aucune fusion automatique.
-- 2026-11-18 — `main` protégée, administrateurs compris : fusion par PR seulement, check `verification` vert exigé, sans relecture obligatoire (mainteneur seul), ni force-push ni suppression.
-- 2026-11-18 — CI GitHub Actions (job `verification`) : lint, typecheck, tests ; pnpm et Node 26 par `pnpm/setup`, lockfile figé ; pas de base PostgreSQL tant que les tests n'en ont pas besoin.
+## Projet et outillage
 
-- 2026-10-30 — Un sprint = une branche ; `main` ne reçoit que des PR relues et fusionnées par l'utilisateur ; dépôt GitHub privé `hueynemud/latynnaxplorer`.
+- Un sprint = une branche ; `main` ne reçoit que des PR relues et fusionnées
+  par l'utilisateur, par merge commit (les hashes cités restent valides).
+  Dépôt GitHub privé `hueynemud/latynnaxplorer` ; `main` protégée (check
+  `verification` exigé, ni force-push ni suppression).
+- CI GitHub Actions (job `verification`) : lint, typecheck, tests avec un
+  service PostgreSQL, build. Renovate le lundi matin : mineures groupées,
+  majeures à part, aucune fusion automatique.
+- Node 26, pnpm 12, dépendances en versions exactes. Next.js (App Router),
+  `module: esnext` et `moduleResolution: bundler` ; la règle Biome
+  `useImportExtensions` garde les extensions `.ts` dont Node a besoin.
+- Tests contre une vraie base, `<base>_test`, recréée par Vitest à chaque
+  lancement. Les règles d'état sans rendu (coches des facettes) sont des
+  fonctions pures de `lib/`, testées sans navigateur ; les types rendus par
+  les requêtes sont séparés du SQL (`lib/query/types.ts`).
+- Interface en anglais ; le texte des annuaires n'est jamais traduit.
 
-- 2026-10-30 — Lecture rapide sans changer le modèle : index trigrammes partiels par `kind` / `label`, index couvrant pour `follows`, `VACUUM (ANALYZE)` après import, `jit=off`, `random_page_cost=1.1`.
-- 2026-10-30 — Éléments hors champ importés comme nœuds `out_of_scope` (numrev-structure/2), arc `member_of` vers leur rubrique ; `follows` inchangé.
-- 2026-10-30 — Éléments hors champ : futurs nœuds, mais seulement quand numrev les exportera comme entités (uuid, parent) ; pas importés d'ici là.
-- 2026-10-30 — `follows` = l'entrée suivante dans cet ordre (entrées seulement), calculée, non stockée.
-- 2026-10-30 — Ordre de lecture = attribut `node.document_reading_order`, commun à tous les nœuds du volume (remplace `rank` par type).
+## Données et modèle (`docs/MODELE_DONNEES.md`)
 
-- 2026-10-30 — Étendue actuelle : données seulement (modèle, import, validation) ; pas de site, pas de CI ni Renovate avant le sprint GitHub.
-- 2026-10-30 — PostgreSQL 17 (et non 18) : avec 18, drizzle-kit 0.31 recrée les contraintes composites à chaque push.
-- 2026-10-30 — Import validé contre les JSON Schema de numrev (copiés dans `scripts/schemas/`) avec ajv ; volume.json a son propre schéma.
-- 2026-10-30 — Node 26, pnpm 12, dépendances en versions exactes.
+- numrev fait foi : import tel quel, validé contre ses JSON Schema (ajv),
+  aucun rattrapage ; un défaut se demande à numrev (`docs/demandes/`).
+- PostgreSQL 17 (avec 18, drizzle-kit 0.31 recrée les contraintes
+  composites à chaque push), extensions `pg_trgm` et `unaccent`. `data/`
+  hors Git ; un volume par dossier `data/<volume>/`, ses métadonnées Dublin
+  Core dans `volume.json`.
+- Une table `node` pour tous les nœuds, typés `section`, `entry` ou
+  `out_of_scope` ; un groupe à accolade est un seul nœud. Empans et ancres
+  dans leurs tables (`span`, `anchor`).
+- Arcs portés par des colonnes, sans table d'arcs : `member_of` et
+  `child_of` par `parent_id`, `follows` par `next_entry_id` (entrée suivante
+  dans l'ordre de lecture du volume, à travers les sections, calculée à
+  l'import). Ordre de lecture : `document_reading_order`, commun à tous les
+  nœuds.
+- `parent_closure` (ancêtre, descendant), calculée à l'import : sous-arbres
+  et ancêtres sans parcours récursif.
+- Pas de colonne fondée sur l'hypothèse « rubriques d'un seul tenant »,
+  tant que numrev ne la garantit pas.
 
-- 2026-10-30 — Données d'un volume dans `data/<volume>/` (les JSON de 1807 déplacés dans `data/1807/`).
-- 2026-10-30 — Géocodage hors modèle pour l'instant : sprint dédié, rattaché aux uuid des empans ADDR.
+## Requête (`docs/SCENARIOS.md`, `lib/query/`)
 
-- 2026-10-30 — Métadonnées d'un volume dans `data/<volume>/volume.json` : éléments Dublin Core + `temporal` {start, end} en AAAA-MM-JJ.
-- 2026-10-30 — Aucune donnée versionnée pour l'instant (`data/` entièrement hors Git).
-- 2026-10-30 — Pas de table de liens temporels : extension future, sprint dédié.
-- 2026-10-30 — Sections et entrées traitées de la même manière ; schéma minimal et commun.
-- 2026-10-30 — numrev fait foi : import tel quel, aucun rattrapage des données dans l'application.
-- 2026-10-30 — Nœud = entrée numrev (un groupe à accolade est un seul nœud, comme dans l'export).
+- La requête se lit dans l'URL et s'y réécrit à l'identique ; paramètres en
+  anglais : `subtree` (répétable : union des sous-arbres) et `text`. Tous
+  facultatifs, combinés en conjonction ; sans critère, rien n'est
+  sélectionné. Sous-graphe toujours induit strict ; `lib/query/` ne juge
+  pas de la pertinence.
+- Requête mal formée : 400 (`proxy.ts`) ; uuid inconnu : 404.
+- Recherche par texte : phrase entière, exacte, sans accents ni casse
+  (`ILIKE` sur `immutable_unaccent`, index trigrammes), sur tous les nœuds ;
+  dans les rubriques cochées, sinon tout l'annuaire. Écartées après mesure :
+  similarité par trigrammes (trop de bruit) et plein texte de PostgreSQL
+  (`docs/IDEES.md`, « Recherche tolérante »).
+- `resolve` lit nœuds, empans et ancres en trois requêtes parallèles,
+  rattachés en TypeScript (regrouper en SQL est deux fois plus lent) ; arcs
+  déduits en TypeScript. Avec un texte, la sélection part de l'index
+  trigrammes : partir du sous-arbre passe de 2 à 60 ms au plan générique des
+  requêtes préparées.
+- Contexte (`context`) : les rubriques ancêtres de la sélection qui n'en font
+  pas partie, nœuds complets, jamais comptés dedans.
+- Fiche d'un nœud : `GET /api/detail/<uuid>`, Route Handler interne en JSON
+  (Next réserve les fonctions serveur aux écritures). Ce n'est pas l'API
+  publique, dont le format suivra une pratique standard (OpenAPI ou plus
+  récent), à trancher avec l'export.
 
-- 2026-10-30 — Recherche insensible aux accents : extension PostgreSQL `unaccent` en plus de `pg_trgm`.
-- 2026-10-30 — Succession (`follows`) entre entrées seulement, dans l'ordre de lecture de tout l'annuaire, à travers les sections.
-- 2026-10-30 — Sous-graphe toujours induit strict : aucun nœud ajouté implicitement.
-- 2026-10-30 — Nœuds = entités typées `entry` et `section` ; volume, page et empan restent des attributs.
-- 2026-10-30 — Arcs documentaires `member_of` (entrée → section) et `child_of` (section → section) portés par des colonnes, sans table d'arcs générique.
-- 2026-10-30 — Un seul annuaire pour commencer : pas de liens temporels dans le modèle pour l'instant.
-- 2026-10-30 — IIIF reporté : le PDF sera servi plus tard par un serveur IIIF.
-- 2026-10-30 — `data/` exclu du dépôt Git.
+## Interface (`docs/DESIGN.md`)
+
+- Objectif : explorer, sélectionner et exporter le contenu des annuaires ;
+  cinq domaines (Contenu, Structure, Document, Espace, Temps) servent
+  indépendamment à sélectionner et à afficher. Mesurer et relier reviennent
+  aux historiens, à partir de l'export.
+- Sélection (ce que l'on retient, dans l'URL) et focus (ce que l'on regarde,
+  hors de l'URL) distingués partout.
+- Radix Themes pour toute l'interface, thème iris sur gris mauve : ses
+  composants et ses jetons ; `app/globals.css` ne garde que ce que Radix n'a
+  pas, et écrit sur place ce qui ne sert qu'une fois. Feuille de Radix
+  importée entière (la découper ne gagnerait qu'environ 23 Ko compressés).
+  Écartés sur maquette : Primer React (états mal distingués, identité de
+  GitHub), shadcn/ui (Tailwind obligatoire). Police Fira Sans (vraies
+  petites capitales), servie par `next/font`.
+- Une seule navigation : seules les facettes et la recherche changent la
+  sélection, aucun lien de la Liste. Pas de `nuqs`.
+- Script assumé : sans lui, les facettes et la fiche au dépliage ne
+  marchent pas.
+
+## Vue Liste (`docs/composants/noeud-liste.md`)
+
+- Liste à plat : la hiérarchie se lit par des guides de niveau (seul celui
+  de la section la plus proche est foncé) et des titres de section fixés et
+  empilés ; le contexte est rendu comme la sélection.
+- Un seul élément pour tout nœud : une ligne (chevron, texte | page) qui
+  déplie sa fiche par `<details>` natif ; deux états, survol et ouvert (en
+  relief) ; les types ne se distinguent que par leur texte.
+- Champs sur fond teinté transparent : sujet (violet, petites capitales),
+  description (sarcelle), adresse (jaune).
+- Fiche en DataList (texte, champs, métadonnées, fil d'Ariane en texte),
+  demandée au premier dépliage ; une sélection d'un seul nœud l'a rendue et
+  dépliée d'emblée.
+- Tout est rendu, sans pagination pour l'instant (« Listes particulières »,
+  13 737 nœuds : 26 Mo, 1,2 s en production ; `docs/IDEES.md`).
+- Vue vide : un grand aplat, « Nothing to show » sans critère, « No match »
+  sinon.
+
+## Facettes (`docs/composants/facettes.md`)
+
+- Colonnes de Miller collées à gauche (Volumes | Contents | vue), chacune
+  repliable par une bande à droite, liées par niveau.
+- Volume : coche ronde, pleine si tout le volume est coché, tiret s'il l'est
+  en partie ; un clic le coche entier, ou le vide s'il l'était. Clic sur la
+  vignette = focus, Contents montre son arbre. Rubrique cochée = tout son
+  sous-arbre, descendants couverts (cochés en pâle) ; cliquer une case
+  couverte ne garde qu'elle (la rubrique qui la couvre est décochée) : « A
+  sauf B » ne s'exprime pas en union de sous-arbres. Une rubrique dont une
+  descendante est cochée a un tiret (visible même branche repliée) ; un
+  clic la coche entière. Les nœuds hors de toute rubrique ne se sélectionnent que par la
+  recherche (racine demandée à numrev).
+- Filtrer à la coche : chaque coche s'applique aussitôt, par une navigation
+  client qui remplace l'entrée d'historique, après 300 ms sans nouvelle
+  coche ; la vue est estompée pendant le chargement. Les cases sont l'état
+  du composant, lu une fois depuis l'URL, que l'URL suit : aucune
+  synchronisation.
+- Contents est local au volume regardé (facettes hiérarchiques) : All et
+  Clear ne touchent que lui.
+- Intitulés dans la casse imprimée, décompte des entrées filtré par le texte
+  cherché ; à l'arrivée, l'arbre est déplié jusqu'aux coches.

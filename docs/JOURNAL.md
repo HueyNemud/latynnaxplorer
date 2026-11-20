@@ -1,770 +1,107 @@
 # Journal de développement
 
-## 2026-11-20 — Sprint 10 : facettes et Liste, toujours d'accord
-
-**Fait**
-- PR #19 (sprint 9) fusionnée ; branche `feat/facettes-et-liste`. Contenu
-  revu au départ : le filtre à la coche, prévu, est remplacé par des
-  boutons Apply et Clear (`docs/IDEES.md`).
-- Facettes conformes à l'URL : la navigation de Next gardait le composant,
-  dont l'état n'était lu qu'au premier rendu (B cochée, puis A ouverte
-  depuis la Liste : B restait cochée). Les cases reprennent maintenant les
-  coches de l'URL à chaque nouvelle sélection ; focus et dépliage gardés
-  (`onToggle`), chemin de la sélection déplié ; une entrée ouverte à part
-  est située (`pathTo`, `focusFor`, testées).
-- Sélection vide : plus d'entrée par défaut ; `proxy.ts` ne fait plus que
-  le 400 ; une requête vide ne sélectionne rien ; vue vide en grand aplat
-  avec ∅ (« Nothing to show », « No match »).
-- Apply et Clear en haut de Contents, deux moitiés d'un bouton, toujours
-  là ; Clear par son propre formulaire GET.
-- Vérifié sous Chromium (navigations client : lien de la Liste, Précédent,
-  entrée seule, dépliage à la main gardé, coche non appliquée abandonnée ;
-  Clear de bout en bout ; boutons fixés au défilement) et Firefox
-  (captures). 98 tests.
-
-**Décisions**
-- Voir `docs/DECISIONS.md` (20 novembre) : requête vide, facettes
-  conformes à l'URL, Apply et Clear, passage à Radix Themes.
-- Les boutons, jugés « extrêmement moches », ont conduit à comparer des
-  bibliothèques sur une maquette jetable (Radix Themes, Primer React ;
-  shadcn/ui discuté) : Radix Themes retenu pour toute l'interface, au
-  sprint 11. Les boutons restent provisoires d'ici là.
-
-**Remarques**
-- En mode dev, une recherche sur tout l'annuaire (« rue ») occupe le
-  serveur une minute et retarde les requêtes suivantes : penser à mesurer
-  en production.
-
-## 2026-11-20 — Sprint 9 : nettoyage du code
-
-**Fait**
-- PR #18 (sprint 8) fusionnée ; branche `refactor/nettoyage`. État des lieux
-  d'abord (lint, types et 77 tests au vert), contenu validé tel quel, plus
-  un audit des styles demandé en cours de route.
-- Doublons : intitulé sans emphase calculé une fois (`plainText`), pages
-  de la fiche (`pages`) déplacées dans `lib/text/` et testées ; icônes
-  dessinées une fois (`components/icons.tsx`) ; regroupements par
-  `Map.groupBy`.
-- Découpage : règles des coches des facettes en fonctions pures
-  (`lib/facets/selection.ts`, testées sans rendu), `Panel` dans son
-  fichier ; types rendus par les requêtes dans `lib/query/types.ts` (les
-  composants et `lib/text` n'importent plus le module SQL) ; `contains`
-  dans `lib/query/contains.ts`.
-- Styles : feuille rangée par sections ; ce qui se répétait écrit une fois
-  (ligne `.row` et chevron communs à la Liste et à l'arbre, texte
-  secondaire, titres, surface en relief, survols, bouton d'icône, anneau
-  du focus) ; réinitialisations des boutons, listes et `<summary>` dans la
-  base ; jetons `--width-view`, `--line-pad-y`, `--radius-small`,
-  `--tracking-caps`, `--ring`. Règle `.apply[hidden]` inutile retirée.
-- Docs : README et section 3 du modèle de données remis à jour ; fiches de
-  composant (jetons, ligne de l'arbre). `AGENTS.md`, écrit par `next dev`,
-  versionné.
-- 94 tests (77 avant). Rendu vérifié par 24 captures (états, survols,
-  focus, panneaux, erreurs) sous Chromium et Firefox, en production, avant
-  et après.
-
-**Décisions**
-- Voir `docs/DECISIONS.md` (20 novembre) : styles partagés dès que la
-  différence est faible.
-- Différences de rendu acceptées pour partager les styles : lignes de
-  l'arbre plus hautes de 2 px et chevron 2 px plus à gauche (ceux de la
-  Liste), anneau de la vignette à 2 px au lieu de 3, marges du lien d'un
-  nœud et rayon du « × » unifiés, marges des pages d'erreur celles de la
-  vue, plus de main sur une rubrique sans sous-rubrique.
-- Les arcs du sous-graphe, qu'aucune vue ne lit, sont gardés (modèle,
-  export à venir).
-
-**Pièges relevés**
-- Vérifier une factorisation : recompiler avec des règles temporaires qui
-  rétablissent les anciennes valeurs ; Firefox est alors identique au
-  pixel, Chromium ne diffère que par l'anticrénelage du texte (moins d'un
-  pixel), le positionnement relatif ayant changé d'élément.
-- Une capture de focus clavier : une touche, puis `focus()` ; parcourir la
-  page à la tabulation n'atteint pas la Liste derrière les 603 cases de
-  l'arbre.
-- `noDescendingSpecificity` de Biome : un sélecteur groupé tôt dans la
-  feuille (anneau du focus) gêne les règles plus loin ; un jeton (`--ring`)
-  évite de répéter la valeur.
-
-**Questions ouvertes**
-- Tests de rendu des composants : demanderaient une dépendance
-  (`docs/IDEES.md`).
-
-## 2026-11-20 — Sprint 8 : facettes de structure
-
-**Fait**
-- PR #17 (sprint 7) fusionnée ; branche `feat/facettes`. Séance de design
-  d'abord, comme aux sprints 5 et 6 : concept, maquette (`app/maquette/`,
-  non versionnée, supprimée à l'implémentation), fiche de composant
-  (`docs/composants/facettes.md`), puis requête et implémentation.
-- `docs/DESIGN.md` : section « Sélection et focus » (distinction valable
-  dans toute l'application) et section « Facettes ».
-- Requête : `subtree` répétable, la sélection est l'union des sous-arbres
-  (`UNION`, chaque nœud une fois même emboîtés) ; un uuid inconnu reste une
-  erreur parmi des uuid connus. `lib/query/facets.ts` : volumes, arbre des
-  rubriques et nombre d'entrées de chaque sous-arbre, filtré par le texte
-  cherché. Condition « contient le texte » partagée (`contains`).
-- `components/Facets.tsx` : panneaux Volumes et Contents en colonnes de
-  Miller, collés à gauche, repliables par une bande à droite et liés par
-  niveau ; carte de volume (coche ronde = sélection, vignette = focus,
-  cernée avec une encoche) ; arbre du volume au focus, cases qui couvrent
-  leurs descendants, décomptes ; « Apply selection » en bas de Contents,
-  seulement s'il y a des changements. Vue centrée dans la place restante.
-- `SearchForm` devient le formulaire de la requête (`#query`) : les cases
-  s'y rattachent par l'attribut `form` ; une case couverte, désactivée,
-  n'est pas envoyée. Effacer la recherche garde les rubriques.
-- Vérifié sous Chromium et Firefox (états, envoi, retour de l'URL) ; arbre
-  d'accessibilité de Chromium : bandes `expanded`, vignette `pressed`,
-  cases nommées, lignes dépliables nommées par leur intitulé seul.
-- Mesures sur 1807 : union des 43 rubriques de premier niveau
-  (22 068 nœuds) 11 ms en SQL ; décomptes 12 ms sans texte, 44 ms pour
-  « rue ». Page par défaut en production : 415 Ko (69 Ko compressés), dont
-  272 Ko de HTML pour l'arbre et environ 119 Ko de données pour le
-  composant client ; 53 ms.
-
-**Décisions**
-- Voir `docs/DECISIONS.md` (20 novembre) : sélection et focus, union des
-  sous-arbres, recherche dans les rubriques cochées, facettes.
-- Le volume n'est pas un critère : il est sélectionné si une rubrique au
-  moins l'est ; les nœuds hors de toute rubrique (90 dans 1807) ne se
-  sélectionnent que par la recherche. Le nœud racine demandé à numrev ne
-  bloque plus rien.
-
-**Pièges relevés**
-- Une constante exportée d'un module `"use client"` devient une référence
-  client côté serveur : l'identifiant du formulaire est exporté par
-  `SearchForm.tsx`, module serveur.
-- Une case dans un `<summary>` donne au `summary` un nom à rallonge
-  (intitulé deux fois et décompte) : `aria-labelledby` vers l'intitulé.
-- Biome (`noDescendingSpecificity`) : le chevron de l'arbre a sa propre
-  classe plutôt que de surcharger `.chevron` de la Liste.
-- Capture headless : `--window-size` ne suffit pas, il faut
-  `Emulation.setDeviceMetricsOverride`.
-
-**Questions ouvertes**
-- Écran étroit : les panneaux ouverts prennent 34,5 rem.
-- Poids de l'arbre sur les petites sélections (voir `docs/IDEES.md`).
-- Lecteur d'écran réel : case dans un `summary`, case couverte.
-
-## 2026-11-19 — Sprint 7 : sélectionner par le contenu
-
-**Fait**
-- PR #16 (sprint 6) fusionnée ; branche `feat/recherche`, étapes et choix
-  validés (`docs/SPRINTS.md`).
-- Recherche par texte (`?text=`, scénario 2 de `docs/SCENARIOS.md`) :
-  phrase entière, exacte, sans accents ni casse, sur l'index trigrammes en
-  place ; `%`, `_`, `\` pris à la lettre ; texte vide ignoré.
-- Tous les critères facultatifs, en conjonction ; le champ de recherche
-  cherche dans tout l'annuaire, le lien d'un nœud ouvre son sous-arbre.
-- `context` : rubriques ancêtres de tous les résultats ; `NodeList` trie
-  par ordre de lecture avant de regrouper (une ligne changée).
-- `components/SearchForm.tsx` : `<search>` et `<form method="get">`
-  natifs, indépendant de la vue ; « No match. » sans résultat.
-- Mesures sur 1807 (dix appels) : « rue de la Paix » `resolve` 1 à 2 ms ;
-  « rue » (17 402 nœuds) `resolve` 175 ms, `context` 105 ms en parallèle.
-- Vérifié sous Chromium et Firefox : regroupement sur cinq niveaux,
-  frères dans l'ordre de lecture, résultat unique déplié, envoi du
-  formulaire au clavier.
-- Demande à numrev : `docs/demandes/numrev_noeud_racine.md`.
-
-**Décisions**
-- Recherche exacte : la similarité par trigrammes ramenait trop de bruit,
-  le plein texte n'est pas tolérant aux graphies et sa racinisation est
-  incohérente sur ce corpus (mesures dans `docs/IDEES.md`).
-- `subtree` d'abord rendu facultatif, puis obligatoire (la recherche
-  restait dans la rubrique ouverte), puis de nouveau facultatif : chercher
-  dans la rubrique ouverte est déroutant. Une facette des rubriques
-  viendra plus tard.
-
-**Pièges relevés**
-- Requêtes préparées : après cinq appels, PostgreSQL peut passer à un plan
-  générique bien plus lent (2 → 60 ms) ; mesurer `resolve` répété, pas une
-  seule fois.
-- Biome (`useSemanticElements`) veut `<search>` plutôt que
-  `role="search"`.
-
-**Questions ouvertes**
-- Pas de racine unique dans 1807 : en attente de numrev.
-- Un champ vidé envoie `text=` : requête vide, retour à l'entrée par
-  défaut.
-
-## 2026-11-19 — Sprint 6, étape 2 : la vue Liste à plat
-
-**Fait**
-- Fira Sans servie par `next/font/google` (`app/layout.tsx`, romain et
-  italique, 400 et 600, `latin` et `latin-ext`), en tête de `--font` par
-  une variable CSS. Aucune dépendance de plus.
-- `components/NodeList.tsx` d'après la maquette : groupes (`.group`) à la
-  place des cartes, chevron, intitulé (`.label`) et lien en icône dans le
-  texte de la ligne ; colonnes texte | page. Section « Vue Liste » de
-  `app/globals.css` remplacée par celle de la maquette, sans préfixe ni
-  bloc de neutralisation ; jetons `--shadow-rest` et `--row-gap` retirés,
-  `--color-open` passé à `#f6f8fa`, jetons des guides et des icônes
-  ajoutés. Maquette supprimée (route et ligne de `.git/info/exclude`).
-- Réglages après revue : guides des sections englobantes estompés le long
-  de leurs sous-groupes (seul le guide de la section la plus proche reste
-  foncé) ; fil d'Ariane de la fiche en dernier, sur une ligne, intitulés
-  tronqués sauf le plus proche. Fiche de composant et décisions à jour.
-- Audit du code : type `ContextSection` retiré (`context` renvoie des
-  `SubgraphNode`), position des guides par une variable, troncature
-  commune aux titres et au fil d'Ariane, conteneur sans règle et
-  commentaires d'historique retirés ; rendu identique au pixel.
-- Vérifications : Biome, `tsc`, `next build` ; capture de « III.e Mairie »
-  identique au pixel à celle de la maquette (Chromium) ; élément ouvert et
-  titres empilés au défilement sous Chromium et Firefox ; arbre
-  d'accessibilité de Chromium inchangé depuis la maquette. Après les
-  réglages : raccords gris / foncé nets au gros plan et fiche identique
-  sous Chromium et Firefox.
-
-**Pièges relevés**
-- Biome (`noDescendingSpecificity`) veut les règles qui surchargent un
-  pseudo-élément après la règle de base.
-
-**Questions ouvertes**
-- Lien dans le `summary` (élément interactif imbriqué), titres annoncés en
-  capitales : toujours à tester avec un vrai lecteur d'écran.
-
-## 2026-11-19 — Sprint 6, étape 1 : maquette de la vue Liste à plat
-
-**Fait**
-- PR #15 (sprint 5) fusionnée ; sprint 6 inséré (la recherche passe au
-  sprint 7, l'export au sprint 8) ; branche `feat/liste-guides`.
-- Maquette sur les rubriques du sprint 5 (route `app/maquette/`, non
-  versionnée : exclue par `.git/info/exclude`, supprimée à
-  l'implémentation). `FlatList.tsx` copie `NodeList.tsx` ; `maquette.css` est
-  écrit comme la future section « Vue Liste » de `globals.css` (préfixe
-  `.mq`), sauf un premier bloc qui neutralise les règles du sprint 5.
-  Revue à l'écran avec l'utilisateur, en de nombreux essais (liste en fin
-  de `docs/composants/noeud-liste.md`).
-- Résultat : liste à plat, guides de niveau (2 px, gris foncé, coude vers
-  le titre, boule à la fin), titres fixés et empilés en capitales grasses,
-  lignes jointives précédées d'un chevron, survol en `#f6f8fa`, lien vers
-  sa propre page en icône après le texte, sujet en petites capitales,
-  champs surlignés comme au sprint 5, Fira Sans.
-- CSS de la maquette élagué (275 → 183 lignes, rendu inchangé).
-- Vérifié sous Chromium et Firefox (raccord du coude, épaisseurs mesurées
-  au pixel, passage à la ligne) ; arbre d'accessibilité de Chromium : lien
-  décrit par le texte de sa ligne (`aria-describedby`).
-- Fiche de composant réécrite, `docs/DESIGN.md` revu, idée de réglages des
-  couleurs de champs dans `docs/IDEES.md`.
-
-**Décisions**
-- Voir `docs/DECISIONS.md` (19 novembre, sprint 6) : liste à plat et
-  guides, états, chevron et lien, texte des titres et du sujet, Fira Sans.
-
-**Pièges relevés**
-- `calc()` refuse un `0` sans unité dans une somme (`0rem`).
-- Firefox fond la marge haute d'un premier enfant dans celle du groupe :
-  le coude se décalait (plus de marge entre les lignes, plus de souci).
-- 1,5 px s'affiche sur 1 ou 2 pixels selon la position : épaisseurs
-  entières.
-- Firefox sous-estime la largeur d'un texte dont les champs ont des marges
-  négatives (passage à la ligne prématuré en flexbox) : lien placé dans le
-  fil du texte.
-
-**Prochaine étape**
-- Implémenter : `components/NodeList.tsx` et section « Vue Liste » de
-  `app/globals.css` d'après la maquette ; `next/font/google` pour Fira Sans
-  dans `app/layout.tsx` ; jetons retirés (`--tint-*` gardés,
-  `--shadow-rest`, `--row-gap` retirés) ; supprimer la maquette ; mêmes
-  vérifications qu'au sprint 5 (`next build`, arbre d'accessibilité,
-  Firefox).
-
-## 2026-11-19 — Sprint 5, étapes 2 à 4 : la vue Liste
-
-**Fait**
-- `PrintedText` ne marque plus les empans que par une classe ; fond pastel,
-  sujet en gras et jetons de la vue Liste dans `app/globals.css` ; plus de
-  soulignement, de noms sous le trait ni de focus bleu.
-- `context` renvoie des nœuds complets, du même type que `resolve` (ancres
-  comprises, empans vides) : le contexte se montre comme la sélection, sans
-  conversion, toujours rendu à part.
-- `components/NodeList.tsx` : cartes emboîtées, un élément `<details>` pour
-  tout nœud, fiche du sprint 4 dépliée dessous ; le titre d'une carte est
-  son premier élément (fixé par le CSS, sans classe à part). Une sélection
-  d'un seul nœud est montrée comme les autres, dépliée. La fiche perd son
-  `h1` : la page n'en a plus qu'un, le texte du nœud désigné.
-- Rendu identique à la maquette (captures), maquette supprimée.
-- Vérifications : `next build` ; arbre d'accessibilité de Chromium
-  (`display: contents` ne masque rien : zones dépliables avec leur état,
-  régions nommées) ; ligne annoncée par son seul texte (elle l'était avec
-  « Open » et le numéro de page) ; Firefox (titres empilés au défilement,
-  survol), piloté par WebDriver BiDi ; aucun trait entre une ligne ouverte
-  et sa fiche (pixels relevés à l'échelle 1).
-- Poids mesuré : 66 Mo de HTML et ~10 s pour la plus grosse rubrique,
-  dont 46 Mo de charge RSC ; accepté pour l'instant (`docs/IDEES.md`).
-
-**Décisions**
-- Voir `docs/DECISIONS.md` (19 novembre) : sélection d'un seul nœud,
-  `context` en nœuds complets, poids accepté.
-
-**Questions ouvertes**
-- Pagination de la vue Liste, à rediscuter avec la recherche (sprint 6).
-- Open dans le `summary` : élément interactif imbriqué, à tester avec un
-  vrai lecteur d'écran.
-
-## 2026-11-19 — Sprint 5, étape 1 : maquette de la vue Liste
-
-**Fait**
-- PR #14 (sprint 4) fusionnée ; branche `feat/vue-liste`. Contenu du sprint
-  validé : tout rendre (pagination reportée), vue détaillée dépliée sous la
-  ligne.
-- Maquette sur de vraies rubriques (route `app/maquette/`, non versionnée,
-  supprimée à l'implémentation) : « III.e Mairie » (25 nœuds) et
-  « Administration générale des Postes » (303 nœuds, 6 niveaux). Revue à
-  l'écran avec l'utilisateur, en de nombreux essais (liste en fin de
-  `docs/composants/noeud-liste.md`).
-- Résultat : une table de cartes emboîtées ; un seul élément pour tout nœud
-  (ligne texte | Open | page, qui déplie la fiche dessous, `<details>`
-  natif) ; titres de section fixés et empilés ; champs sur fond pastel
-  (palette néon de colorhunt.co adoucie), sujet en gras ; deux règles
-  d'état (survol, ouvert) ; contexte en cartes comme le reste.
-- Simplification finale : mêmes règles et même composant pour tous les
-  types, couleurs en valeurs fixes, une seule règle de troncature, pas de
-  transition.
-- Fiche de composant réécrite, `docs/DESIGN.md` revu (contexte, densité,
-  ligne Liste), pistes tirées d'un guide des tables de données dans
-  `docs/IDEES.md`.
-- Captures après défilement : `chromium --screenshot` rend une page blanche
-  dès qu'elle défile ; on pilote Chromium par son protocole DevTools
-  (script Node, WebSocket intégré).
-
-**Décisions**
-- Voir `docs/DECISIONS.md` (19 novembre).
-
-**Questions ouvertes**
-- Sélection d'un seul nœud montrée comme toute sélection (proposé).
-- Poids de la page avec toutes les fiches repliées dans le HTML : à mesurer.
-- `display: contents` sur `<details>` : navigateurs et arbre
-  d'accessibilité à vérifier.
-
-## 2026-11-18 — Sprint 4 : la fiche d'un nœud
-
-**Fait**
-- PR #13 (sprint 3) fusionnée ; branche `feat/fiche-noeud`.
-- Fiche de composant du nœud dans la vue Liste, par type et par densité
-  (`docs/composants/noeud-liste.md`, skill `design:design-system`), à partir
-  d'un relevé des données de 1807 : emphase Markdown dans 4 525 nœuds,
-  24 empans qui coupent une emphase, 58 nœuds sur plusieurs lignes, ancres
-  absentes ou sur deux pages.
-- `resolve` renvoie empans et ancres de chaque nœud ; `context` lit les
-  rubriques ancêtres à part. Quatre écritures mesurées (JSON, tableaux,
-  lignes étiquetées, trois requêtes) : trois requêtes en lignes simples,
-  90 ms au lieu de 192 sur le plus gros sous-arbre ; sous-graphes
-  identiques sur les 803 sous-arbres habituels.
-- Next.js 16.4.6 et React 19.3.1 installés ; `next build` en CI.
-- Page `/` : fiche d'un nœud seul, nombre de nœuds sinon ; `proxy.ts`
-  pour l'entrée par défaut et le statut 400 ; 404 pour un uuid inconnu.
-- `lib/text/segments.ts` : découpe du texte aux bornes de l'emphase et
-  des empans (positions en points de code, `\*` échappé).
-- Fiche revue à l'écran avec l'utilisateur, en plusieurs essais : texte
-  souligné en titre, puis champs seuls, puis badges avant les champs, puis
-  nom du libellé sous le trait. Conclusion : le texte souligné est une
-  représentation compacte ; la fiche devient un ensemble de clés / valeurs
-  (Text, champs, métadonnées). `PrintedText` (texte souligné) est gardé
-  pour la compacte du sprint 5. Fil d'Ariane sans gris ni soulignement au
-  repos.
-
-**Décisions**
-- Trois requêtes pour `resolve`, contexte à part, interface en anglais,
-  fiche de composant, contenu de la fiche, proxy, organisation Next :
-  voir `docs/DECISIONS.md`.
-
-**Questions ouvertes**
-- Deux défauts de numrev, laissés tels quels (numrev fait foi) : la
-  section « LISTE DE NON-COMMERÇANS, ## CONTENANT ### … » (marques de titre
-  au milieu de l'intitulé) et « PRÉFECTURE DU DÉPARTEMENT DE LA SEINE,
-  Place de l'Hôtel-de-Ville.\ » (barre oblique d'un astérisque échappé).
-  Demande écrite : `docs/demandes/numrev_intitules_titres.md`, à
-  transmettre.
-- Densité compacte (sprint 5) : le texte souligné, avec les noms sous les
-  traits, demande un interligne plus grand ; à revoir sur des milliers de
-  lignes.
-
-**Suite**
-- `docs/SPRINTS.md` revu avec l'utilisateur (sprint 5 précisé, demande
-  numrev) ; PR #14 du sprint 4 ouverte, à relire et fusionner par
-  l'utilisateur.
-- Après la fusion : sprint 5, la vue Liste, sur une nouvelle branche depuis
-  `main` ; commencer par la maquette de la densité compacte.
-
-## 2026-11-18 — Sprint 3 : concept de design
-
-**Fait**
-- PR #12 (préparation du sprint 3) fusionnée.
-- Le sprint « première page, vue Liste » est abandonné avant tout code :
-  mieux vaut fixer d'abord les principes d'UX et d'UI.
-- `docs/DESIGN.md` : objectif, profils, cinq domaines, sélection et vues
-  orthogonales, fonctionnalités, représentations d'un nœud, principes
-  d'affichage (ee3d769, c51edd1, 3c49c5d, 12ea974).
-- `docs/SPRINTS.md` réécrit : fiche d'un nœud, vue Liste, sélection par
-  le contenu, export.
-
-**Décisions**
-- Concept de design, principes d'affichage, mesurer et relier écartés :
-  voir `docs/DECISIONS.md`.
-- Le mot « aspect » est abandonné : il mêlait critères de sélection et
-  vues ; on dit désormais domaine (données) et vue (affichage).
-
-**Suite**
-- Sprint 4, la fiche d'un nœud : commencer par la fiche de composant
-  (skill `design:design-system`), puis discuter de ce que `resolve` doit
-  renvoyer en plus.
-
-## 2026-11-18 — Préparation du sprint 3 : dépendances
-
-**Fait**
-- PR #11 (sprint d'entretien) fusionnée.
-- Application Next.js d'essai, hors du dépôt (Next 16.4.6, React 19.3.1,
-  TypeScript 7.0.2, `postgres` 4.1.1) : `next build` passe et échoue bien
-  sur une erreur de type ; une page serveur lit `?subtree=` et interroge la
-  base de développement (lecture seule).
-- Conflit relevé : Next impose `moduleResolution: bundler`, refusé par
-  TypeScript avec `module: nodenext`. `module: esnext` + `bundler`
-  fonctionne et Next ne retouche plus `tsconfig.json` ; un import relatif
-  sans extension passe alors `tsc` mais casse Node : la règle Biome
-  `useImportExtensions` le signale et le corrige en `.ts`.
-
-**Décisions**
-- Dépendances du sprint 3, réglages qui les accompagnent, `nuqs` reporté :
-  voir `docs/DECISIONS.md`.
-
-**Suite**
-- Contenu d'une ligne de la vue Liste à discuter (pistes dans
-  `SPRINTS.md`), puis branche du sprint 3.
-
-## 2026-11-18 — Sprint d'entretien : mises à jour majeures
-
-**Fait**
-- PR #10 (sprint 2) fusionnée.
-- Les deux PR Renovate partaient encore de la fusion de la PR #1 : leur CI
-  verte ne passait ni `lib/query/` ni la base de test. Rebasées (case de
-  Renovate) ; CI verte ensuite, tests du sprint 2 compris.
-- #7, `postgres` 3.4.9 → 4.1.1. Changements de la v4 qui pourraient nous
-  toucher : types des paramètres décidés par le serveur (`infer: false`),
-  `sql.array()` retiré, `BEGIN` hors `sql.begin` rejeté, types en module ES.
-  Rien de cela n'est utilisé ici. En local : lint, typecheck, 34 tests ;
-  1807 importé dans deux bases neuves, avec la v3 et avec la v4 : contenu
-  des cinq tables identique (empreinte md5 par table) ; sous-graphes de
-  `resolve` identiques sur les 803 sous-arbres habituels.
-- #8, TypeScript 6.0.3 → 7.0.2 (compilateur natif). `tsconfig.json`
-  n'utilise aucune option retirée ; les nouveaux défauts sont fixés chez
-  nous (`strict`, `module`, `target`, `types`) ou sans effet sur le
-  typecheck. TypeScript 7 n'a plus d'API JavaScript : seul cosmiconfig (par
-  commitlint) en dépend, et seulement pour une configuration en `.ts` ; la
-  nôtre est dans `package.json`. En local : lint, typecheck, 34 tests,
-  commitlint (message accepté, message non conventionnel refusé), `tsc`
-  qui échoue bien sur une erreur de type. Typecheck : 0,3 s contre 1,3 s.
-
-- #7 et #8 fusionnées par l'utilisateur, sans conflit. Les deux ensemble
-  sur `main` : lint, typecheck, 34 tests.
-
-**Suite**
-- Revue de `SPRINTS.md` avec l'utilisateur avant le sprint 3 (première
-  page, vue Liste).
-
-## 2026-11-18 — Sprint 2 : premier scénario, un sous-arbre
-
-**Fait**
-- PR #2 (intégration continue) fusionnée ; Renovate installé. PR #9
-  (PostGIS 18) fermée : on reste sur PostgreSQL 17.
-- `docs/SCENARIOS.md` : scénario 1, un nœud et tout son sous-arbre ;
-  `SPRINTS.md` : sprint 2 en cours, sprint d'entretien (#7, #8) — `f6a04a9`.
-- `lib/db/client.ts` et `scripts/load.ts` séparés de l'import ; réimport de
-  1807 identique (22 158 nœuds, 45 673 empans, 22 017 ancres) — `a4b4ee9`.
-- Base de test recréée par Vitest (`scripts/test-database.ts`), service
-  PostgreSQL dans la CI ; premier test du chargement — `31df472`.
-- `lib/query/query.ts` : `?subtree=<uuid>` lu et écrit — `c94e115`.
-- `lib/query/resolve.ts` : sous-graphe induit, nœuds dans l'ordre de
-  lecture, arcs déduits ; 30 tests — `8992489`.
-- 1807 : les 603 rubriques sont d'un seul tenant dans l'ordre de lecture ;
-  603 rubriques pour 521 libellés (désignation par uuid) ; 7 niveaux.
-- Entrée suivante par `lead()` sur la plage du sous-arbre plutôt qu'une
-  sous-requête par entrée : sous-graphes identiques sur 803 sous-arbres de
-  1807 (toutes les rubriques et 200 autres nœuds).
-- Pistes sans parcours de l'arbre notées dans `IDEES.md`, mesurées : table
-  de fermeture des sections, sous-arbre en plage de rangs.
-- Table `parent_closure` (fermeture des nœuds parents) calculée à l'import,
-  1 515 lignes pour 1807 ; `drizzle-kit push` reste sans changement au
-  second passage (PostgreSQL 17) — `1b8bc12`.
-- Sous-arbre lu dans `parent_closure`, sans `WITH RECURSIVE` ; `UNION ALL`
-  plutôt que `OR`, qui relisait toute la table — `e8b7992`. Sous-graphes
-  identiques à la requête d'origine sur les 803 sous-arbres ; 33 tests.
-- Temps restant décomposé, vu de Node (51 ms pour 13 737 nœuds) : SQL 20,
-  transfert et lecture des lignes 15, TypeScript 6. Écartés : plan
-  générique des requêtes préparées (sans effet), `json_agg` (plus lent).
-- `follows` stocké dans `node.next_entry_id`, calculé à l'import ; nœuds
-  insérés en une instruction pour la clé étrangère ; 20 708 arcs, identiques
-  à `lead()` sur tout le volume — `a865f1c`. `resolve` lit la colonne :
-  plus aucun calcul en SQL — `504fd5f`. Sous-graphes toujours identiques
-  sur les 803 sous-arbres ; 34 tests.
-- Mesures (`MODELE_DONNEES.md`, section 4), SQL seul : 0,13 ms pour une
-  petite rubrique, 1,5 ms pour 3 338 nœuds, 7,6 ms pour 13 737 (contre
-  1,4 / 20 / 70 à 80 ms au début du sprint) ; 35 ms vu de Node pour le
-  plus gros.
-- Base locale à remettre à niveau après récupération de la branche :
-  `pnpm db:load`.
-
-**Décisions**
-- Voir `docs/DECISIONS.md` : scénarios, motifs d'URL en anglais, filtre
-  `subtree` générique, erreurs, arcs en TypeScript, base de test, API JSON
-  plus tard.
-- Pas de changement du schéma pour la performance (décision de
-  l'utilisateur) : l'hypothèse « rubriques d'un seul tenant », vraie sur
-  1807, est à mieux vérifier dans numrev avant de s'en servir ; pas de
-  demande à numrev pour l'instant.
-
-**Questions ouvertes**
-- Messages d'erreur en français dans le code : à traduire quand
-  l'interface les montrera (application internationale).
-
-- Table de fermeture adoptée (`parent_closure`, nœuds parents de tout
-  type, pas seulement les sections) : simple, exacte, tenue par l'import.
-- `follows` stocké : les trois arcs suivent le même principe (une colonne
-  de `node`). Revient sur la décision du 30 octobre, qui attendait les
-  requêtes réelles de `lib/query/`.
-
-- Index `node (volume_id, kind, document_reading_order, id)` supprimé : il
-  ne servait qu'au calcul de `follows` (décision de l'utilisateur) ; temps
-  inchangés.
-
-**Suite**
-- Fusion de la PR, puis revue de `SPRINTS.md` : sprint d'entretien ou
-  deuxième scénario.
-
-## 2026-11-18 — Sprint 1 : intégration continue
-
-**Fait**
-- PR #1 (modèle de données) relue et fusionnée par merge commit.
-- `docs/SPRINTS.md` : modèle de données fait, sprint 1 en cours — `f4e2335`.
-- CI `.github/workflows/ci.yml`, job `verification` : `pnpm/setup@v3`
-  (pnpm 12.3.4 lu dans `packageManager`, Node 26, cache, lockfile figé),
-  puis lint, typecheck et les 14 tests ; ≈ 20 s — `d6a4523`.
-- `renovate.json` validé contre le schéma de Renovate 44 — `e8418e7`.
-- Protection de `main` posée par l'API GitHub (voir les décisions) ; le
-  check `verification` est bien exigé sur la PR #2.
-
-**Décisions**
-- Voir `docs/DECISIONS.md` (CI, protection, Renovate, mode de fusion).
-- `pnpm/setup` plutôt que `pnpm/action-setup` + `actions/setup-node` :
-  l'action recommandée par pnpm à partir de la version 11, une seule étape.
-
-**Questions ouvertes**
-- Protection d'un dépôt privé : réglée, GitHub l'accepte sur ce compte.
-- Application GitHub Renovate à installer sur le dépôt (par l'utilisateur).
-- `ubuntu-latest` passe à Ubuntu 26 depuis le 19 octobre 2026 (annonce
-  GitHub) : rien à faire a priori.
-
-**Suite**
-- Fusion de la PR #2, puis revue de `docs/SPRINTS.md` et sprint 2
-  (`lib/query/`).
-
-## 2026-10-30 — Processus : dépôt GitHub, branches et PR
-
-**Fait**
-- Dépôt privé `hueynemud/latynnaxplorer` créé ; `main` réduit au projet
-  initial (brief, outillage, base Docker), le travail du modèle de données
-  déplacé sur `feat/modele-donnees`, proposé en PR.
-- `CLAUDE.md` : façon de travailler (un sprint = une branche, PR fusionnée
-  par l'utilisateur, étapes validées une à une).
-- `docs/SPRINTS.md` : les trois prochains sprints (CI, `lib/query/`, vue
-  Liste).
-
-**Décisions**
-- `main` ne reçoit que des PR relues et fusionnées par l'utilisateur.
-- Dépôt privé.
-
-**Questions ouvertes**
-- Protection de `main` sur un dépôt privé : compte GitHub Pro nécessaire ?
-
-**Suite**
-- Relecture et fusion de la PR du modèle de données, puis sprint 1 (CI).
-
-## 2026-10-30 — Performances en lecture
-
-**Fait**
-- `member_of` validé pour les éléments hors champ.
-- Mesure des requêtes de `MODELE_DONNEES.md` sur 1807 (`EXPLAIN ANALYZE`,
-  cache chaud), puis optimisation sans changer le modèle :
-  - index trigrammes partiels par `kind` et par `label`, en plus des
-    généraux : recherche de sections 8,3 → 0,3 ms ;
-  - index `follows` couvrant (`id` en clé) et `VACUUM (ANALYZE)` en fin
-    d'import : parcours d'index seul ;
-  - SQL de `follows` : `OFFSET 0` (évite la double évaluation), variante
-    `lead()` pour les grandes sélections : arcs du volume 214 → 98 ms, et
-    22 ms pour `follows` par `lead()` (résultats identiques, vérifié) ;
-  - `compose.yaml` : `jit=off`, `random_page_cost=1.1`.
-- Mesures et règles d'écriture des requêtes : `MODELE_DONNEES.md`, section 4.
-
-**Décisions**
-- Pas de changement du modèle pour la performance à ce stade.
-
-- `follows` stocké, colonnes sans accents et chemin d'ancêtres : notés
-  dans `docs/IDEES.md`, non faits (décision de l'utilisateur).
-
-**Questions ouvertes**
-- Aucune.
-
-**Suite**
-- `lib/query/` ou application Next.js, selon votre priorité.
-
-## 2026-10-30 — Éléments hors champ importés
-
-**Fait**
-- numrev a traité la demande (`c3b94a0`, `2548ce1`, branche
-  `stabilisation`) : tableau `out_of_scope` dans `numrev-structure/2`, pages
-  partagées sans doublon.
-- Nouvel export de 1807 copié dans `data/1807/` (accord donné) ; schéma
-  recopié en `scripts/schemas/numrev-structure-2.schema.json`.
-- Type de nœud `out_of_scope` ; import, fixture et tests adaptés (14 tests).
-- 1807 : 22 158 nœuds dont 846 hors champ (90 à la racine), 22 017 ancres
-  (89 hors champ sans boîte) ; `follows` inchangé (20 708 arcs) ; titres
-  courants et numéros de page intercalés dans l'ordre de lecture.
-- `drizzle-kit push` ajoute la valeur d'enum sans question ni recréation.
-
-**Décisions**
-- Nom du type : `out_of_scope`, comme le tableau numrev.
-- Arc d'un élément hors champ vers sa rubrique : `member_of`, comme une
-  entrée.
-- Libellé OCR du bloc (nature probable de l'élément) non repris.
-
-**Questions ouvertes**
-- Aucune.
-
-**Suite**
-- `lib/query/` ou application Next.js, selon votre priorité.
-
-## 2026-10-30 — Ordre de lecture et éléments hors champ
-
-**Fait**
-- `rank` (par type) remplacé par `document_reading_order` (tous nœuds du
-  volume), index `(volume_id, kind, document_reading_order)` pour `follows` ;
-  import, fixture et tests adaptés (14 tests). Vérifié sur 1807 : 20 708
-  arcs `follows`, sections et entrées intercalées.
-- Prompt pour numrev : `docs/demandes/numrev_hors_champ.md`.
-
-**Décisions**
-- Ordre de lecture = attribut ; `follows` = relation entre entrées, déduite.
-- Hors champ non importés en attendant numrev (pas de rattrapage ici).
-
-**Questions ouvertes**
-- Retour de numrev sur les éléments hors champ (format, pages partagées).
-
-**Suite**
-- `lib/query/` ou application Next.js, selon votre priorité.
-
-## 2026-10-30 — Échafaudage données : schéma, validation, import
-
-**Fait**
-- Dépôt Git initialisé ; outillage Node 26 / pnpm 12, TypeScript 6, Biome,
-  Vitest, Lefthook (biome check + tsc au pre-commit, commitlint) —
-  `4f137c4`, `c3b42c3`.
-- Base PostgreSQL 17 + PostGIS via Docker Compose, extensions `pg_trgm`,
-  `unaccent`, fonction `immutable_unaccent` — `659e440`, `aa751a7`.
-- Schéma Drizzle du modèle v2 (`lib/db/schema.ts`) — `458539b`.
-- Validation des fichiers d'un volume (ajv, schémas numrev) — `60f12c4`.
-- Import (`scripts/import.ts`), scripts `db:import` / `db:load` —
-  `34caa92`. 1807 : 21 312 nœuds, 45 673 empans, 21 260 ancres, en ≈ 5 s.
-- 13 tests Vitest sur une petite fixture conforme ; README.
-
-**Décisions**
-- PostgreSQL 17 : drizzle-kit 0.31 n'est pas idempotent avec 18 (vérifié).
-- Noms de colonnes SQL explicites, sans l'option `casing` de Drizzle.
-- Boîtes en `real` : fidèles au type `number` du schéma numrev.
-- Pas de `lib/db/client.ts` : seul le script d'import se connecte.
-- Scripts de build de `esbuild` et `lefthook` refusés (`pnpm-workspace.yaml`) :
-  inutiles ici.
-- Schémas numrev exclus de Biome pour rester identiques à l'original.
-
-**Questions ouvertes**
-- Titre et autres champs Dublin Core de `data/1807/volume.json` à remplir.
-
-**Suite**
-- Proposer l'étape suivante : `lib/query/` (requête ⇄ URL, résolution en
-  sous-graphe) ou l'application Next.js, selon votre priorité.
-
-## 2026-10-30 — Modèle v2 : une table de nœuds
-
-**Fait**
-- `docs/MODELE_DONNEES.md` réécrit (v2) : 4 tables `volume`, `node`,
-  `span`, `anchor` ; arcs `member_of` / `child_of` / `follows` déduits des
-  colonnes.
-- `data/1807/volume.json` prérempli (Dublin Core + `temporal`).
-
-**Décisions**
-- numrev fait foi, pas de rattrapage : plus de repli sur la boîte du bloc,
-  un nœud sans ligne boîtée n'a pas d'ancre.
-- Sections et entrées dans une seule table `node`, ancrées par la même
-  table `anchor`.
-- Retirés car inutilisés : table `page`, `level`, `kind` d'entrée, membres,
-  indicateurs de qualité, provenance, table `link`.
-
-- Géocodage : aucune table, sprint dédié (noté dans `MODELE_DONNEES.md`).
-- Les deux JSON de 1807 déplacés dans `data/1807/` (accord donné).
-
-**Questions ouvertes**
-- Validation explicite du modèle v2.
-- Arborescence et dépendances proposées, en attente de validation.
-
-**Suite**
-- Après validation : échafaudage en petits commits atomiques.
-
-## 2026-10-30 — Sections comme nœuds, premières décisions
-
-**Fait**
-- Discussion du modèle : sections promues au rang de nœuds typés.
-- Décisions reportées dans `docs/DECISIONS.md`. `docs/MODELE_DONNEES.md`
-  sera réécrit une fois les points ci-dessous tranchés.
-
-**Décisions**
-- Nœuds typés `entry` / `section` ; arcs `member_of`, `child_of`, `follows`
-  portés par des colonnes ; sous-graphe induit strict.
-- `follows` entre entrées, dans l'ordre de lecture, à travers les sections.
-- Un seul annuaire pour l'instant, pas de liens temporels ; IIIF plus tard.
-- `data/` hors Git ; extension `unaccent`.
-
-**Questions ouvertes**
-- Groupe à accolade : un nœud ou un nœud par membre ?
-- Ancrage des sections : page + boîte sur la table `section` ?
-- Table `link` : retirée du modèle ou gardée vide ?
-- Emplacement des données (`data/` ou `data/1807/`) et versionnement du
-  fichier de métadonnées du volume.
-
-**Suite**
-- Réécrire `docs/MODELE_DONNEES.md`, puis proposer arborescence et
-  dépendances.
-
-**Pour plus tard : liens temporels**
-- Arcs entre entrées d'éditions successives, importés de la jointure numrev
-  `<A>__<B>.<méthode>.join.csv` (colonnes `methode`, `certitude`,
-  `niveau_incertitude`, `score`) ; seules les paires `apparié` ?
-- numrev apparie aussi les rubriques entre éditions (`alignment/sections.py`,
-  cas 1-N) : arcs temporels entre sections, dans une table à part.
-- Extension « voisins temporels » et « composante » par `WITH RECURSIVE`
-  (SQL déjà esquissé dans `docs/MODELE_DONNEES.md`, à conserver).
-
-## 2026-10-30 — Analyse des données et proposition de modèle
-
-**Fait**
-- Lecture de `data/1807_AD75-PER292.document.json` et `.structure.json`, et de
-  la spec `format_export.md` du projet voisin (lecture seule).
-- Proposition de modèle de données : `docs/MODELE_DONNEES.md` (structure des
-  sources, schéma Drizzle commenté, diagramme, SQL du sous-graphe induit).
-- Aucun commit : dépôt Git pas encore initialisé (échafaudage en attente).
-
-**Décisions**
-- Aucune validée ; tout est proposé dans `docs/MODELE_DONNEES.md`.
-
-**Questions ouvertes**
-- `data/` dans Git (28,7 Mo par volume) ?
-- Nœud = entrée (proposé) ou membre de groupe à accolade ?
-- Source des images IIIF des pages ?
-- Source des métadonnées des volumes (libellé, titre, années) ?
-- Format d'import des liens temporels (jointure numrev) ?
-- Succession à travers les sections ou non ?
-- Extension `unaccent` ?
-- Renvois « voyez » : arcs explicites plus tard ?
-
-**Suite**
-- Après validation du modèle : proposer l'arborescence et la liste exacte des
-  dépendances.
+Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
+`git log` et les PR, les décisions en vigueur dans `docs/DECISIONS.md`.
+À chaque fin de sprint : quelques lignes ici, et les pièges nouveaux dans
+« Pièges connus ».
+
+## Pièges connus
+
+- **Mesurer en production** (`next build`, puis `next start` sur un autre
+  port) : `pnpm dev` est 20 à 40 fois plus lent sur la Liste, et une grosse
+  requête y retarde les suivantes.
+- **Requêtes préparées** : après cinq appels, PostgreSQL peut passer à un
+  plan générique bien plus lent ; mesurer `resolve` répété, pas une fois.
+- **Next** : une constante exportée d'un module `"use client"` devient une
+  référence client côté serveur ; un composant client gardé par une
+  navigation client ne relit pas son état initial ; les fonctions serveur
+  sont envoyées une par une (lecture : Route Handler).
+- **Radix** : il définit `--space-*` et `--color-background` sur
+  `.radix-themes` (nos jetons ne doivent pas reprendre ces noms) ; ses
+  composants portent `.rt-reset` et ont leur propre anneau de focus.
+- **CSS** : `calc()` refuse un `0` sans unité dans une somme ; épaisseurs en
+  pixels entiers (1,5 px s'affiche tantôt sur 1, tantôt sur 2) ; Firefox
+  fond la marge haute d'un premier enfant dans celle de son parent, et
+  sous-estime en flexbox la largeur d'un texte dont des enfants ont des
+  marges négatives.
+- **Biome** : `noDescendingSpecificity` (une règle qui en surcharge une
+  autre vient après elle), `useSemanticElements` (`<search>` plutôt que
+  `role="search"`), `useImportExtensions`.
+- **Accessibilité** : une case dans un `<summary>` lui donne un nom à
+  rallonge ; le nommer par `aria-labelledby` vers l'intitulé seul.
+- **Captures headless** : `Emulation.setDeviceMetricsOverride` (pas
+  `--window-size`) ; pour un focus clavier, `setFocusEmulationEnabled` ou
+  une touche, puis `focus()`.
+
+## 2026-11-20 — Sprint 11 : passage à Radix Themes (PR #21)
+
+- Thème Radix iris sur gris mauve, ses jetons à la place des nôtres ;
+  contrôles, fiche (DataList), vignette (Card) et vue vide en composants
+  Radix ; feuille de style réduite à ce que Radix n'a pas (793 → 574
+  lignes).
+- Une seule navigation : lien « Open on its own page » et synchronisation
+  des facettes retirés, fil d'Ariane en texte.
+- Fiche demandée au premier dépliage : « Listes particulières » (13 737
+  nœuds) passe de 81 à 26 Mo et de 3,8 à 1,2 s en production ; une fiche,
+  7 ms.
+- Filtre à la coche, All et Clear locaux au volume regardé ; une case
+  couverte ne garde qu'elle au clic ; rubriques et volumes semi-sélectionnés
+  (tiret).
+- Champs teintés par les échelles transparentes de Radix (violet, sarcelle,
+  jaune), choisis sur planche. 101 tests.
+
+## 2026-11-20 — Sprint 10 : facettes et Liste d'accord (PR #20)
+
+- Sans critère, rien n'est sélectionné (plus d'entrée par défaut) ; vue
+  vide en grand aplat.
+- Apply et Clear en haut de Contents (remplacés au sprint 11).
+
+## 2026-11-20 — Sprint 9 : nettoyage du code (PR #19)
+
+- Doublons retirés, règles des coches en fonctions pures testées, types
+  séparés du SQL, feuille de style rangée par sections. 94 tests.
+
+## 2026-11-20 — Sprint 8 : facettes de structure (PR #18)
+
+- `subtree` répétable (union des sous-arbres) ; volumes et rubriques avec
+  leurs décomptes (`lib/query/facets.ts`) ; panneaux Volumes et Contents ;
+  cases rattachées au formulaire de la requête.
+
+## 2026-11-19 — Sprint 7 : sélectionner par le contenu (PR #17)
+
+- Recherche par texte exacte, sans accents ni casse, dans tout l'annuaire ;
+  résultats regroupés sous toutes leurs rubriques ; champ de recherche.
+  Similarité par trigrammes et plein texte mesurés et écartés.
+
+## 2026-11-19 — Sprints 5 et 6 : la vue Liste (PR #15, #16)
+
+- Maquettes revues à l'écran, puis liste à plat : guides de niveau, titres
+  fixés et empilés, un seul `<details>` par nœud, Fira Sans.
+- Lenteur ressentie : due au serveur de développement, pas au rendu.
+
+## 2026-11-18 — Sprints 3 et 4 : concept de design, fiche d'un nœud (PR #12 à #14)
+
+- `docs/DESIGN.md` (domaines, sélection et vues, représentations d'un nœud),
+  avant tout écran.
+- Dépendances de Next.js validées sur une application d'essai ; fiche d'un
+  nœud en clés / valeurs ; 400 et 404.
+
+## 2026-11-18 — Entretien et sprint 2 : requête → sous-graphe (PR #7, #8, #10, #11)
+
+- Scénario 1 (un sous-arbre), base de test recréée par Vitest ;
+  `parent_closure` et `follows` stocké : 7,6 ms en SQL pour 13 737 nœuds.
+- `postgres` v4 et TypeScript 7 (typecheck 1,3 → 0,3 s), vérifiés par un
+  réimport identique de 1807.
+
+## 2026-11-18 — Sprint 1 : intégration continue (PR #2)
+
+- CI GitHub Actions, protection de `main`, Renovate.
+
+## 2026-10-30 — Modèle de données (PR #1)
+
+- Analyse de l'export numrev ; modèle v2 (une table de nœuds, arcs portés
+  par des colonnes) ; validation et import ; éléments hors champ importés
+  après une demande à numrev ; index de lecture mesurés
+  (`docs/MODELE_DONNEES.md`, section 4).
+- 1807 : 22 158 nœuds (846 hors champ), 45 673 empans, 22 017 ancres, 603
+  rubriques sur 7 niveaux.

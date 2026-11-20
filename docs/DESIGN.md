@@ -104,7 +104,7 @@ Une facette montre **toutes les valeurs possibles** d'un critère, cochées
 ou non, là où la vue ne montre que la sélection (une rubrique exclue
 disparaît de la Liste : on ne pourrait pas l'y recocher). Les facettes
 servent à composer la sélection ; la vue sert à la regarder. Premier
-domaine couvert (sprint 8) : la Structure, volumes et rubriques.
+domaine couvert : la Structure, volumes et rubriques.
 
 - **Place** : colonnes de Miller, collées au bord gauche de la fenêtre :
   Volumes, puis Contents, puis la vue, centrée dans la place qui reste.
@@ -123,34 +123,33 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
   rappeler en tête), une case à gauche de chaque ligne, le nombre
   d'entrées de son sous-arbre à droite (compte tenu du texte cherché).
 - **Cocher** :
-  - un volume est sélectionné si une rubrique au moins l'est ; sa coche
-    sélectionne tout le volume (toutes ses rubriques de premier niveau,
-    qui restent actives) ou le désélectionne tout entier ;
-  - une rubrique : la prend avec tout son sous-arbre, et grise les cases
-    de ses descendants (cochées, inactives) ; la décocher les réactive,
-    décochées.
+  - un volume est sélectionné si une rubrique au moins l'est : coche
+    pleine s'il l'est entier, tiret s'il l'est en partie ; un clic le coche
+    entier, ou le vide s'il l'était ;
+  - une rubrique dont une descendante est cochée a un tiret, même branche
+    repliée ; un clic la coche entière ;
+  - une rubrique : la prend avec tout son sous-arbre ; les cases de ses
+    descendants sont couvertes (cochées en pâle) ; la décocher les libère ;
+  - une case couverte : ne garde qu'elle (la rubrique qui la couvre est
+    décochée), en un clic.
 - **Sélection** : l'union des sous-arbres des rubriques cochées les plus
   hautes, en conjonction avec les autres critères (le texte cherché dans
   ce périmètre). Les nœuds hors de toute rubrique (1807 : 90 éléments
   hors champ à la racine) ne sont pas sélectionnables par les facettes,
   seulement par la recherche, en attendant un vrai nœud racine de numrev.
-- **Application** : la requête est un seul formulaire GET natif, le champ
-  de recherche et les cases des rubriques (rattachées par l'attribut
-  `form`) ; une case grisée est désactivée, donc pas envoyée : seules
-  partent les rubriques cochées les plus hautes. En haut de Contents,
-  fixés, toujours là, les deux moitiés d'un même bouton : « Apply
-  selection » envoie les cases (inactif si elles ne diffèrent pas de la
-  sélection affichée) ; « Clear » applique aussitôt une sélection sans
-  coche, en gardant le texte cherché (inactif si rien n'est coché).
-  Entrée dans le champ de recherche applique aussi les cases. Un peu de
-  script propage les coches, sans `nuqs`.
-- **Toujours conformes à l'URL** : l'URL est la seule source de la
-  sélection. Après toute navigation (lien d'un nœud, fil d'Ariane,
-  recherche, Précédent), les cases reprennent les coches de l'URL ; le
-  volume au focus et les rubriques dépliées restent, le chemin de la
-  sélection est déplié en plus. Un nœud qui n'est pas une rubrique (une
-  entrée ouverte à part) ne se coche pas : les facettes le situent (focus
-  sur son volume, chemin de sa rubrique déplié).
+- **Application** : **à la coche**. Chaque coche s'applique
+  aussitôt ; l'URL suit les cases (navigation client qui remplace l'entrée
+  de l'historique), après un court délai qui regroupe les coches
+  rapprochées ; la vue est estompée pendant le chargement. Contents est
+  local au volume regardé (facettes hiérarchiques) : en haut, « All »
+  coche tout ce volume, « Clear » le décoche, sans toucher aux autres
+  volumes. Le champ de recherche envoie aussi les cases (attribut `form`),
+  en gardant les coches.
+- **Une seule navigation** : seules les facettes et la
+  recherche changent la sélection ; la Liste n'a pas de lien qui le fasse
+  (ni « ouvrir à part », ni fil d'Ariane cliquable). Les cases sont l'état
+  des facettes, et l'URL les suit : aucune synchronisation. Un nœud qui
+  n'est pas une rubrique, désigné par l'URL, ne se coche pas.
 - **Sélection vide** : sans aucun critère, rien n'est sélectionné ; la vue
   le dit par un grand aplat (« Nothing to show », ou « No match » quand
   des critères ne trouvent rien). Pas d'entrée par défaut.
@@ -189,9 +188,13 @@ Il n'y a pas de page « fiche » à concevoir à part.
   n'en montre que ce qui mène à elle, et n'est jamais compté dedans.
 - **Densité** : automatique par défaut (un nœud → déplié en sa fiche,
   plusieurs → compacte) ; dans une vue compacte, chaque nœud peut se déplier en sa
-  fiche (inspecter).
+  fiche (inspecter), demandée au serveur au premier dépliage.
 - **Vues** : une à la fois pour commencer, avec un focus pensé dès le
   départ comme partagé ; à terme, deux vues côte à côte (Liste + Page,
   Liste + Carte…).
+- **Composants** : ceux de Radix Themes, sur son thème (accent
+  iris, gris mauve) : boutons, cases, champ de recherche, cartes, listes
+  clé / valeur. Nos styles seulement pour ce que Radix n'a pas (Liste à
+  guides, arbre de Contents, panneaux), avec ses jetons.
 - **La source à un clic** : depuis tout nœud, dans toute vue, la page
   d'origine est accessible.
