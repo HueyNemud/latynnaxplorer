@@ -6,6 +6,7 @@
 // posé, et le lien qui efface la recherche aussi.
 
 import { serializeQuery } from "../lib/query/query.ts";
+import { ClearIcon, SearchIcon } from "./icons.tsx";
 
 /** Identifiant du formulaire de la requête, auquel les cases des facettes se rattachent. */
 export const QUERY_FORM = "query";
@@ -21,10 +22,7 @@ export function SearchForm({
   return (
     <search className="search">
       <form id={QUERY_FORM} className="search-form" method="get">
-        <svg className="icon search-icon" viewBox="0 0 16 16" aria-hidden="true">
-          <circle cx="7" cy="7" r="4.5" />
-          <path d="m10.5 10.5 3 3" />
-        </svg>
+        <SearchIcon className="search-icon" />
         <label htmlFor="search-text" className="visually-hidden">
           Search text
         </label>
@@ -44,13 +42,11 @@ export function SearchForm({
             défaut) */}
         {text !== undefined && (
           <a
-            className="search-clear"
+            className="icon-button search-clear"
             href={`?${serializeQuery(subtree ? { subtree } : {})}`}
             title="Clear search"
           >
-            <svg className="icon" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="m4.5 4.5 7 7m0-7-7 7" />
-            </svg>
+            <ClearIcon />
             <span className="visually-hidden">Clear search</span>
           </a>
         )}

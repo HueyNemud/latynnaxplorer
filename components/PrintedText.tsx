@@ -3,7 +3,7 @@
 // docs/composants/noeud-liste.md).
 
 import { Fragment, type ReactNode } from "react";
-import type { Span } from "../lib/query/resolve.ts";
+import type { Span } from "../lib/query/types.ts";
 import { segments } from "../lib/text/segments.ts";
 
 export function PrintedText({ text, spans = [] }: { text: string; spans?: readonly Span[] }) {

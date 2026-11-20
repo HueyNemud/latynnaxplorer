@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { segments } from "./segments.ts";
+import { plainText, segments } from "./segments.ts";
 
 const span = (id: string, label: "SUBJ" | "DESC" | "ADDR", charStart: number, charEnd: number) => ({
   id,
@@ -67,5 +67,15 @@ describe("segments", () => {
 
   it("garde les retours à la ligne", () => {
     expect(segments("a.\nb.", [])).toEqual([{ text: "a.\nb.", emphasis: false, span: null }]);
+  });
+});
+
+describe("plainText", () => {
+  it("retire les marques d'emphase et garde les astérisques échappés", () => {
+    expect(plainText("Gabillot aîné, *en gros*, 3 \\* 4.")).toBe("Gabillot aîné, en gros, 3 * 4.");
+  });
+
+  it("met le texte sur une ligne", () => {
+    expect(plainText("Dupont,\n  rue de la Paix.")).toBe("Dupont, rue de la Paix.");
   });
 });

@@ -195,8 +195,13 @@ sur `--color-open` et sur les fonds pastel.
 | `--tint-subj` / `--tint-desc` / `--tint-addr` | `#b9e6ff` / `#afffe2` / `#fffca9` | fonds des champs |
 | `--shadow-raised` | contour 1 px à 14 % + ombre 4 px / 14 px à 14 % | élément ouvert |
 | `--radius-card` | `0.5rem` | ligne survolée, élément ouvert |
+| `--radius-small` | `0.25rem` | coude du guide, boutons d'icône |
 | `--title-height` | `1.75rem` | hauteur d'une ligne de titre, pas de la pile |
 | `--line-pad` | `0.375rem` | marge intérieure gauche et droite d'une ligne ; retrait d'un sous-groupe |
+| `--line-pad-y` | `0.125rem` | marge intérieure haute et basse d'une ligne (Liste et arbre des facettes) |
+| `--tracking-caps` | `0.03em` | espacement des titres en capitales |
+| `--ring` / `--ring-offset` | `2px solid --color-text` / `2px` | anneau du focus, clavier ou de l'application |
+| `--width-view` | `64rem` | largeur de la vue, hors gouttières |
 | `--guide-width` / `--guide-gap` / `--ball` | `2px` / `0.25rem` / `6px` | guide, écart avec les lignes, boule |
 | `--icon` | `0.875rem` | chevron et icône du lien |
 | `--columns` | `1fr 2.5rem` | texte, page |

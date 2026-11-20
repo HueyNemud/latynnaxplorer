@@ -9,7 +9,7 @@ import { db } from "../lib/db/server.ts";
 import { facets } from "../lib/query/facets.ts";
 import { parseQuery } from "../lib/query/query.ts";
 import { context, NodeNotFoundError, resolve } from "../lib/query/resolve.ts";
-import { segments } from "../lib/text/segments.ts";
+import { plainText } from "../lib/text/segments.ts";
 
 type SearchParams = Record<string, string | string[] | undefined>;
 
@@ -34,11 +34,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
       {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché,
           sinon « Selection » (plusieurs rubriques) */}
       <h1 className="visually-hidden" lang={root || query.text ? "fr" : undefined}>
-        {root
-          ? segments(root.text, [])
-              .map((s) => s.text)
-              .join("")
-          : (query.text ?? "Selection")}
+        {root ? plainText(root.text) : (query.text ?? "Selection")}
       </h1>
       <Facets
         volumes={structure.volumes}

@@ -1,10 +1,10 @@
 # latynnaxplorer
 
 Exploration visuelle des annuaires commerciaux parisiens traités par la
-chaîne numrev (`../adresses_revolutionnaires`). Étape actuelle : modèle de
-données, import d'un annuaire en base et résolution des requêtes en
-sous-graphes (`lib/query/`) ; site Next.js qui montre la fiche d'un nœud
-(`/?subtree=<uuid>`).
+chaîne numrev (`../adresses_revolutionnaires`). Étape actuelle : import d'un
+annuaire en base, résolution des requêtes en sous-graphes (`lib/query/`) et
+site Next.js : la sélection dans la vue Liste, sous un champ de recherche,
+avec à gauche les facettes de structure (volumes et rubriques à cocher).
 
 ## Lancement
 
@@ -18,8 +18,14 @@ pnpm db:load      # base PostgreSQL (Docker), schéma, import de data/1807
 pnpm dev          # site sur http://localhost:3000
 ```
 
-Sans paramètre, `/` redirige vers une entrée de 1807 ; `?subtree=<uuid>`
-sélectionne un nœud et tout son sous-arbre (un seul nœud : sa fiche).
+Sans paramètre, `/` redirige vers une entrée de 1807. La requête est dans
+l'URL (`docs/SCENARIOS.md`) :
+
+- `?subtree=<uuid>` sélectionne un nœud et tout son sous-arbre ; répété,
+  l'union des sous-arbres (les rubriques cochées dans les facettes) ;
+- `?text=<texte>` garde les nœuds qui contiennent le texte, sans tenir
+  compte des accents ni de la casse ;
+- les deux se combinent.
 
 ## Commandes
 

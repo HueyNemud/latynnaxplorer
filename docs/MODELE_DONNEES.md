@@ -180,11 +180,15 @@ et 89 éléments hors champ sans ancre ; 2 entrées ancrées sur deux pages.
 ## 3. Requête → sous-graphe induit (SQL)
 
 Implémenté dans `lib/query/` pour les scénarios de `docs/SCENARIOS.md`.
-Une seule requête SQL par résolution : elle rend les nœuds sélectionnés
-avec leurs colonnes d'arcs (`parent_id`, `next_entry_id`) ; les arcs de
-l'étape 2 sont ensuite déduits de ces lignes en TypeScript
-(`inducedArcs`). Le sous-arbre est lu dans `parent_closure`, sans
-`WITH RECURSIVE`.
+Une seule sélection SQL par requête (`selection` dans `resolve.ts`) : elle
+rend les nœuds sélectionnés avec leurs colonnes d'arcs (`parent_id`,
+`next_entry_id`). Elle est lue en trois requêtes parallèles, en lignes
+simples : les nœuds, leurs empans, leurs ancres, rattachés ensuite en
+TypeScript (section 4) ; les arcs de l'étape 2 sont déduits des lignes des
+nœuds (`inducedArcs`). Le sous-arbre est lu dans `parent_closure`, sans
+`WITH RECURSIVE`. À part : le contexte de la sélection (`context`, ses
+rubriques ancêtres) et les facettes (`facets.ts`, volumes et rubriques avec
+leurs décomptes). Les types rendus sont dans `types.ts`.
 
 Les formes ci-dessous restent la référence pour les filtres à venir ; un
 parcours récursif s'y remplace par `parent_closure`.

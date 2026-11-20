@@ -3,54 +3,9 @@
 // déduits de leurs colonnes. Le contexte de la sélection (rubriques ancêtres) est lu à part.
 
 import type postgres from "postgres";
-import type { nodeKind, spanLabel } from "../db/schema.ts";
+import { contains } from "./contains.ts";
 import type { Query } from "./query.ts";
-
-export type NodeKind = (typeof nodeKind.enumValues)[number];
-export type ArcKind = "member_of" | "child_of" | "follows";
-export type SpanLabel = (typeof spanLabel.enumValues)[number];
-
-/** Champ structuré d'une entrée ; positions dans `text` brut, en points de code, fin exclue. */
-export interface Span {
-  id: string;
-  label: SpanLabel;
-  charStart: number;
-  charEnd: number;
-  normalized: string;
-}
-
-/** Boîte du nœud sur une page du PDF (repère numrev 0–1000, origine en haut à gauche). */
-export interface Anchor {
-  page: number;
-  x0: number;
-  y0: number;
-  x1: number;
-  y1: number;
-}
-
-export interface SubgraphNode {
-  id: string;
-  kind: NodeKind;
-  parentId: string | null;
-  documentReadingOrder: number;
-  text: string;
-  /** Dans l'ordre du texte ; vide hors entrées. */
-  spans: Span[];
-  /** Dans l'ordre des pages ; vide si le nœud n'a aucune ligne boîtée. */
-  anchors: Anchor[];
-}
-
-export interface Arc {
-  source: string;
-  target: string;
-  kind: ArcKind;
-}
-
-/** Nœuds dans l'ordre de lecture ; arcs dont les deux bouts sont parmi ces nœuds. */
-export interface Subgraph {
-  nodes: SubgraphNode[];
-  arcs: Arc[];
-}
+import type { Anchor, Arc, Span, Subgraph, SubgraphNode } from "./types.ts";
 
 /** Le nœud désigné par la requête n'existe pas. */
 export class NodeNotFoundError extends Error {
@@ -88,20 +43,6 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
     }
     return arcs;
   });
-}
-
-/**
- * Condition « la colonne contient le texte », comme une phrase entière, sans accents ni casse
- * (scénario 2), écrite comme l'expression de l'index trigrammes de `node.text`. Le texte cherché
- * est pris tel quel : ses « % », « _ » et « \ » sont échappés pour ILIKE.
- */
-export function contains(
-  sql: postgres.Sql,
-  column: postgres.PendingQuery<postgres.Row[]>,
-  text: string,
-) {
-  return sql`immutable_unaccent(${column})
-    ILIKE '%' || immutable_unaccent(${text.replace(/[\\%_]/g, "\\$&")}) || '%'`;
 }
 
 /**
@@ -201,10 +142,9 @@ function groupByNode<T extends { nodeId: string }>(rows: T[]): Map<string, Omit<
  * Contexte de la sélection : les rubriques ancêtres de ses nœuds qui n'en font pas partie,
  * chacune une fois, dans l'ordre de lecture, quels que soient les critères. Un sous-arbre seul
  * a pour contexte les rubriques au-dessus de son nœud, de la racine à son parent. Vide pour une
- * sélection vide. Des
- * nœuds complets, comme ceux du sous-graphe (une rubrique n'a pas d'empans), pour être montrés
- * de la même façon ; mais rendus à part : le contexte entoure la sélection sans en faire partie
- * (docs/DESIGN.md, « Principes d'affichage »).
+ * sélection vide. Des nœuds complets, comme ceux du sous-graphe (une rubrique n'a pas d'empans),
+ * pour être montrés de la même façon ; mais rendus à part : le contexte entoure la sélection sans
+ * en faire partie (docs/DESIGN.md, « Principes d'affichage »).
  */
 export async function context(sql: postgres.Sql, query: Query): Promise<SubgraphNode[]> {
   // parent_closure relie aussi chaque nœud parent à lui-même : le parent est compris.
