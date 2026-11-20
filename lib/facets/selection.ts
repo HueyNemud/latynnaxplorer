@@ -28,10 +28,23 @@ export function checkedOf(tree: SectionTree, subtree: readonly string[]): Set<st
   return new Set(subtree.filter((id) => tree.byId.has(id)));
 }
 
-/** Rubrique couverte : une rubrique au-dessus d'elle est cochée. */
-export function isCovered(tree: SectionTree, checked: ReadonlySet<string>, id: string): boolean {
-  for (const p of ancestors(tree, id)) if (checked.has(p)) return true;
-  return false;
+/** Rubrique couverte : la rubrique cochée au-dessus d'elle qui la couvre, s'il y en a une. */
+export function coveredBy(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  id: string,
+): string | undefined {
+  for (const p of ancestors(tree, id)) if (checked.has(p)) return p;
+  return undefined;
+}
+
+/** Ne garder que cette rubrique couverte : la rubrique qui la couvre est décochée, elle seule est
+ * cochée à sa place ; les autres coches ne changent pas. */
+export function keepOnly(tree: SectionTree, checked: ReadonlySet<string>, id: string): Set<string> {
+  const next = new Set(checked);
+  for (const p of ancestors(tree, id)) next.delete(p);
+  next.add(id);
+  return next;
 }
 
 /** Cocher ou décocher une rubrique. Cochée, elle couvre tout son sous-arbre : ses descendants

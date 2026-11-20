@@ -5,9 +5,10 @@ import { describe, expect, it } from "vitest";
 import type { FacetSection } from "../query/types.ts";
 import {
   checkedOf,
-  isCovered,
+  coveredBy,
   isVolumeFull,
   isVolumeSelected,
+  keepOnly,
   pathTo,
   sectionTree,
   setVolume,
@@ -50,16 +51,23 @@ describe("checkedOf", () => {
   });
 });
 
-describe("isCovered", () => {
+describe("coveredBy", () => {
   it("couvre tout le sous-arbre d'une rubrique cochée, pas la rubrique elle-même", () => {
     const checked = set("A");
-    expect(["A", "A1", "A2", "A2a", "B"].map((id) => isCovered(tree, checked, id))).toEqual([
-      false,
-      true,
-      true,
-      true,
-      false,
+    expect(["A", "A1", "A2", "A2a", "B"].map((id) => coveredBy(tree, checked, id))).toEqual([
+      undefined,
+      "A",
+      "A",
+      "A",
+      undefined,
     ]);
+  });
+});
+
+describe("keepOnly", () => {
+  it("décoche la rubrique qui couvre et ne coche que celle-ci, même plus bas", () => {
+    expect(keepOnly(tree, set("A", "B"), "A2")).toEqual(set("B", "A2"));
+    expect(keepOnly(tree, set("A", "C"), "A2a")).toEqual(set("C", "A2a"));
   });
 });
 
@@ -71,7 +79,7 @@ describe("toggleSection", () => {
   it("décoche une rubrique : ses descendants redeviennent libres, décochés", () => {
     const checked = toggleSection(tree, set("A", "B"), "A");
     expect(checked).toEqual(set("B"));
-    expect(isCovered(tree, checked, "A1")).toBe(false);
+    expect(coveredBy(tree, checked, "A1")).toBeUndefined();
   });
 
   it("ne modifie pas les coches reçues", () => {

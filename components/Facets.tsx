@@ -6,10 +6,10 @@
 //   ou le désélectionne tout entier ; un clic sur sa vignette met le focus sur lui, et Contents
 //   montre son arbre. Un volume est sélectionné si une rubrique au moins l'est.
 // - Cocher une rubrique prend tout son sous-arbre : les cases de ses descendants sont couvertes
-//   (cochées, désactivées) ; la décocher les réactive, décochées. Règles des coches :
-//   lib/facets/selection.ts.
+//   (cochées, en pâle) ; la décocher les libère, décochées. Cliquer une case couverte ne garde
+//   qu'elle : la rubrique qui la couvre est décochée. Règles des coches : lib/facets/selection.ts.
 // - Les cases font partie du formulaire de la requête (#query, components/SearchForm.tsx) par
-//   l'attribut `form`. Une case couverte, désactivée, n'est pas envoyée : seules partent les
+//   l'attribut `form`. Une case couverte, sans nom, n'est pas envoyée : seules partent les
 //   rubriques cochées les plus hautes. Cases, coches et boutons de Radix Themes : une case Radix
 //   est un bouton, avec une case cachée pour le formulaire ; sans script, les facettes ne
 //   servent pas.
@@ -25,9 +25,10 @@ import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   checkedOf,
-  isCovered,
+  coveredBy,
   isVolumeFull,
   isVolumeSelected,
+  keepOnly,
   pathTo,
   sectionTree,
   setVolume,
@@ -90,20 +91,27 @@ export function Facets({
 
   const row = (s: FacetSection): ReactNode => {
     const kids = tree.children.get(s.id) ?? [];
-    const covered = isCovered(tree, checked, s.id);
+    // la rubrique cochée qui couvre celle-ci, s'il y en a une
+    const cover = tree.byId.get(coveredBy(tree, checked, s.id) ?? "");
     const label = plainText(s.text);
     const line = (
       <>
         {kids.length > 0 && <ChevronIcon className="chevron" />}
         <Checkbox
           size="1"
+          // couverte : cochée en pâle, sans nom (pas envoyée) ; un clic ne garde qu'elle
+          variant={cover ? "soft" : "surface"}
           form={QUERY_FORM}
-          name="subtree"
+          name={cover ? undefined : "subtree"}
           value={s.id}
-          checked={covered || checked.has(s.id)}
-          disabled={covered}
-          onCheckedChange={() => select(toggleSection(tree, checked, s.id))}
+          checked={cover !== undefined || checked.has(s.id)}
+          onCheckedChange={() =>
+            select(cover ? keepOnly(tree, checked, s.id) : toggleSection(tree, checked, s.id))
+          }
           aria-label={label}
+          title={
+            cover ? `Keep only this section (included in: ${plainText(cover.text)})` : undefined
+          }
         />
         <span id={`tree-${s.id}`} className="tree-label" lang="fr" title={label}>
           {label}

@@ -154,8 +154,14 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 - **Clic** : sur la case, coche sans déplier ; sur l'intitulé ou le chevron,
   déplie sans cocher.
 - **Cocher** prend la rubrique avec tout son sous-arbre : les cases de ses
-  descendants sont **couvertes**, cochées et grisées (`disabled`) ; la
-  décocher les réactive, décochées.
+  descendants sont **couvertes**, cochées en pâle ; la décocher les libère,
+  décochées.
+- **Cliquer une case couverte** ne garde qu'elle : la rubrique qui la
+  couvre (même plusieurs niveaux au-dessus) est décochée, elle seule est
+  cochée ; les autres coches ne changent pas. Un clic, une requête, au lieu
+  de deux. « A sauf B » n'est pas proposé : une union de sous-arbres ne sait
+  pas l'exprimer sans perdre les entrées propres de A. Infobulle « Keep only
+  this section (included in: A) ».
 - **Dépliage à l'arrivée** : le chemin des rubriques cochées est déplié,
   le reste replié.
 - **Appliquer** : chaque coche s'applique, après 300 ms sans nouvelle
@@ -170,7 +176,7 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 | Repos | Checkbox de Radix (taille 1), intitulé `--gray-12` |
 | Survol | fond `--gray-2` sur la ligne |
 | Cochée | Checkbox cochée, iris (accent) |
-| Couverte | Checkbox cochée grisée, inactive ; intitulé inchangé |
+| Couverte | Checkbox cochée en pâle (variante `soft`), cliquable ; intitulé inchangé |
 | Dépliée | chevron tourné vers le bas |
 | Focus clavier | anneau de Radix sur la case, anneau `--focus-8` sur la ligne |
 
@@ -185,7 +191,7 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
   ne changent pas. Comme toute coche, ils s'appliquent aussitôt, texte
   cherché gardé.
 - La recherche envoie une valeur `subtree` par rubrique cochée **non
-  couverte** (une case désactivée n'est pas envoyée), y compris celles des
+  couverte** (une case couverte, sans nom, n'est pas envoyée), y compris celles des
   volumes qui ne sont pas au focus (champs cachés).
 - États (survol, inactif, focus) : ceux de Radix.
 
@@ -229,8 +235,10 @@ Volumes 9,5 rem, Contents 22 rem, bande 1,5 rem, carte 8 rem, coche ronde
   l'intitulé seul (`aria-labelledby`), sans la case ni le décompte. Case dans un `summary` :
   élément interactif dans un autre ; accepté, à tester avec un lecteur
   d'écran.
-- **Couverte** : `disabled`, annoncé comme « indisponible » ; la raison
-  (rubrique parente cochée) n'est pas dite : à tester.
+- **Couverte** : case cochée et active ; son infobulle (description
+  accessible) dit ce qu'un clic fera et quelle rubrique la couvre. Cliquer
+  une case cochée qui reste cochée va contre l'usage : à tester avec un
+  lecteur d'écran.
 - **Sélection et focus** ne reposent pas sur la couleur seule : coche
   dessinée, contour et encoche.
 
@@ -240,7 +248,7 @@ Volumes 9,5 rem, Contents 22 rem, bande 1,5 rem, carte 8 rem, coche ronde
 |---|---|
 | une case pour sélectionner, un clic sur l'objet pour le regarder | un même geste pour les deux |
 | un seul formulaire pour toute la requête | un bouton ou une URL par facette |
-| composants de Radix, `disabled` pour une case couverte | état mi-coché, contrôles dessinés à la main |
+| composants de Radix, case couverte en pâle | état mi-coché, contrôles dessinés à la main |
 | montrer toutes les valeurs, même à 0 | masquer les rubriques sans résultat |
 | intitulés tels qu'imprimés | capitales forcées, intitulés corrigés |
 | séparer les colonnes par les bandes | filets, cadres autour des panneaux |

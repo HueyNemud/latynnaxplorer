@@ -126,9 +126,10 @@ domaine couvert : la Structure, volumes et rubriques.
   - un volume est sélectionné si une rubrique au moins l'est ; sa coche
     sélectionne tout le volume (toutes ses rubriques de premier niveau,
     qui restent actives) ou le désélectionne tout entier ;
-  - une rubrique : la prend avec tout son sous-arbre, et grise les cases
-    de ses descendants (cochées, inactives) ; la décocher les réactive,
-    décochées.
+  - une rubrique : la prend avec tout son sous-arbre ; les cases de ses
+    descendants sont couvertes (cochées en pâle) ; la décocher les libère ;
+  - une case couverte : ne garde qu'elle (la rubrique qui la couvre est
+    décochée), en un clic.
 - **Sélection** : l'union des sous-arbres des rubriques cochées les plus
   hautes, en conjonction avec les autres critères (le texte cherché dans
   ce périmètre). Les nœuds hors de toute rubrique (1807 : 90 éléments
