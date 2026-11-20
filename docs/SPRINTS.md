@@ -263,8 +263,9 @@ Réalisé : thème Radix (iris sur gris mauve) et ses jetons ; contrôles,
 fiche (DataList), vignette (Card) et vue vide en composants Radix ; une
 seule navigation, par les facettes ; fiche demandée au premier dépliage
 (« Listes particulières » : 81 → 26 Mo) ; champs teintés par les échelles
-transparentes de Radix ; feuille de style réduite à ce que Radix n'a pas.
-Détail dans `docs/JOURNAL.md`.
+transparentes de Radix ; feuille de style réduite à ce que Radix n'a pas ;
+filtre à la coche, All et Clear locaux au volume regardé. Détail dans
+`docs/JOURNAL.md`.
 
 But : une interface stylée et homogène, en s'appuyant sur Radix Themes
 plutôt qu'en dessinant chaque contrôle (`docs/DECISIONS.md`, 20 novembre) ;

@@ -30,8 +30,14 @@
   une fiche 7 ms côté serveur, affichée 78 ms après le clic ; petites pages
   plus lourdes d'environ 200 Ko bruts (6 Ko compressés : les 603 cases
   Radix de l'arbre) ; CSS et JS 179 → 282 Ko compressés.
+- Filtrer à la coche (demandé à la relecture de la PR) : chaque coche
+  s'applique aussitôt (`router.replace`, 300 ms de regroupement, vue
+  estompée pendant le chargement) ; All et Clear, locaux au volume regardé,
+  à la place d'« Apply selection ». Vérifié en production : aucun
+  rechargement, historique inchangé, arbre déplié gardé, All sur tout 1807
+  (22 068 lignes).
 - Vérifié sous Chromium et Firefox (captures avant / après, focus clavier
-  de chaque contrôle, dépliage). 97 tests.
+  de chaque contrôle, dépliage). 99 tests.
 
 **Décisions**
 - Voir `docs/DECISIONS.md` (20 novembre) : Radix appliqué, une seule

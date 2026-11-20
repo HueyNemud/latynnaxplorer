@@ -134,21 +134,19 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
   ce périmètre). Les nœuds hors de toute rubrique (1807 : 90 éléments
   hors champ à la racine) ne sont pas sélectionnables par les facettes,
   seulement par la recherche, en attendant un vrai nœud racine de numrev.
-- **Application** : la requête est un seul formulaire GET natif, le champ
-  de recherche et les cases des rubriques (rattachées par l'attribut
-  `form`) ; une case grisée est désactivée, donc pas envoyée : seules
-  partent les rubriques cochées les plus hautes. En haut de Contents,
-  fixés, toujours là, côte à côte : « Apply selection » envoie les cases (inactif si elles ne diffèrent pas de la
-  sélection affichée) ; « Clear » applique aussitôt une sélection sans
-  coche, en gardant le texte cherché (inactif si rien n'est coché).
-  Entrée dans le champ de recherche applique aussi les cases. Un peu de
-  script propage les coches, sans `nuqs`.
+- **Application** (sprint 11) : **à la coche**. Chaque coche s'applique
+  aussitôt ; l'URL suit les cases (navigation client qui remplace l'entrée
+  de l'historique), après un court délai qui regroupe les coches
+  rapprochées ; la vue est estompée pendant le chargement. Contents est
+  local au volume regardé (facettes hiérarchiques) : en haut, « All »
+  coche tout ce volume, « Clear » le décoche, sans toucher aux autres
+  volumes. Le champ de recherche envoie aussi les cases (attribut `form`),
+  en gardant les coches.
 - **Une seule navigation** (sprint 11) : seules les facettes et la
-  recherche changent la sélection, toujours en rechargeant la page ; la
-  Liste n'a pas de lien qui le fasse (ni « ouvrir à part », ni fil
-  d'Ariane cliquable). Les facettes disent donc toujours ce que dit l'URL,
-  sans synchronisation. Un nœud qui n'est pas une rubrique, désigné par
-  l'URL, ne se coche pas.
+  recherche changent la sélection ; la Liste n'a pas de lien qui le fasse
+  (ni « ouvrir à part », ni fil d'Ariane cliquable). Les cases sont l'état
+  des facettes, et l'URL les suit : aucune synchronisation. Un nœud qui
+  n'est pas une rubrique, désigné par l'URL, ne se coche pas.
 - **Sélection vide** : sans aucun critère, rien n'est sélectionné ; la vue
   le dit par un grand aplat (« Nothing to show », ou « No match » quand
   des critères ne trouvent rien). Pas d'entrée par défaut.

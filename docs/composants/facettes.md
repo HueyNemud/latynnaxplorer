@@ -24,14 +24,16 @@ n'en a pas besoin.
   sur son côté droit.
 - **Sélection et focus distincts** : une case pour sélectionner, un clic sur
   l'objet pour le regarder.
-- **Une seule requête** : le champ de recherche et les cases des rubriques
-  forment un seul formulaire GET natif ; le script ne sert qu'à propager les
-  coches.
+- **Filtrer à la coche** : chaque coche s'applique aussitôt (sprint 11) ;
+  le champ de recherche envoie aussi les cases (formulaire GET, attribut
+  `form`).
 - **Radix d'abord** (sprint 11) : boutons, cases, coche ronde et vignette
   sont des composants de Radix Themes ; `<details>` natif pour déplier
   l'arbre. Les facettes demandent du script.
 - **Seule navigation** : seules les facettes (et la recherche) changent la
-  sélection, toujours en rechargeant la page ; la Liste ne le fait pas.
+  sélection ; la Liste ne le fait pas.
+- **Facettes hiérarchiques** : Contents est local au volume regardé ; ses
+  actions (All, Clear) ne touchent que lui.
 
 ## Ce que les données imposent
 
@@ -51,8 +53,7 @@ Relevé sur 1807 :
 
 ## Langue
 
-Interface en anglais : « Volumes », « Contents », « Apply selection »,
-« Clear »,
+Interface en anglais : « Volumes », « Contents », « All », « Clear »,
 infobulles et noms accessibles. Intitulés des rubriques en français, tels
 qu'imprimés (`lang="fr"` à prévoir sur l'intitulé).
 
@@ -60,7 +61,7 @@ qu'imprimés (`lang="fr"` à prévoir sur l'intitulé).
 
 ```
 ┌──────────┬─┬──────────────────────────────┬─┬───────────────────────────────┐
-│ ◉        │‹│ [ Apply selection │ Clear  ] │‹│      🔍 Search_______          │
+│ ◉        │‹│ [     All     ] [   Clear   ] │‹│      🔍 Search_______          │
 │   1807   │V│ › ☐ LISTES PARTICULIÈRES… 13,311│C│                          Page │
 │ 1807_AD75│o│   ☑ LISTE DE NON-COMM… 3,277 │o│ ┌› ADMINISTRATION GÉNÉRALE…  178 │
 │ -PER292  ▶l│ ⌄ ☑ ADMINISTRATION GÉN…  234 │n│ │ › M. Lavallette, …         178 │
@@ -158,9 +159,12 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
   décocher les réactive, décochées.
 - **Dépliage à l'arrivée** : le chemin des rubriques cochées est déplié,
   le reste replié.
-- **Toujours conformes à l'URL** : toute nouvelle sélection recharge la
-  page (formulaires GET), les cases repartent donc des coches de l'URL. Une
-  entrée désignée par l'URL ne coche rien et n'est pas située.
+- **Appliquer** : chaque coche s'applique, après 300 ms sans nouvelle
+  coche (les coches rapprochées font une seule requête) ; l'URL est
+  remplacée par une navigation client, sans nouvelle entrée d'historique ;
+  la vue est estompée pendant le chargement ; le volume regardé et l'arbre
+  déplié restent. Les cases sont l'état du composant, lu une fois depuis
+  l'URL. Une entrée désignée par l'URL ne coche rien et n'est pas située.
 
 | État | Rendu |
 |---|---|
@@ -171,20 +175,19 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 | Dépliée | chevron tourné vers le bas |
 | Focus clavier | anneau de Radix sur la case, anneau `--focus-8` sur la ligne |
 
-## Boutons Apply et Clear
+## Boutons All et Clear
 
 - En haut de Contents, fixés (`position: sticky`) au-dessus de l'arbre qui
   défile, fond blanc derrière eux ; **toujours là**, pour que rien ne se
-  décale ; chacun sur la moitié de la largeur.
-- **Apply selection** : Button plein de Radix ; envoie le formulaire de la
-  requête (`form="query"`) : le texte, et une valeur `subtree` par rubrique
-  cochée **non couverte** (une case désactivée n'est pas envoyée), y compris
-  celles des volumes qui ne sont pas au focus (champs cachés). Inactif
-  quand les cases ne diffèrent pas de la sélection affichée.
-- **Clear** : Button doux de Radix, dans son propre formulaire GET, qui ne
-  porte que le texte cherché de la sélection affichée : applique aussitôt
-  une sélection sans coche (tout l'annuaire si un texte est cherché, rien
-  sinon). Inactif quand rien n'est coché.
+  décale ; chacun sur la moitié de la largeur ; Buttons doux de Radix.
+- **Locaux au volume regardé** : **All** coche toutes ses rubriques de
+  premier niveau (inactif si c'est déjà le cas) ; **Clear** décoche tout
+  ce volume (inactif si rien n'y est coché). Les coches des autres volumes
+  ne changent pas. Comme toute coche, ils s'appliquent aussitôt, texte
+  cherché gardé.
+- La recherche envoie une valeur `subtree` par rubrique cochée **non
+  couverte** (une case désactivée n'est pas envoyée), y compris celles des
+  volumes qui ne sont pas au focus (champs cachés).
 - États (survol, inactif, focus) : ceux de Radix.
 
 ## Implémentation : ce qui est inévitable
@@ -281,6 +284,9 @@ Sprint 11 :
 
 - Apply et Clear en deux moitiés d'un même bouton, faits main : « extrêmement
   moches » ; Primer React (ButtonGroup) et shadcn/ui écartés pour Radix.
+- Bouton « Apply selection » (sprints 8 à 11) : remplacé par le filtre à la
+  coche. All et Clear sur tous les volumes : écartés, Contents est local au
+  volume regardé. Une entrée d'historique par sélection : écartée.
 - Vignette en Card « surface » et « ghost » (planche) : « classic » retenue.
 
 ## Questions ouvertes
