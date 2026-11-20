@@ -6,7 +6,14 @@ import { afterAll, describe, expect, inject, it } from "vitest";
 import { E1, E2, E3, O1, T1, T2 } from "../../scripts/fixture.ts";
 import { connect } from "../db/client.ts";
 import type { Query } from "./query.ts";
-import { context, inducedArcs, NodeNotFoundError, resolve, type SelectedNode } from "./resolve.ts";
+import {
+  context,
+  detail,
+  inducedArcs,
+  NodeNotFoundError,
+  resolve,
+  type SelectedNode,
+} from "./resolve.ts";
 
 const sql = connect(inject("databaseUrl"));
 afterAll(() => sql.end());
@@ -180,6 +187,30 @@ describe("resolve, sans critère", () => {
   it("ne rend rien", async () => {
     expect(await resolve(sql, {})).toEqual({ nodes: [], arcs: [] });
     expect(await context(sql, {})).toEqual([]);
+  });
+});
+
+describe("detail", () => {
+  it("rend le nœud seul, avec ses empans, et le texte de ses rubriques de la racine au parent", async () => {
+    const { node, path } = await detail(sql, E1);
+    expect(node.id).toBe(E1);
+    expect(node.spans).toHaveLength(2);
+    expect(path).toEqual([
+      { id: T1, text: "PARTIE." },
+      { id: T2, text: "RUBRIQUE." },
+    ]);
+  });
+
+  it("rend une rubrique sans son sous-arbre", async () => {
+    const { node, path } = await detail(sql, T2);
+    expect(node.id).toBe(T2);
+    expect(path.map((s) => s.id)).toEqual([T1]);
+  });
+
+  it("refuse un nœud inconnu", async () => {
+    await expect(detail(sql, "99999999-0000-0000-0000-000000000000")).rejects.toThrow(
+      NodeNotFoundError,
+    );
   });
 });
 

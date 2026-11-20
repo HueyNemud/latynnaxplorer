@@ -61,8 +61,12 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
  *   UNION ALL : deux nœuds désignés peuvent être l'un sous l'autre, chaque nœud ne doit venir
  *   qu'une fois (sur tout 1807, 43 rubriques : 11 ms contre 6).
  */
+/** Colonnes d'un nœud sélectionné (alias `n`), telles que `read` les relit. */
+const COLUMNS = (sql: postgres.Sql) =>
+  sql`n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id`;
+
 function selection(sql: postgres.Sql, { subtree, text }: Query) {
-  const columns = sql`n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id`;
+  const columns = COLUMNS(sql);
   if (text !== undefined) {
     const inSubtree =
       subtree === undefined
@@ -90,11 +94,52 @@ function selection(sql: postgres.Sql, { subtree, text }: Query) {
  * à côté d'autres connus.
  */
 export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph> {
-  const selected = selection(sql, query);
+  const [{ rows, nodes }, known] = await Promise.all([
+    read(sql, selection(sql, query)),
+    query.subtree === undefined
+      ? []
+      : sql<{ id: string }[]>`SELECT id FROM node WHERE id = ANY(${query.subtree}::uuid[])`,
+  ]);
+  const found = new Set(known.map((k) => k.id));
+  const unknown = query.subtree?.find((id) => !found.has(id));
+  if (unknown !== undefined) throw new NodeNotFoundError(unknown);
+  return { nodes, arcs: inducedArcs(rows) };
+}
+
+/**
+ * Fiche d'un nœud, demandée au dépliage de sa ligne (components/NodeDetails.tsx) : le nœud seul,
+ * avec ses empans et ses ancres, et le chemin de ses rubriques, de la racine à son parent (son
+ * fil d'Ariane : leur texte seul).
+ */
+export async function detail(
+  sql: postgres.Sql,
+  id: string,
+): Promise<{ node: SubgraphNode; path: Pick<SubgraphNode, "id" | "text">[] }> {
+  const [{ nodes }, path] = await Promise.all([
+    read(sql, sql`SELECT ${COLUMNS(sql)} FROM node n WHERE n.id = ${id}::uuid`),
+    sql<Pick<SubgraphNode, "id" | "text">[]>`
+      SELECT a.id, a.text
+      FROM node n
+      JOIN parent_closure c ON c.descendant_id = n.parent_id
+      JOIN node a ON a.id = c.ancestor_id
+      WHERE n.id = ${id}::uuid
+      ORDER BY a.document_reading_order`,
+  ]);
+  const node = nodes[0];
+  if (node === undefined) throw new NodeNotFoundError(id);
+  return { node, path };
+}
+
+/** Les nœuds d'une sélection, dans l'ordre de lecture, avec leurs empans et leurs ancres ; et
+ * leurs lignes, pour les arcs. */
+async function read(
+  sql: postgres.Sql,
+  selected: postgres.PendingQuery<postgres.Row[]>,
+): Promise<{ rows: SelectedNode[]; nodes: SubgraphNode[] }> {
   // Trois requêtes en parallèle, en lignes simples : nœuds, empans, ancres, rattachés ensuite en
   // TypeScript. Regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent.
   // Mesures : docs/MODELE_DONNEES.md, section 4.
-  const [rows, spans, anchors, known] = await Promise.all([
+  const [rows, spans, anchors] = await Promise.all([
     sql<SelectedNode[]>`
       SELECT id, kind, parent_id AS "parentId", document_reading_order AS "documentReadingOrder",
              text, next_entry_id AS "nextEntryId"
@@ -109,22 +154,16 @@ export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph
       SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
       FROM (${selected}) n JOIN anchor a ON a.node_id = n.id
       ORDER BY a.page`,
-    query.subtree === undefined
-      ? []
-      : sql<{ id: string }[]>`SELECT id FROM node WHERE id = ANY(${query.subtree}::uuid[])`,
   ]);
-  const found = new Set(known.map((k) => k.id));
-  const unknown = query.subtree?.find((id) => !found.has(id));
-  if (unknown !== undefined) throw new NodeNotFoundError(unknown);
   const spansOf = groupByNode(spans);
   const anchorsOf = groupByNode(anchors);
   return {
+    rows,
     nodes: rows.map(({ nextEntryId: _, ...node }) => ({
       ...node,
       spans: spansOf.get(node.id) ?? [],
       anchors: anchorsOf.get(node.id) ?? [],
     })),
-    arcs: inducedArcs(rows),
   };
 }
 

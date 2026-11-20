@@ -1,12 +1,15 @@
 // Vue Liste (docs/composants/noeud-liste.md) : la sélection dans ses rubriques, à plat. Toute
 // section, contexte compris, est un groupe marqué par son guide de niveau ; tout nœud est le
 // même élément, une ligne (chevron, texte | page) qui déplie sa fiche juste dessous, par
-// <details> natif. La Liste ne change pas la sélection : seules les facettes le font.
+// <details> natif. La fiche n'est rendue qu'au premier dépliage (components/NodeDetails.tsx),
+// sauf pour une sélection d'un seul nœud, dépliée d'emblée. La Liste ne change pas la
+// sélection : seules les facettes le font.
 
 import type { CSSProperties, ReactNode } from "react";
 import type { SubgraphNode } from "../lib/query/types.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
+import { NodeDetails } from "./NodeDetails.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
 /**
@@ -49,6 +52,7 @@ export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: S
         <span className="page">Page</span>
       </div>
       {children.get(null)?.map((n) => render(n, []))}
+      <NodeDetails />
     </>
   );
 }
@@ -69,9 +73,14 @@ function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; 
         </span>
         <span className="page">{node.anchors[0]?.page}</span>
       </summary>
-      <div className="detail">
-        <NodeDetail node={node} context={path} />
-      </div>
+      {/* dépliée d'emblée : la fiche ; sinon une case vide, remplie au premier dépliage */}
+      {open ? (
+        <div className="detail">
+          <NodeDetail node={node} context={path} />
+        </div>
+      ) : (
+        <div className="detail" data-node={node.id} />
+      )}
     </details>
   );
 }

@@ -450,24 +450,17 @@ details[open] > summary .chevron {
 
 /* ── Fiche (components/NodeDetail.tsx) ── */
 
-/* groupes clé / valeur (texte, champs, métadonnées), colonnes des clés alignées */
-.node-detail dl {
-  display: grid;
-  grid-template-columns: 7rem 1fr;
-  gap: var(--space-2) var(--space-4);
-  margin: 0 0 var(--space-5);
+/* groupes clé / valeur (DataList de Radix : texte, champs, métadonnées), espacés ; même écart
+   entre clés et valeurs quelle que soit leur taille, pour aligner les valeurs */
+.detail-group {
+  column-gap: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
-.node-detail dl > div {
-  display: contents;
-}
-
-.node-detail dd {
-  margin: 0;
-}
-
-.meta {
-  font-size: var(--font-size-2);
+/* fiche qui n'a pas pu être demandée */
+.detail-error {
+  margin: 0 0 var(--space-4);
+  color: var(--gray-11);
 }
 
 .identifier {

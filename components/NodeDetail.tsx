@@ -1,7 +1,10 @@
-// Fiche d'un nœud dans la vue Liste : densité détaillée, en clé / valeur — texte, champs,
-// métadonnées —, puis le fil d'Ariane, en texte (seules les facettes changent la sélection) ;
-// dépliée sous sa ligne (docs/composants/noeud-liste.md).
+// Fiche d'un nœud dans la vue Liste : densité détaillée, en clé / valeur (DataList de Radix
+// Themes) — texte, champs, métadonnées —, puis le fil d'Ariane, en texte (seules les facettes
+// changent la sélection) ; dépliée sous sa ligne (docs/composants/noeud-liste.md). Rendue par le
+// serveur pour une sélection d'un seul nœud, par le navigateur au dépliage sinon
+// (components/NodeDetails.tsx).
 
+import { DataList } from "@radix-ui/themes";
 import type { NodeKind, SpanLabel, SubgraphNode } from "../lib/query/types.ts";
 import { pages } from "../lib/text/pages.ts";
 import { PrintedText } from "./PrintedText.tsx";
@@ -18,44 +21,54 @@ const FIELD_LABELS: Record<SpanLabel, string> = {
   ADDR: "Address",
 };
 
-export function NodeDetail({ node, context }: { node: SubgraphNode; context: SubgraphNode[] }) {
+/** Largeur de la colonne des clés, la même pour tous les groupes. */
+const LABEL_WIDTH = "7rem";
+
+export function NodeDetail({
+  node,
+  context,
+}: {
+  node: SubgraphNode;
+  /** rubriques au-dessus du nœud, de la racine à son parent */
+  context: Pick<SubgraphNode, "id" | "text">[];
+}) {
   return (
     <article className="node-detail">
-      <dl>
-        <div>
-          <dt>Text</dt>
-          <dd>
+      <DataList.Root size="3" className="detail-group">
+        <DataList.Item>
+          <DataList.Label minWidth={LABEL_WIDTH}>Text</DataList.Label>
+          <DataList.Value>
             <PrintedText text={node.text} />
-          </dd>
-        </div>
-      </dl>
+          </DataList.Value>
+        </DataList.Item>
+      </DataList.Root>
       {node.spans.length > 0 && (
-        <dl>
+        <DataList.Root size="3" className="detail-group">
           {/* un champ par empan, dans l'ordre du texte (répétés pour un groupe à accolade) */}
           {node.spans.map((span) => (
-            <div key={span.id}>
-              <dt>{FIELD_LABELS[span.label]}</dt>
-              <dd lang="fr">{span.normalized}</dd>
-            </div>
+            <DataList.Item key={span.id}>
+              <DataList.Label minWidth={LABEL_WIDTH}>{FIELD_LABELS[span.label]}</DataList.Label>
+              <DataList.Value lang="fr">{span.normalized}</DataList.Value>
+            </DataList.Item>
           ))}
-        </dl>
+        </DataList.Root>
       )}
-      <dl className="meta">
-        <div>
-          <dt>Type</dt>
-          <dd>{KIND_LABELS[node.kind]}</dd>
-        </div>
-        <div>
-          <dt>Source</dt>
-          <dd>{pages(node.anchors.map((a) => a.page))}</dd>
-        </div>
-        <div>
-          <dt>Identifier</dt>
-          <dd>
+      <DataList.Root size="2" className="detail-group">
+        <DataList.Item>
+          <DataList.Label minWidth={LABEL_WIDTH}>Type</DataList.Label>
+          <DataList.Value>{KIND_LABELS[node.kind]}</DataList.Value>
+        </DataList.Item>
+        <DataList.Item>
+          <DataList.Label minWidth={LABEL_WIDTH}>Source</DataList.Label>
+          <DataList.Value>{pages(node.anchors.map((a) => a.page))}</DataList.Value>
+        </DataList.Item>
+        <DataList.Item>
+          <DataList.Label minWidth={LABEL_WIDTH}>Identifier</DataList.Label>
+          <DataList.Value>
             <code className="identifier">{node.id}</code>
-          </dd>
-        </div>
-      </dl>
+          </DataList.Value>
+        </DataList.Item>
+      </DataList.Root>
       {context.length > 0 && (
         <nav aria-label="Sections">
           <ol className="breadcrumb">
