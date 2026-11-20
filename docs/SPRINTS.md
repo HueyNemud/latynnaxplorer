@@ -214,29 +214,42 @@ Choix validés :
 - `AGENTS.md` de `next dev` versionné ; arcs du sous-graphe gardés.
 - Reporté (`docs/IDEES.md`) : tests de rendu des composants.
 
-## Sprint 10 : facettes et Liste, des interactions sans accroc
+## Sprint 10 : facettes et Liste, toujours d'accord
 
-But : que les facettes et la Liste disent toujours la même chose, et que
-cocher suffise à filtrer.
+But : que les facettes et la Liste disent toujours la même chose, et qu'une
+sélection vide soit vraiment vide.
 
-- **Filtrer à la coche** : cocher ou décocher une rubrique ou un volume
-  applique la sélection aussitôt, sans le bouton « Apply selection ».
-  À régler : rythme des requêtes quand on coche plusieurs cases de suite,
-  focus et dépliage de l'arbre gardés d'une sélection à l'autre,
-  historique du navigateur (une entrée par coche ou non), fonctionnement
-  sans script.
-- **Facettes toujours conformes à l'URL** : aujourd'hui, cocher une
-  sous-rubrique puis suivre dans la Liste « Open on its own page » vers la
-  rubrique mère (ou un lien du fil d'Ariane) montre la rubrique mère dans
-  la Liste, mais les facettes gardent l'ancienne coche. Cause probable :
-  la navigation de Next garde le composant client, dont l'état n'est lu
-  qu'au premier rendu. Toute navigation (lien, fil d'Ariane, recherche,
-  bouton Précédent) doit redonner aux facettes les coches de l'URL.
-- À trancher aussi : ce que montrent les facettes quand la sélection est
-  un nœud qui n'est pas une rubrique (une entrée ouverte à part : rien
-  n'est coché aujourd'hui).
-- Contenu exact proposé et validé au début du sprint ; vérifié sous
-  Chromium et Firefox.
+Étapes, validées une à une :
+
+1. **Facettes conformes à l'URL** : l'URL est la seule source. À chaque
+   navigation (lien « Open on its own page », fil d'Ariane, recherche,
+   bouton Précédent), les cases reprennent les coches de l'URL ; le volume
+   regardé et les rubriques dépliées restent, le chemin des nouvelles
+   coches est déplié en plus. Exemple : B cochée sous A, puis A ouverte
+   depuis la Liste : A est cochée, B couverte. Aujourd'hui, la navigation
+   de Next garde le composant client, dont l'état n'est lu qu'au premier
+   rendu.
+2. **Sélection vide** : plus d'entrée par défaut. Sans critère, le
+   sous-graphe est vide et la vue dit « Nothing to show » (grand aplat
+   gris, petit caractère unicode) ; le proxy ne redirige plus.
+3. **Apply et Clear en haut de Contents** : toujours affichés, inactifs
+   quand ils ne servent pas (Apply : cases identiques à la sélection
+   affichée ; Clear : rien de coché). Clear décoche tout et applique
+   aussitôt, en gardant le texte cherché.
+4. Fiche `docs/composants/facettes.md`, `docs/DESIGN.md`, journal,
+   décisions, revue de ce fichier.
+
+Choix validés :
+
+- Un bouton pour appliquer, pas de filtre à la coche (`docs/IDEES.md`) ;
+  formulaire GET natif inchangé, sans `nuqs`.
+- Texte cherché sans rubrique cochée : tout l'annuaire, comme aujourd'hui ;
+  « Nothing to show » seulement sans aucun critère.
+- Sélection d'un nœud qui n'est pas une rubrique (une entrée ouverte à
+  part) : rien n'est coché, mais les facettes la situent (focus sur son
+  volume, chemin de sa rubrique déplié). Cocher puis Apply remplace la
+  sélection.
+- Vérifié sous Chromium et Firefox.
 
 ## Sprint 11 : exporter
 

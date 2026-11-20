@@ -88,6 +88,14 @@ plusieurs volumes en base.
 - Les panneaux ouverts prennent 34,5 rem : sur un téléphone, ils devraient
   passer par-dessus la vue (tiroir), repliés par défaut. À concevoir.
 
+## Filtrer à la coche
+
+- Envisagé au sprint 10 : cocher une rubrique ou un volume appliquerait la
+  sélection aussitôt (navigation client par `next/form`, envoi après un
+  court délai).
+- Écarté pour l'instant : un bouton Apply, en haut de Contents, garde la
+  main sur le moment où la vue change et évite une requête par coche.
+
 ## Tests de rendu des composants
 
 - Sprint 9 : la logique des facettes est testée en fonctions pures ; le
