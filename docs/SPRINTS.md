@@ -214,7 +214,13 @@ Choix validés :
 - `AGENTS.md` de `next dev` versionné ; arcs du sous-graphe gardés.
 - Reporté (`docs/IDEES.md`) : tests de rendu des composants.
 
-## Sprint 10 : facettes et Liste, toujours d'accord
+## Sprint 10 : facettes et Liste, toujours d'accord (PR à venir)
+
+Réalisé : facettes conformes à l'URL après toute navigation, entrée seule
+située ; sélection vide sans entrée par défaut (« Nothing to show ») ;
+Apply et Clear en haut de Contents (rendu provisoire). Maquette Radix
+Themes / Primer React : Radix retenu pour toute l'interface. Détail dans
+`docs/JOURNAL.md`.
 
 But : que les facettes et la Liste disent toujours la même chose, et qu'une
 sélection vide soit vraiment vide.
@@ -251,7 +257,26 @@ Choix validés :
   sélection.
 - Vérifié sous Chromium et Firefox.
 
-## Sprint 11 : exporter
+## Sprint 11 : passage à Radix Themes
+
+But : une interface stylée et homogène, en s'appuyant sur Radix Themes
+plutôt qu'en dessinant chaque contrôle (`docs/DECISIONS.md`, 20 novembre).
+
+Pistes, à préciser et valider au début du sprint :
+
+1. Thème et jetons : `Theme` de Radix, couleur d'accent et gris à choisir
+   (planche), Fira Sans gardée ; nos jetons remplacés par ceux de Radix.
+2. Contrôles : Apply / Clear, boutons d'icône, cases de l'arbre, coche
+   ronde des volumes, champ de recherche.
+3. Fiche d'un nœud en DataList, vignettes en Card ; panneaux et infobulles
+   (ScrollArea, Tooltip) si le gain se confirme.
+4. Vue Liste : lignes en HTML léger avec les jetons Radix (poids des très
+   grosses sélections) ; couleurs des champs rejouées dans les échelles
+   Radix (planche).
+5. Captures avant / après sous Chromium et Firefox ; poids mesuré en
+   production.
+
+## Sprint 12 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (section suivante).

@@ -96,6 +96,12 @@ plusieurs volumes en base.
 - Écarté pour l'instant : un bouton Apply, en haut de Contents, garde la
   main sur le moment où la vue change et évite une requête par coche.
 
+## Mode sombre
+
+- Sprint 10 : chaque échelle de couleurs de Radix Themes a sa variante
+  sombre ; une fois l'interface passée à Radix (sprint 11), un mode sombre
+  coûterait peu. À reprendre ensuite.
+
 ## Tests de rendu des composants
 
 - Sprint 9 : la logique des facettes est testée en fonctions pures ; le

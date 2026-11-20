@@ -1,5 +1,40 @@
 # Journal de développement
 
+## 2026-11-20 — Sprint 10 : facettes et Liste, toujours d'accord
+
+**Fait**
+- PR #19 (sprint 9) fusionnée ; branche `feat/facettes-et-liste`. Contenu
+  revu au départ : le filtre à la coche, prévu, est remplacé par des
+  boutons Apply et Clear (`docs/IDEES.md`).
+- Facettes conformes à l'URL : la navigation de Next gardait le composant,
+  dont l'état n'était lu qu'au premier rendu (B cochée, puis A ouverte
+  depuis la Liste : B restait cochée). Les cases reprennent maintenant les
+  coches de l'URL à chaque nouvelle sélection ; focus et dépliage gardés
+  (`onToggle`), chemin de la sélection déplié ; une entrée ouverte à part
+  est située (`pathTo`, `focusFor`, testées).
+- Sélection vide : plus d'entrée par défaut ; `proxy.ts` ne fait plus que
+  le 400 ; une requête vide ne sélectionne rien ; vue vide en grand aplat
+  avec ∅ (« Nothing to show », « No match »).
+- Apply et Clear en haut de Contents, deux moitiés d'un bouton, toujours
+  là ; Clear par son propre formulaire GET.
+- Vérifié sous Chromium (navigations client : lien de la Liste, Précédent,
+  entrée seule, dépliage à la main gardé, coche non appliquée abandonnée ;
+  Clear de bout en bout ; boutons fixés au défilement) et Firefox
+  (captures). 98 tests.
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (20 novembre) : requête vide, facettes
+  conformes à l'URL, Apply et Clear, passage à Radix Themes.
+- Les boutons, jugés « extrêmement moches », ont conduit à comparer des
+  bibliothèques sur une maquette jetable (Radix Themes, Primer React ;
+  shadcn/ui discuté) : Radix Themes retenu pour toute l'interface, au
+  sprint 11. Les boutons restent provisoires d'ici là.
+
+**Remarques**
+- En mode dev, une recherche sur tout l'annuaire (« rue ») occupe le
+  serveur une minute et retarde les requêtes suivantes : penser à mesurer
+  en production.
+
 ## 2026-11-20 — Sprint 9 : nettoyage du code
 
 **Fait**
