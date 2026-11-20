@@ -4,7 +4,8 @@
 // case vide (`.detail`, marquée de l'identifiant du nœud) ; à son premier dépliage, sa fiche est
 // demandée au serveur (app/api/detail/[id]/route.ts), puis rendue dans la case et gardée. Un seul
 // composant pour toute la Liste, à l'écoute des dépliages (l'événement toggle ne remonte pas :
-// écouté à la capture). Sans script, une ligne dépliée ne montre pas sa fiche.
+// écouté à la capture). Sans script, une ligne dépliée ne montre pas sa fiche. `load` (essai des
+// données en local, app/essai) : la fiche lue sans serveur.
 
 import { Spinner, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
@@ -15,7 +16,7 @@ import { NodeDetail } from "./NodeDetail.tsx";
 /** Case d'une fiche à demander, juste sous la ligne d'un nœud (`.item`). */
 const BOX = ".detail[data-node]";
 
-export function NodeDetails() {
+export function NodeDetails({ load = fetchDetail }: { load?: (id: string) => Promise<Detail> }) {
   const [boxes, setBoxes] = useState<ReadonlyMap<string, HTMLElement>>(new Map());
   useEffect(() => {
     const add = (box: Element | null) => {
@@ -33,10 +34,10 @@ export function NodeDetails() {
     document.addEventListener("toggle", onToggle, true);
     return () => document.removeEventListener("toggle", onToggle, true);
   }, []);
-  return [...boxes].map(([id, box]) => createPortal(<Fetched id={id} />, box, id));
+  return [...boxes].map(([id, box]) => createPortal(<Fetched id={id} load={load} />, box, id));
 }
 
-interface Detail {
+export interface Detail {
   node: SubgraphNode;
   path: Pick<SubgraphNode, "id" | "text">[];
 }
@@ -45,7 +46,7 @@ interface Detail {
  * nouveau (deux fois en développement) ; une demande échouée n'est pas gardée. */
 const requests = new Map<string, Promise<Detail>>();
 
-function load(id: string): Promise<Detail> {
+function fetchDetail(id: string): Promise<Detail> {
   let request = requests.get(id);
   if (request === undefined) {
     request = fetch(`/api/detail/${id}`).then((response) => {
@@ -59,7 +60,7 @@ function load(id: string): Promise<Detail> {
 }
 
 /** La fiche d'un nœud ; un indicateur en attendant. */
-function Fetched({ id }: { id: string }) {
+function Fetched({ id, load }: { id: string; load: (id: string) => Promise<Detail> }) {
   const [detail, setDetail] = useState<Detail | "error">();
   useEffect(() => {
     let live = true;
@@ -70,7 +71,7 @@ function Fetched({ id }: { id: string }) {
     return () => {
       live = false;
     };
-  }, [id]);
+  }, [id, load]);
   if (detail === undefined) return <Spinner />;
   if (detail === "error")
     return (

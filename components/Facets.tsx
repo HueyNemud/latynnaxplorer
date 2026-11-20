@@ -21,9 +21,11 @@
 //   est estompée pendant le chargement. Le volume regardé et l'arbre déplié restent.
 // - Contents est local au volume regardé (facettes hiérarchiques) : All coche tout ce volume,
 //   Clear le décoche ; les autres volumes ne changent pas.
+// - `navigate` (essai des données en local, app/essai) : comment l'URL suit les coches ; par
+//   défaut, une navigation client de Next, qui redemande la page au serveur.
 
 import { Button, Card, Checkbox } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   checkedOf,
@@ -50,6 +52,7 @@ export function Facets({
   sections,
   checked: subtree,
   text,
+  navigate,
 }: {
   volumes: FacetVolume[];
   sections: FacetSection[];
@@ -57,6 +60,8 @@ export function Facets({
   checked: readonly string[];
   /** le texte cherché de la sélection affichée, gardé quand les coches changent */
   text: string | undefined;
+  /** remplace l'URL de la page ; par défaut, router.replace */
+  navigate?: (url: string) => void;
 }) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
   // les coches, lues une fois depuis l'URL
@@ -70,6 +75,7 @@ export function Facets({
 
   // appliquer : l'URL suit les coches, après 300 ms sans nouvelle coche
   const router = useRouter();
+  const pathname = usePathname();
   const [loading, startTransition] = useTransition();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
@@ -81,7 +87,8 @@ export function Facets({
         ...(next.size > 0 && { subtree: [...next] }),
         ...(text !== undefined && { text }),
       });
-      startTransition(() => router.replace(query.size > 0 ? `/?${query}` : "/"));
+      const url = query.size > 0 ? `${pathname}?${query}` : pathname;
+      startTransition(() => (navigate ?? router.replace)(url));
     }, 300);
   };
   // panneaux ouverts : toujours les premiers (Volumes, puis Contents) ; ouvrir un panneau ouvre

@@ -22,8 +22,16 @@ dépendances, choix discutables).
 | 9, nettoyage du code | #19 | code et feuille de style remis au propre |
 | 10, facettes et Liste d'accord | #20 | sélection vide sans entrée par défaut |
 | 11, passage à Radix Themes | #21 | interface Radix, fiche au dépliage, filtre à la coche |
+| Essai, données en local | #22 | `/essai` : un fichier par volume, requêtes résolues dans le navigateur |
 
-## Sprint 12 : exporter
+## Sprint 12 : données en local
+
+But : le site entier sur des fichiers de volume, résolus dans le navigateur,
+sans base ni rendu serveur de la sélection ; format du fichier compact et
+mis en cache. L'état actuel est d'abord étiqueté `archive/postgresql` sur
+`main`. Contenu à proposer et valider au début du sprint.
+
+## Sprint 13 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (ci-dessous). Contenu à proposer et valider au
