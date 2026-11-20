@@ -214,7 +214,7 @@ Choix validés :
 - `AGENTS.md` de `next dev` versionné ; arcs du sous-graphe gardés.
 - Reporté (`docs/IDEES.md`) : tests de rendu des composants.
 
-## Sprint 10 : facettes et Liste, toujours d'accord (PR à venir)
+## Sprint 10 : facettes et Liste, toujours d'accord (PR #20)
 
 Réalisé : facettes conformes à l'URL après toute navigation, entrée seule
 située ; sélection vide sans entrée par défaut (« Nothing to show ») ;
