@@ -10,11 +10,9 @@ import type { LoadedVolume } from "./volume.ts";
 /** Le nœud désigné par la requête n'existe pas. */
 export class NodeNotFoundError extends Error {
   override name = "NodeNotFoundError";
-  readonly nodeId: string;
 
   constructor(nodeId: string) {
     super(`nœud inconnu : ${nodeId}`);
-    this.nodeId = nodeId;
   }
 }
 

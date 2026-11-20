@@ -21,11 +21,6 @@ export class QueryError extends Error {
 // Forme 8-4-4-4-12 seulement : les uuid de numrev ne sont pas tous d'une version RFC 4122.
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Un identifiant de nœud bien formé. */
-export function isUuid(value: string): boolean {
-  return UUID.test(value);
-}
-
 /** Lit la requête dans les paramètres d'une URL ; les paramètres inconnus sont ignorés. */
 export function parseQuery(params: URLSearchParams): Query {
   const query: Query = {};
