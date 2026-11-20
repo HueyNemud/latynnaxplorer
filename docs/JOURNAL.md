@@ -10,6 +10,13 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **Mesurer en production** (`next build`, puis `next start` sur un autre
   port) : `pnpm dev` est 20 à 40 fois plus lent sur la Liste, et une grosse
   requête y retarde les suivantes.
+- **Cache de navigation** (bfcache) : Chromium garde en mémoire les pages
+  quittées qui y sont admises (une page statique, pas `/`) ; tas et nœuds
+  DOM se cumulent d'une mesure à l'autre. Mesurer avec
+  `--disable-features=BackForwardCache`.
+- **postgres.js** : ses résultats sont un tableau dérivé (`count`,
+  `command`) ; `isDeepStrictEqual` les dit différents d'un tableau simple
+  (comparer des `structuredClone`), `toEqual` de Vitest non.
 - **Requêtes préparées** : après cinq appels, PostgreSQL peut passer à un
   plan générique bien plus lent ; mesurer `resolve` répété, pas une fois.
 - **Next** : une constante exportée d'un module `"use client"` devient une
@@ -32,6 +39,13 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **Captures headless** : `Emulation.setDeviceMetricsOverride` (pas
   `--window-size`) ; pour un focus clavier, `setFocusEmulationEnabled` ou
   une touche, puis `focus()`.
+
+## 2026-11-20 — Essai : données en local
+
+- Un fichier par volume, résolu dans le navigateur (`/essai`) : même
+  résultat que SQL sur tout 1807 ; interactions plus rapides et sans
+  réseau, arrivée plus lente ; le DOM reste le goulot des grosses
+  sélections. Mesures et bilan : `docs/essai-donnees-locales.md`.
 
 ## 2026-11-20 — Sprint 11 : passage à Radix Themes (PR #21)
 
