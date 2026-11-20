@@ -7,6 +7,7 @@ import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { serializeQuery } from "../lib/query/query.ts";
 import type { SubgraphNode } from "../lib/query/types.ts";
+import { ChevronIcon, OpenIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
@@ -18,15 +19,11 @@ export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: S
   const shown = [...context, ...nodes].sort(
     (a, b) => a.documentReadingOrder - b.documentReadingOrder,
   );
-  const byId = new Map(shown.map((n) => [n.id, n]));
+  const ids = new Set(shown.map((n) => n.id));
   // enfants de chaque nœud montré, dans l'ordre de lecture ; null : les nœuds sans parent montré
-  const children = new Map<string | null, SubgraphNode[]>();
-  for (const n of shown) {
-    const key = n.parentId !== null && byId.has(n.parentId) ? n.parentId : null;
-    const siblings = children.get(key);
-    if (siblings) siblings.push(n);
-    else children.set(key, [n]);
-  }
+  const children = Map.groupBy(shown, (n) =>
+    n.parentId !== null && ids.has(n.parentId) ? n.parentId : null,
+  );
   const opened = nodes.length === 1 ? nodes[0]?.id : undefined;
 
   // un nœud et, pour une section, son groupe ; `path` : ses rubriques montrées, de la racine au
@@ -64,9 +61,7 @@ function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; 
     <details className="item" open={open}>
       <summary className="line" aria-labelledby={`text-${node.id}`}>
         <span className={`text text-${node.kind}`}>
-          <svg className="icon chevron" viewBox="0 0 16 16" aria-hidden="true">
-            <path d="M6 3.5 10.5 8 6 12.5" />
-          </svg>
+          <ChevronIcon className="chevron" />
           {/* nom de la ligne : son texte seul, sans le lien */}
           <span id={`text-${node.id}`} className="label">
             {node.kind === "out_of_scope" && (
@@ -83,9 +78,7 @@ function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; 
             aria-describedby={`text-${node.id}`}
             title="Open on its own page"
           >
-            <svg className="icon" viewBox="0 0 16 16" aria-hidden="true">
-              <path d="M9.5 2.5h4v4M13.5 2.5 7.5 8.5M11.5 9.5v3a1 1 0 0 1-1 1h-7a1 1 0 0 1-1-1v-7a1 1 0 0 1 1-1h3" />
-            </svg>
+            <OpenIcon />
           </Link>
         </span>
         <span className="page">{node.anchors[0]?.page}</span>
