@@ -137,11 +137,23 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
 - **Application** : la requête est un seul formulaire GET natif, le champ
   de recherche et les cases des rubriques (rattachées par l'attribut
   `form`) ; une case grisée est désactivée, donc pas envoyée : seules
-  partent les rubriques cochées les plus hautes. Le bouton « Apply
-  selection », en bas de Contents, fixé, sur toute sa largeur, n'apparaît
-  que si les cases diffèrent de la sélection affichée ; Entrée dans le
-  champ de recherche applique aussi les cases. Un peu de script propage
-  les coches, sans `nuqs`.
+  partent les rubriques cochées les plus hautes. En haut de Contents,
+  fixés, toujours là, les deux moitiés d'un même bouton : « Apply
+  selection » envoie les cases (inactif si elles ne diffèrent pas de la
+  sélection affichée) ; « Clear » applique aussitôt une sélection sans
+  coche, en gardant le texte cherché (inactif si rien n'est coché).
+  Entrée dans le champ de recherche applique aussi les cases. Un peu de
+  script propage les coches, sans `nuqs`.
+- **Toujours conformes à l'URL** : l'URL est la seule source de la
+  sélection. Après toute navigation (lien d'un nœud, fil d'Ariane,
+  recherche, Précédent), les cases reprennent les coches de l'URL ; le
+  volume au focus et les rubriques dépliées restent, le chemin de la
+  sélection est déplié en plus. Un nœud qui n'est pas une rubrique (une
+  entrée ouverte à part) ne se coche pas : les facettes le situent (focus
+  sur son volume, chemin de sa rubrique déplié).
+- **Sélection vide** : sans aucun critère, rien n'est sélectionné ; la vue
+  le dit par un grand aplat (« Nothing to show », ou « No match » quand
+  des critères ne trouvent rien). Pas d'entrée par défaut.
 
 Apparence de l'arbre de Contents : intitulés dans la casse imprimée (pas
 en capitales comme les titres de la Liste), simple retrait par niveau,

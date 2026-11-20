@@ -49,23 +49,24 @@ Relevé sur 1807 :
 ## Langue
 
 Interface en anglais : « Volumes », « Contents », « Apply selection »,
+« Clear »,
 infobulles et noms accessibles. Intitulés des rubriques en français, tels
 qu'imprimés (`lang="fr"` à prévoir sur l'intitulé).
 
 ## Anatomie
 
 ```
-┌──────────┬─┬────────────────────────────┬─┬───────────────────────────────┐
-│ ◉        │‹│ › ☐ LISTES PARTICULIÈRES… 13,311│‹│      🔍 Search_______          │
-│   1807   │V│   ☑ LISTE DE NON-COMM… 3,277 │C│                          Page │
-│ 1807_AD75│o│ ⌄ ☑ ADMINISTRATION GÉN…  234 │o│ ┌› ADMINISTRATION GÉNÉRALE…  178 │
-│ -PER292  ▶l│     ▣ Conseiller d'état…   1 │n│ │ › M. Lavallette, …         178 │
-│ (cernée) │u│     ▣ Administrateurs…     7 │t│ …                              │
-│ ○        │m│   ☐ DOCTEURS EN MÉDECINE. 335│e│                                │
-│   1810   │e│   …                          │n│                                │
-│          │s│ ┌─────────────────────────┐  │t│                                │
-│          │ │ │     Apply selection     │  │s│                                │
-└──────────┴─┴─┴─────────────────────────┴──┴─┴───────────────────────────────┘
+┌──────────┬─┬──────────────────────────────┬─┬───────────────────────────────┐
+│ ◉        │‹│ [ Apply selection │ Clear  ] │‹│      🔍 Search_______          │
+│   1807   │V│ › ☐ LISTES PARTICULIÈRES… 13,311│C│                          Page │
+│ 1807_AD75│o│   ☑ LISTE DE NON-COMM… 3,277 │o│ ┌› ADMINISTRATION GÉNÉRALE…  178 │
+│ -PER292  ▶l│ ⌄ ☑ ADMINISTRATION GÉN…  234 │n│ │ › M. Lavallette, …         178 │
+│ (cernée) │u│     ▣ Conseiller d'état…   1 │t│ …                              │
+│ ○        │m│     ▣ Administrateurs…     7 │e│                                │
+│   1810   │e│   ☐ DOCTEURS EN MÉDECINE. 335│n│                                │
+│          │s│   …                          │t│                                │
+│          │ │                              │s│                                │
+└──────────┴─┴──────────────────────────────┴─┴───────────────────────────────┘
   Volumes  bande      Contents             bande    vue (centrée, 64rem au plus)
 ```
 
@@ -155,6 +156,11 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
   décocher les réactive, décochées.
 - **Dépliage à l'arrivée** : le chemin des rubriques cochées est déplié,
   le reste replié.
+- **Après une navigation** (lien de la Liste, fil d'Ariane, Précédent) :
+  les cases reprennent les coches de l'URL ; le volume au focus et les
+  rubriques dépliées restent, le chemin de la nouvelle sélection est
+  déplié en plus. Une sélection qui n'est pas une rubrique (une entrée) ne
+  coche rien : sa rubrique est dépliée, son volume mis au focus.
 
 | État | Rendu |
 |---|---|
@@ -165,19 +171,32 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 | Dépliée | chevron tourné vers le bas |
 | Focus clavier | contour habituel, sur la case ou sur la ligne |
 
-## Bouton « Apply selection »
+## Boutons Apply et Clear (sprint 10)
 
-- En bas de Contents, fixé (`position: sticky`), sur toute la largeur du
-  panneau, fond blanc derrière lui pour couvrir l'arbre qui défile.
-- **N'apparaît que s'il y a des changements à appliquer** : cases différentes
-  de la sélection affichée. Entrée dans le champ de recherche envoie aussi
-  les cases.
-- Bouton sobre : trait 1 px `--color-text` autour, fond blanc, coins
-  `--radius-card`, texte petit ; survol : fond `--color-text`, texte blanc.
-- Envoie le formulaire de la requête (`form="query"`) : le texte, et une
-  valeur `subtree` par rubrique cochée **non couverte** (une case désactivée
-  n'est pas envoyée), y compris celles des volumes qui ne sont pas au focus
-  (champs cachés).
+- En haut de Contents, fixés (`position: sticky`) au-dessus de l'arbre qui
+  défile, fond blanc derrière eux ; **toujours là**, pour que rien ne se
+  décale.
+- Les **deux moitiés d'un même bouton**, chacune sur la moitié de la
+  largeur : coins arrondis à l'extérieur seulement, un seul trait au
+  milieu (celui d'un bouton actif passe devant).
+- **Apply selection** : envoie le formulaire de la requête
+  (`form="query"`) : le texte, et une valeur `subtree` par rubrique cochée
+  **non couverte** (une case désactivée n'est pas envoyée), y compris
+  celles des volumes qui ne sont pas au focus (champs cachés). Inactif
+  quand les cases ne diffèrent pas de la sélection affichée.
+- **Clear** : son propre formulaire GET, qui ne porte que le texte cherché
+  de la sélection affichée : applique aussitôt une sélection sans coche
+  (tout l'annuaire si un texte est cherché, rien sinon). Inactif quand rien
+  n'est coché.
+
+| État | Rendu |
+|---|---|
+| Actif | fond `--color-action`, trait `--color-text` |
+| Survol (actif) | inversé : fond `--color-text`, texte blanc |
+| Inactif | fond blanc, texte `--color-muted`, trait `--color-guide-faded` |
+
+Rendu provisoire : jugé « extrêmement moche », il sera refait avec Radix
+Themes au sprint 11 (`docs/SPRINTS.md`).
 
 ## Implémentation : ce qui est inévitable
 
@@ -187,8 +206,13 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
   panneaux, le formulaire au-dessus de la vue ; l'attribut `form` les y
   rattache sans imbriquer les formulaires.
 - **Propagation des coches** : un composant client (état des cases, focus,
-  panneaux ouverts). Sans script, le formulaire marche encore, sans
-  propagation ni case grisée.
+  panneaux ouverts, rubriques dépliées). Sans script, Entrée dans le champ
+  de recherche envoie encore les cases, sans propagation ni case grisée ;
+  Apply, inactif au rendu du serveur, ne sert pas.
+- **Conformité à l'URL** : la navigation de Next garde le composant ; il
+  retient les `subtree` reçus et, quand ils changent, reprend les coches
+  pendant le rendu (sans effet). Le dépliage est suivi par `onToggle` sur
+  les `<details>`, pour qu'il survive à la navigation.
 - **Case dans un `<summary>`** : cliquer la case ne déplie pas la rubrique
   (vérifié sous Chromium et Firefox).
 - **Coche ronde** : case native redessinée (`appearance: none`), coche en SVG
@@ -206,6 +230,7 @@ Jetons existants (`app/globals.css`, voir `docs/composants/noeud-liste.md`) :
 | Jeton | Valeur | Usage |
 |---|---|---|
 | `--color-press` | `#eef1f4` | survol d'une bande ou d'une vignette (un cran sous `--color-open`) |
+| `--color-action` | `--tint-subj` | Apply et Clear quand ils servent (sprint 10, provisoire) |
 | `--panel-volumes` | `9.5rem` | largeur de Volumes |
 | `--panel-contents` | `22rem` | largeur de Contents |
 | `--strip-width` | `1.5rem` | bande de repli |
@@ -266,6 +291,14 @@ Sprint 8 :
 - Intitulés de l'arbre en capitales, comme les titres de la Liste.
 - Bouton « Apply » plein, foncé, toujours visible en bas de la pile ; bouton
   à droite du champ de recherche.
+
+Sprint 10 :
+
+- Filtrer à la coche, sans bouton (`docs/IDEES.md`).
+- Apply en bas de Contents, visible seulement s'il y a des changements :
+  remonté en haut, toujours là, avec Clear.
+- Boutons séparés en pilule ; teintes vert, jaune, gris (planche) ; le
+  bleu retenu en attendant Radix Themes.
 
 ## Questions ouvertes
 

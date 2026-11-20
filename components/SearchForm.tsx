@@ -38,8 +38,8 @@ export function SearchForm({
           autoComplete="off"
           spellCheck={false}
         />
-        {/* effacer la recherche : la même sélection sans le texte (sans rien : la sélection par
-            défaut) */}
+        {/* effacer la recherche : la même sélection sans le texte (sans rubrique : rien à
+            afficher) */}
         {text !== undefined && (
           <a
             className="icon-button search-clear"

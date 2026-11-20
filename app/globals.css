@@ -21,6 +21,8 @@
   --tint-subj: #b9e6ff;
   --tint-desc: #afffe2;
   --tint-addr: #fffca9;
+  /* boutons des facettes (Apply, Clear) quand ils servent */
+  --color-action: var(--tint-subj);
 
   /* Fira Sans chargée par next/font (app/layout.tsx), pour ses vraies petites capitales */
   --font:
@@ -279,10 +281,10 @@ details[open] > summary .chevron {
   color: var(--color-muted);
 }
 
-/* Inversé au survol (bouton Apply, lien vers un nœud) : fond du texte, texte du fond */
+/* Inversé au survol (boutons des facettes, lien vers un nœud) : fond du texte, texte du fond */
 .own-page:hover,
 .own-page:focus-visible,
-.apply-button:hover {
+.facet-action:enabled:hover {
   color: var(--color-background);
   background: var(--color-text);
 }
@@ -347,10 +349,24 @@ details[open] > summary .chevron {
   color: var(--color-muted);
 }
 
-.no-match {
+/* vue vide (app/page.tsx) : un grand aplat, le signe ∅ et une ligne */
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  min-height: 60vh;
   margin: 0;
-  padding: 0 var(--line-pad);
+  border-radius: var(--radius-card);
+  background: var(--color-open);
   color: var(--color-muted);
+  font-size: var(--size-small);
+}
+
+.empty-sign {
+  font-size: 1.5rem;
+  line-height: 1;
 }
 
 /* ── Vue Liste (components/NodeList.tsx, docs/composants/noeud-liste.md) ── */
@@ -620,7 +636,6 @@ details[open] > summary .chevron {
 
 .panel-contents {
   width: var(--panel-contents);
-  padding-bottom: 0;
 }
 
 /* bande de repli : chevron, puis titre écrit de bas en haut ; sépare aussi les colonnes */
@@ -731,20 +746,48 @@ details[open] > summary .chevron {
   translate: 0 0.125rem;
 }
 
-/* Appliquer : en bas de Contents, fixé, sur toute sa largeur ; seulement s'il y a des
-   changements à appliquer. Un trait autour, sans fond ; inversé au survol. */
-.apply {
+/* Apply et Clear : en haut de Contents, fixés au-dessus de l'arbre qui défile, toujours là ;
+   les deux moitiés d'un même bouton. Colorés quand ils servent, inversés au survol ; estompés
+   sinon. Clear est dans son propre formulaire, transparent pour la grille. */
+.facet-actions {
   position: sticky;
-  bottom: 0;
-  padding: var(--space-2) 0 var(--space-3);
+  top: calc(-1 * var(--space-3));
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: calc(-1 * var(--space-3));
+  padding: var(--space-3) 0 var(--space-2);
   background: var(--color-background);
 }
 
-.apply-button {
-  width: 100%;
-  padding: var(--space-1) var(--space-3);
+.facet-actions > form {
+  display: contents;
+}
+
+.facet-action {
+  padding: var(--space-1) var(--space-2);
   font-size: var(--size-small);
-  background: var(--color-background);
+  color: var(--color-text);
+  background: var(--color-action);
   border: 1px solid var(--color-text);
-  border-radius: var(--radius-card);
+}
+
+.facet-apply {
+  border-radius: var(--radius-card) 0 0 var(--radius-card);
+}
+
+/* les deux traits du milieu superposés ; celui d'un bouton actif passe devant */
+.facet-actions > form > .facet-action {
+  margin-left: -1px;
+  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+}
+
+.facet-action:enabled {
+  position: relative;
+}
+
+.facet-action:disabled {
+  color: var(--color-muted);
+  background: var(--color-background);
+  border-color: var(--color-guide-faded);
 }

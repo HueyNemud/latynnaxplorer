@@ -11,10 +11,17 @@
 // - Les cases font partie du formulaire de la requête (#query, components/SearchForm.tsx) par
 //   l'attribut `form`. Une case couverte, désactivée, n'est pas envoyée : seules partent les
 //   rubriques cochées les plus hautes. Le script ne sert qu'à propager les coches.
+// - En haut de Contents, toujours là : Apply envoie le formulaire (inactif sans changement) ;
+//   Clear applique aussitôt une sélection sans coche, en gardant le texte cherché (inactif sans
+//   coche), par son propre formulaire GET.
+// - Toujours conformes à l'URL : à chaque nouvelle sélection (lien de la Liste, fil d'Ariane,
+//   bouton Précédent), les cases reprennent les coches de l'URL ; le volume regardé et les
+//   rubriques dépliées restent, le chemin de la sélection est déplié en plus.
 
 import { type ReactNode, useMemo, useState } from "react";
 import {
   checkedOf,
+  focusFor,
   isCovered,
   isVolumeSelected,
   pathTo,
@@ -33,22 +40,37 @@ export function Facets({
   volumes,
   sections,
   checked: subtree,
+  places,
+  text,
 }: {
   volumes: FacetVolume[];
   sections: FacetSection[];
   /** les `subtree` de l'URL : rubriques cochées les plus hautes */
   checked: readonly string[];
+  /** rubriques qui contiennent les nœuds désignés : un nœud qui n'est pas une rubrique ne se
+   * coche pas, mais les facettes le situent */
+  places: readonly string[];
+  /** le texte cherché de la sélection affichée, que Clear garde */
+  text: string | undefined;
 }) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
   // les coches de la sélection affichée
   const initial = useMemo(() => checkedOf(tree, subtree), [tree, subtree]);
   const [checked, setChecked] = useState(initial);
-  // focus : le volume de la première rubrique cochée, sinon le premier volume
-  const [focus, setFocus] = useState(
-    () => tree.byId.get([...initial][0] ?? "")?.volumeId ?? volumes[0]?.id,
-  );
-  // à l'arrivée, le chemin des rubriques cochées est déplié
-  const [open] = useState(() => pathTo(tree, initial));
+  // focus : le volume de la sélection (première coche, sinon première rubrique qui contient un
+  // nœud désigné), sinon le premier volume
+  const [focus, setFocus] = useState(() => focusFor(tree, [...initial, ...places], volumes[0]?.id));
+  // rubriques dépliées : le chemin de la sélection, puis ce que l'on déplie ou replie
+  const [open, setOpen] = useState(() => pathTo(tree, initial, places));
+  // Nouvelle sélection : la navigation de Next garde ce composant, l'état ci-dessus n'a été lu
+  // qu'au premier rendu. Les props changent à chaque navigation : l'état suit, pendant le rendu.
+  const [shown, setShown] = useState(subtree);
+  if (shown !== subtree) {
+    setShown(subtree);
+    setChecked(initial);
+    setFocus(focusFor(tree, [...initial, ...places], focus));
+    setOpen(new Set([...open, ...pathTo(tree, initial, places)]));
+  }
   // panneaux ouverts : toujours les premiers (Volumes, puis Contents) ; ouvrir un panneau ouvre
   // ceux des niveaux au-dessus, en replier un replie ceux des niveaux en dessous
   const [panels, setPanels] = useState(2);
@@ -84,7 +106,20 @@ export function Facets({
     return (
       <li key={s.id}>
         {kids.length > 0 ? (
-          <details open={open.has(s.id)}>
+          <details
+            open={open.has(s.id)}
+            onToggle={(e) => {
+              // dépliée ou repliée à la main : retenue pour la sélection suivante
+              const isOpen = e.currentTarget.open;
+              setOpen((o) => {
+                if (isOpen === o.has(s.id)) return o;
+                const next = new Set(o);
+                if (isOpen) next.add(s.id);
+                else next.delete(s.id);
+                return next;
+              });
+            }}
+          >
             {/* nommé par son intitulé seul, sans la case ni le décompte */}
             <summary className="row tree-line" aria-labelledby={`tree-${s.id}`}>
               {line}
@@ -135,6 +170,22 @@ export function Facets({
         </div>
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
+        <div className="facet-actions">
+          <button
+            type="submit"
+            form={QUERY_FORM}
+            className="facet-action facet-apply"
+            disabled={sameChecks(checked, initial)}
+          >
+            Apply selection
+          </button>
+          <form method="get">
+            {text !== undefined && <input type="hidden" name="text" value={text} />}
+            <button type="submit" className="facet-action" disabled={checked.size === 0}>
+              Clear
+            </button>
+          </form>
+        </div>
         <ul className="tree tree-root">{(tree.children.get(focus ?? "") ?? []).map(row)}</ul>
         {/* rubriques cochées des autres volumes, que Contents ne montre pas : envoyées aussi */}
         {[...checked]
@@ -142,12 +193,6 @@ export function Facets({
           .map((id) => (
             <input key={id} type="hidden" form={QUERY_FORM} name="subtree" value={id} />
           ))}
-        {/* seulement s'il y a des changements à appliquer */}
-        <div className="apply" hidden={sameChecks(checked, initial)}>
-          <button type="submit" form={QUERY_FORM} className="apply-button">
-            Apply selection
-          </button>
-        </div>
       </Panel>
     </section>
   );

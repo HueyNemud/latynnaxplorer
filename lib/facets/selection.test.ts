@@ -5,6 +5,7 @@ import { describe, expect, it } from "vitest";
 import type { FacetSection } from "../query/types.ts";
 import {
   checkedOf,
+  focusFor,
   isCovered,
   isVolumeSelected,
   pathTo,
@@ -106,5 +107,24 @@ describe("sameChecks", () => {
 describe("pathTo", () => {
   it("déplie les rubriques au-dessus de chaque coche", () => {
     expect(pathTo(tree, set("A2a", "B"))).toEqual(set("A2", "A"));
+  });
+
+  it("déplie aussi la rubrique qui contient un nœud désigné, et celles au-dessus d'elle", () => {
+    expect(pathTo(tree, set(), ["A2", "inconnue"])).toEqual(set("A2", "A"));
+  });
+});
+
+describe("focusFor", () => {
+  it("garde le volume regardé s'il contient une des rubriques", () => {
+    expect(focusFor(tree, ["C", "A1"], "V")).toBe("V");
+  });
+
+  it("passe au volume de la première rubrique sinon", () => {
+    expect(focusFor(tree, ["C", "A1"], "X")).toBe("W");
+  });
+
+  it("garde le volume regardé sans rubrique connue", () => {
+    expect(focusFor(tree, ["inconnue"], "V")).toBe("V");
+    expect(focusFor(tree, [], undefined)).toBeUndefined();
   });
 });
