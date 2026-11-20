@@ -10,7 +10,7 @@ import { toVolumeFile } from "../../scripts/volume-file.ts";
 import { connect } from "../db/client.ts";
 import { facets } from "../query/facets.ts";
 import type { Query } from "../query/query.ts";
-import { context, detail, NodeNotFoundError, resolve } from "../query/resolve.ts";
+import { context, detail, resolve } from "../query/resolve.ts";
 import {
   contextLocal,
   detailLocal,
@@ -51,11 +51,6 @@ describe("moteur local, comparé à SQL sur la fixture", () => {
 
   it.each([T1, T2, E1, E2, E3, O1])("detail : %s", async (id) => {
     expect(detailLocal(volume, id)).toEqual(await detail(sql, id));
-  });
-
-  it("refuse un sous-arbre inconnu, comme SQL", () => {
-    const unknown = "99999999-0000-0000-0000-000000000000";
-    expect(() => resolveLocal(volume, { subtree: [T2, unknown] })).toThrow(NodeNotFoundError);
   });
 });
 

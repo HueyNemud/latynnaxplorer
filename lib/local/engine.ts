@@ -133,10 +133,9 @@ function selection(volume: LocalVolume, { subtree, text }: Query): SubgraphNode[
   );
 }
 
-/** Comme `resolve` : sous-graphe induit ; un `subtree` inconnu est une erreur. */
+/** Comme `resolve`, dans ce volume : sous-graphe induit. Un `subtree` qui n'est pas de ce volume
+ * n'y désigne rien (les inconnus de tous les volumes : lib/local/explore.ts). */
 export function resolveLocal(volume: LocalVolume, query: Query): Subgraph {
-  const unknown = query.subtree?.find((id) => !volume.byId.has(id));
-  if (unknown !== undefined) throw new NodeNotFoundError(unknown);
   const nodes = selection(volume, query);
   const rows: SelectedNode[] = nodes.map(({ spans: _, anchors: __, ...n }) => ({
     ...n,
