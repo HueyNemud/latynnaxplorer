@@ -1,4 +1,4 @@
-// Validation des fichiers d'un volume avant import : rien n'est importé d'un fichier non conforme.
+// Validation des fichiers d'un volume avant export : rien n'est exporté d'un fichier non conforme.
 // Les schémas numrev sont copiés de ../adresses_revolutionnaires/src/numrev/export/schemas/
 // (commit 2548ce1) ; à recopier quand numrev change de version de format.
 
@@ -15,20 +15,20 @@ interface LineRef {
   line: string;
 }
 
-/** Champs de volume.json lus par l'import (le schéma garantit les autres). */
+/** Champs de volume.json lus par l'export (le schéma garantit les autres). */
 export interface VolumeMeta {
   identifier: string;
   title: string | null;
   temporal: { start: string; end: string };
 }
 
-/** Champs de <volume>.document.json lus par l'import. */
+/** Champs de <volume>.document.json lus par l'export. */
 export interface NumrevDocument {
   volume: string;
   pages: { page: number; lines: { id: string; bbox_estimate: Bbox | null }[] }[];
 }
 
-/** Champs de <volume>.structure.json lus par l'import. */
+/** Champs de <volume>.structure.json lus par l'export. */
 export interface NumrevStructure {
   volume: string;
   root: string;

@@ -1,5 +1,5 @@
-// Lecture d'un dossier de volume (data/<volume>), partagée par l'import en base et l'export en
-// fichier : volume.json, <volume>.document.json et <volume>.structure.json, validés.
+// Lecture d'un dossier de volume (data/<volume>) : volume.json, <volume>.document.json et
+// <volume>.structure.json, validés.
 
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";

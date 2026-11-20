@@ -5,15 +5,14 @@
 
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import type { VolumeIndex } from "../lib/local/types.ts";
+import type { VolumeIndex } from "../lib/query/volume.ts";
 import { readVolume } from "./read.ts";
-import { toRows } from "./rows.ts";
 import { toVolumeFile, withVolume } from "./volume-file.ts";
 
 const [dir, out = "public/volumes"] = process.argv.slice(2);
 if (!dir) throw new Error("usage : node scripts/export-volume.ts data/<volume> [dossier]");
 
-const file = toVolumeFile(toRows(readVolume(dir)));
+const file = toVolumeFile(readVolume(dir));
 const json = JSON.stringify(file);
 mkdirSync(out, { recursive: true });
 const name = `${file.volume.id}.json`;

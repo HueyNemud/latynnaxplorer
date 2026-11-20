@@ -2,18 +2,23 @@
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous le champ de
 // recherche. Tout se résout dans le navigateur : l'index des volumes est lu à l'arrivée, chaque
-// volume est téléchargé quand on en a besoin (lib/local/explore.ts, neededVolumes), puis la
+// volume est téléchargé quand on en a besoin (lib/query/explore.ts, neededVolumes), puis la
 // requête de l'URL est résolue sur les volumes chargés. Facettes et recherche changent l'URL sans
 // recharger la page ; Next garde useSearchParams à jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { detailLocal, indexVolume, type LocalVolume } from "../lib/local/engine.ts";
-import { neededVolumes, type View, view, volumeOf } from "../lib/local/explore.ts";
-import type { IndexedVolume, VolumeFile, VolumeIndex } from "../lib/local/types.ts";
+import { neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
 import { parseQuery, type Query, QueryError } from "../lib/query/query.ts";
-import { NodeNotFoundError } from "../lib/query/resolve.ts";
+import { detail as detailOf, NodeNotFoundError } from "../lib/query/resolve.ts";
+import {
+  type IndexedVolume,
+  indexVolume,
+  type LoadedVolume,
+  type VolumeFile,
+  type VolumeIndex,
+} from "../lib/query/volume.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { Facets } from "./Facets.tsx";
 import { NodeList } from "./NodeList.tsx";
@@ -56,7 +61,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   }, [search]);
 
   // volumes chargés, dans l'ordre de l'index ; erreurs de chargement
-  const [loaded, setLoaded] = useState<ReadonlyMap<string, LocalVolume>>(new Map());
+  const [loaded, setLoaded] = useState<ReadonlyMap<string, LoadedVolume>>(new Map());
   const [failed, setFailed] = useState(false);
   const list = useMemo(() => volumes.flatMap((v) => loaded.get(v.id) ?? []), [volumes, loaded]);
   // volume regardé : choisi dans Volumes ; sinon celui de la première rubrique cochée, sinon le
@@ -110,7 +115,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
     (id: string) => {
       const volume = volumeOf(list, id);
       if (volume === undefined) throw new NodeNotFoundError(id);
-      return detailLocal(volume, id);
+      return detailOf(volume, id);
     },
     [list],
   );

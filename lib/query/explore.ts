@@ -2,10 +2,11 @@
 // et sa vue sur les volumes chargés (sélection, contexte et facettes de chacun, mis bout à
 // bout dans l'ordre de l'index). Fonctions pures.
 
-import type { Query } from "../query/query.ts";
-import { NodeNotFoundError } from "../query/resolve.ts";
-import type { FacetSection, SubgraphNode } from "../query/types.ts";
-import { contextLocal, facetsLocal, type LocalVolume, resolveLocal } from "./engine.ts";
+import { sections } from "./facets.ts";
+import type { Query } from "./query.ts";
+import { context, NodeNotFoundError, resolve } from "./resolve.ts";
+import type { FacetSection, SubgraphNode } from "./types.ts";
+import type { LoadedVolume } from "./volume.ts";
 
 /**
  * Volumes dont la requête a besoin : celui que l'on regarde ; tous si elle cherche un texte sans
@@ -14,7 +15,7 @@ import { contextLocal, facetsLocal, type LocalVolume, resolveLocal } from "./eng
  */
 export function neededVolumes(
   all: readonly string[],
-  loaded: readonly LocalVolume[],
+  loaded: readonly LoadedVolume[],
   query: Query,
   focus: string | undefined,
 ): string[] {
@@ -26,9 +27,9 @@ export function neededVolumes(
 
 /** Volume chargé qui contient le nœud. */
 export function volumeOf(
-  loaded: readonly LocalVolume[],
+  loaded: readonly LoadedVolume[],
   id: string | undefined,
-): LocalVolume | undefined {
+): LoadedVolume | undefined {
   return id === undefined ? undefined : loaded.find((v) => v.byId.has(id));
 }
 
@@ -46,19 +47,19 @@ export interface View {
  * dans aucun d'eux est une erreur : à n'appeler qu'une fois chargés ceux que demande
  * neededVolumes.
  */
-export function view(loaded: readonly LocalVolume[], query: Query): View {
+export function view(loaded: readonly LoadedVolume[], query: Query): View {
   const unknown = query.subtree?.find((id) => volumeOf(loaded, id) === undefined);
   if (unknown !== undefined) throw new NodeNotFoundError(unknown);
   const result: View = { selection: [], shown: [], sections: [] };
   for (const volume of loaded) {
-    const { nodes } = resolveLocal(volume, query);
+    const { nodes } = resolve(volume, query);
     result.selection.push(...nodes);
     result.shown.push(
-      ...[...contextLocal(volume, query), ...nodes].sort(
+      ...[...context(volume, query), ...nodes].sort(
         (a, b) => a.documentReadingOrder - b.documentReadingOrder,
       ),
     );
-    result.sections.push(...facetsLocal(volume, query).sections);
+    result.sections.push(...sections(volume, query));
   }
   return result;
 }

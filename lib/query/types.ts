@@ -1,11 +1,10 @@
 // Formes des données que rendent les requêtes (lib/query/resolve.ts, lib/query/facets.ts),
-// partagées avec les composants : des types seuls, sans SQL.
+// partagées avec les composants : des types seuls.
 
-import type { nodeKind, spanLabel } from "../db/schema.ts";
-
-export type NodeKind = (typeof nodeKind.enumValues)[number];
+export type NodeKind = "entry" | "section" | "out_of_scope";
 export type ArcKind = "member_of" | "child_of" | "follows";
-export type SpanLabel = (typeof spanLabel.enumValues)[number];
+/** sujet, description, adresse */
+export type SpanLabel = "SUBJ" | "DESC" | "ADDR";
 
 /** Champ structuré d'une entrée ; positions dans `text` brut, en points de code, fin exclue. */
 export interface Span {
@@ -66,11 +65,4 @@ export interface FacetSection {
   text: string;
   /** entrées du sous-arbre, la rubrique comprise, qui contiennent le texte cherché s'il y en a un */
   entries: number;
-}
-
-export interface Facets {
-  /** dans l'ordre des dates */
-  volumes: FacetVolume[];
-  /** par volume, dans l'ordre de lecture : un parent vient avant ses enfants */
-  sections: FacetSection[];
 }

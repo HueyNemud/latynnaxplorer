@@ -2,15 +2,13 @@
 node_modules/
 *.tsbuildinfo
 
-# Configuration locale
-.env
-
 # Données sources : jamais versionnées pour l'instant
 data/
 
-# Next.js : sorties de build, fichier de types régénéré
+# Next.js : sorties de build (out/ : le site statique), fichier de types régénéré
 .next/
+out/
 next-env.d.ts
 
-# Volumes exportés pour le navigateur (essai des données en local), tirés de data/
+# Volumes exportés pour le site en développement (scripts/export-volume.ts), tirés de data/
 public/volumes/

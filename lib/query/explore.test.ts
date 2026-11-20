@@ -3,15 +3,13 @@
 
 import { describe, expect, it } from "vitest";
 import { E1, E2, fixture, O1, T1, T2 } from "../../scripts/fixture.ts";
-import { toRows } from "../../scripts/rows.ts";
 import { validateVolume } from "../../scripts/validate.ts";
 import { toVolumeFile } from "../../scripts/volume-file.ts";
-import { NodeNotFoundError } from "../query/resolve.ts";
-import { indexVolume } from "./engine.ts";
 import { neededVolumes, view, volumeOf } from "./explore.ts";
-import type { VolumeFile } from "./types.ts";
+import { NodeNotFoundError } from "./resolve.ts";
+import { indexVolume, type VolumeFile } from "./volume.ts";
 
-const file = toVolumeFile(toRows(validateVolume(fixture())));
+const file = toVolumeFile(validateVolume(fixture()));
 const other = (id: string) => `autre-${id}`;
 const copy: VolumeFile = {
   volume: { id: "AUTRE", title: null, temporalStart: "1820-01-01" },
@@ -63,8 +61,11 @@ describe("view", () => {
     ]);
   });
 
-  it("refuse un sous-arbre qui n'est dans aucun volume chargé", () => {
+  it("refuse un sous-arbre qui n'est dans aucun volume chargé, même avec un texte", () => {
     expect(() => view([first], { subtree: [T2, other(T2)] })).toThrow(NodeNotFoundError);
+    expect(() => view([first, second], { subtree: ["inconnu"], text: "rue" })).toThrow(
+      "nœud inconnu : inconnu",
+    );
   });
 });
 
