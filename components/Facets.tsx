@@ -7,7 +7,9 @@
 //   montre son arbre. Un volume est sélectionné si une rubrique au moins l'est.
 // - Cocher une rubrique prend tout son sous-arbre : les cases de ses descendants sont couvertes
 //   (cochées, en pâle) ; la décocher les libère, décochées. Cliquer une case couverte ne garde
-//   qu'elle : la rubrique qui la couvre est décochée. Règles des coches : lib/facets/selection.ts.
+//   qu'elle : la rubrique qui la couvre est décochée. Une rubrique ou un volume dont une partie
+//   seulement est cochée est semi-sélectionné (tiret) ; un clic le coche entier. Règles des
+//   coches : lib/facets/selection.ts.
 // - Les cases font partie du formulaire de la requête (#query, components/SearchForm.tsx) par
 //   l'attribut `form`. Une case couverte, sans nom, n'est pas envoyée : seules partent les
 //   rubriques cochées les plus hautes. Cases, coches et boutons de Radix Themes : une case Radix
@@ -34,6 +36,7 @@ import {
   setVolume,
   toggleSection,
   toggleVolume,
+  volumeState,
 } from "../lib/facets/selection.ts";
 import { serializeQuery } from "../lib/query/query.ts";
 import type { FacetSection, FacetVolume } from "../lib/query/types.ts";
@@ -89,6 +92,9 @@ export function Facets({
     onToggle: () => setPanels(level < panels ? level : level + 1),
   });
 
+  // rubriques semi-sélectionnées : une rubrique en dessous d'elles est cochée
+  const partial = useMemo(() => pathTo(tree, checked), [tree, checked]);
+
   const row = (s: FacetSection): ReactNode => {
     const kids = tree.children.get(s.id) ?? [];
     // la rubrique cochée qui couvre celle-ci, s'il y en a une
@@ -104,7 +110,9 @@ export function Facets({
           form={QUERY_FORM}
           name={cover ? undefined : "subtree"}
           value={s.id}
-          checked={cover !== undefined || checked.has(s.id)}
+          checked={
+            cover !== undefined || checked.has(s.id) || (partial.has(s.id) && "indeterminate")
+          }
           onCheckedChange={() =>
             select(cover ? keepOnly(tree, checked, s.id) : toggleSection(tree, checked, s.id))
           }
@@ -164,7 +172,7 @@ export function Facets({
                 <Checkbox
                   size="3"
                   className="volume-box"
-                  checked={isVolumeSelected(tree, checked, v.id)}
+                  checked={volumeState(tree, checked, v.id)}
                   onCheckedChange={() => select(toggleVolume(tree, checked, v.id))}
                   aria-label={`Select ${name}`}
                 />

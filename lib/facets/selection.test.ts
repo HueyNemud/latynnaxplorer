@@ -14,6 +14,7 @@ import {
   setVolume,
   toggleSection,
   toggleVolume,
+  volumeState,
 } from "./selection.ts";
 
 const section = (id: string, parentId: string | null, volumeId = "V"): FacetSection => ({
@@ -99,8 +100,15 @@ describe("volumes", () => {
     expect(toggleVolume(tree, set("C"), "V")).toEqual(set("C", "A", "B"));
   });
 
-  it("décocher un volume retire toutes ses coches", () => {
-    expect(toggleVolume(tree, set("A2a", "C"), "V")).toEqual(set("C"));
+  it("un volume en partie coché se coche entier, un volume entier se vide", () => {
+    expect(toggleVolume(tree, set("A2a", "C"), "V")).toEqual(set("C", "A", "B"));
+    expect(toggleVolume(tree, set("A", "B", "C"), "V")).toEqual(set("C"));
+  });
+
+  it("état de la coche d'un volume : entier, en partie ou rien", () => {
+    expect(volumeState(tree, set("A", "B"), "V")).toBe(true);
+    expect(volumeState(tree, set("A2a"), "V")).toBe("indeterminate");
+    expect(volumeState(tree, set("C"), "V")).toBe(false);
   });
 });
 

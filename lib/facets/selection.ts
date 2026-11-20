@@ -99,16 +99,28 @@ export function setVolume(
   return next;
 }
 
-/** La coche ronde d'un volume : tout le volume s'il n'est pas sélectionné, sinon plus rien. */
+/** État de la coche d'un volume : entier, en partie (une partie de ses rubriques), ou rien. */
+export function volumeState(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  volumeId: string,
+): boolean | "indeterminate" {
+  if (isVolumeFull(tree, checked, volumeId)) return true;
+  return isVolumeSelected(tree, checked, volumeId) && "indeterminate";
+}
+
+/** La coche ronde d'un volume : tout le volume s'il ne l'est pas entier (rien ou en partie),
+ * sinon plus rien. */
 export function toggleVolume(
   tree: SectionTree,
   checked: ReadonlySet<string>,
   volumeId: string,
 ): Set<string> {
-  return setVolume(tree, checked, volumeId, !isVolumeSelected(tree, checked, volumeId));
+  return setVolume(tree, checked, volumeId, !isVolumeFull(tree, checked, volumeId));
 }
 
-/** Rubriques à déplier pour montrer les coches : celles au-dessus de chacune. */
+/** Rubriques au-dessus des coches : à déplier à l'arrivée pour les montrer ; semi-sélectionnées
+ * (une rubrique en dessous d'elles est cochée). */
 export function pathTo(tree: SectionTree, checked: ReadonlySet<string>): Set<string> {
   const path = new Set<string>();
   for (const id of checked) for (const p of ancestors(tree, id)) path.add(p);

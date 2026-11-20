@@ -110,12 +110,14 @@ n'est notée que si elle risque de revenir sur la table.
 
 - Colonnes de Miller collées à gauche (Volumes | Contents | vue), chacune
   repliable par une bande à droite, liées par niveau.
-- Volume : coche ronde (tout le volume ou rien) ; clic sur la vignette =
-  focus, Contents montre son arbre. Rubrique cochée = tout son sous-arbre,
-  descendants couverts (cochés en pâle) ; cliquer une case couverte ne garde
-  qu'elle (la rubrique qui la couvre est décochée) : « A sauf B » ne
-  s'exprime pas en union de sous-arbres. Un volume est sélectionné si une de
-  ses rubriques l'est. Les nœuds hors de toute rubrique ne se sélectionnent que par la
+- Volume : coche ronde, pleine si tout le volume est coché, tiret s'il l'est
+  en partie ; un clic le coche entier, ou le vide s'il l'était. Clic sur la
+  vignette = focus, Contents montre son arbre. Rubrique cochée = tout son
+  sous-arbre, descendants couverts (cochés en pâle) ; cliquer une case
+  couverte ne garde qu'elle (la rubrique qui la couvre est décochée) : « A
+  sauf B » ne s'exprime pas en union de sous-arbres. Une rubrique dont une
+  descendante est cochée a un tiret (visible même branche repliée) ; un
+  clic la coche entière. Les nœuds hors de toute rubrique ne se sélectionnent que par la
   recherche (racine demandée à numrev).
 - Filtrer à la coche : chaque coche s'applique aussitôt, par une navigation
   client qui remplace l'entrée d'historique, après 300 ms sans nouvelle

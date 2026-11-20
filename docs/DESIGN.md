@@ -123,9 +123,11 @@ domaine couvert : la Structure, volumes et rubriques.
   rappeler en tête), une case à gauche de chaque ligne, le nombre
   d'entrées de son sous-arbre à droite (compte tenu du texte cherché).
 - **Cocher** :
-  - un volume est sélectionné si une rubrique au moins l'est ; sa coche
-    sélectionne tout le volume (toutes ses rubriques de premier niveau,
-    qui restent actives) ou le désélectionne tout entier ;
+  - un volume est sélectionné si une rubrique au moins l'est : coche
+    pleine s'il l'est entier, tiret s'il l'est en partie ; un clic le coche
+    entier, ou le vide s'il l'était ;
+  - une rubrique dont une descendante est cochée a un tiret, même branche
+    repliée ; un clic la coche entière ;
   - une rubrique : la prend avec tout son sous-arbre ; les cases de ses
     descendants sont couvertes (cochées en pâle) ; la décocher les libère ;
   - une case couverte : ne garde qu'elle (la rubrique qui la couvre est

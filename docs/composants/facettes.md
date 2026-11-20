@@ -123,16 +123,18 @@ Une carte par volume, dans l'ordre des dates, 8 rem de large.
   focus n'est pas dans l'URL.
 - **Sélection** : une **coche ronde** de 1,5 rem en haut à gauche de la
   vignette, posée dessus : la Checkbox de Radix, rendue ronde par ses
-  variables CSS (`--checkbox-size`, `--checkbox-border-radius`). Un volume est sélectionné si une rubrique au moins
-  l'est. Cocher sélectionne tout le volume (toutes ses rubriques de premier
-  niveau, qui restent actives) ; décocher le désélectionne tout entier.
+  variables CSS (`--checkbox-size`, `--checkbox-border-radius`). Pleine si
+  tout le volume est sélectionné (toutes ses rubriques de premier niveau),
+  avec un tiret si une partie seulement l'est. Un clic coche tout le volume
+  (s'il est vide ou en partie coché), ou le vide (s'il est entier).
 
 | État | Vignette | Coche ronde |
 |---|---|---|
 | Repos | carte en relief | cercle vide (Radix) |
 | Survol de la vignette | relief de Radix | — |
 | Focus (volume regardé) | cernée, encoche à droite | — |
-| Sélectionné | — | disque iris (accent), coche blanche |
+| Entier | — | disque iris (accent), coche blanche |
+| En partie | — | disque iris, tiret blanc |
 | Focus clavier | anneau de Radix, sur la vignette ou sur la coche | idem |
 
 ## Ligne de l'arbre (Contents)
@@ -177,6 +179,7 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 | Survol | fond `--gray-2` sur la ligne |
 | Cochée | Checkbox cochée, iris (accent) |
 | Couverte | Checkbox cochée en pâle (variante `soft`), cliquable ; intitulé inchangé |
+| Semi-sélectionnée | tiret (`indeterminate`, « mixed » pour les lecteurs d'écran) : une rubrique en dessous est cochée, même dans une branche repliée ; un clic la coche entière |
 | Dépliée | chevron tourné vers le bas |
 | Focus clavier | anneau de Radix sur la case, anneau `--focus-8` sur la ligne |
 
@@ -248,7 +251,7 @@ Volumes 9,5 rem, Contents 22 rem, bande 1,5 rem, carte 8 rem, coche ronde
 |---|---|
 | une case pour sélectionner, un clic sur l'objet pour le regarder | un même geste pour les deux |
 | un seul formulaire pour toute la requête | un bouton ou une URL par facette |
-| composants de Radix, case couverte en pâle | état mi-coché, contrôles dessinés à la main |
+| composants de Radix, case couverte en pâle, tiret pour une partie | contrôles dessinés à la main |
 | montrer toutes les valeurs, même à 0 | masquer les rubriques sans résultat |
 | intitulés tels qu'imprimés | capitales forcées, intitulés corrigés |
 | séparer les colonnes par les bandes | filets, cadres autour des panneaux |
@@ -259,8 +262,8 @@ Volumes 9,5 rem, Contents 22 rem, bande 1,5 rem, carte 8 rem, coche ronde
   décalés du bord de la fenêtre.
 - Volume racine coché comme une rubrique ; arbre de tous les volumes à la
   fois.
-- Rubrique cochée = ses seuls nœuds propres ; volume « mi-coché » : trop
-  complexes.
+- Rubrique cochée = ses seuls nœuds propres, ou « A sauf B » : ne
+  s'exprime pas en union de sous-arbres.
 - Vignette enfoncée pour la sélection ou le focus (confondait les deux) ;
   case carrée ou bandeau « Selected » sous la vignette ; nom et décompte
   sous la carte.
