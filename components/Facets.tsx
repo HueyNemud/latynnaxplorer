@@ -11,6 +11,9 @@
 // - Les cases font partie du formulaire de la requête (#query, components/SearchForm.tsx) par
 //   l'attribut `form`. Une case couverte, désactivée, n'est pas envoyée : seules partent les
 //   rubriques cochées les plus hautes. Le script ne sert qu'à propager les coches.
+// - En haut de Contents, toujours là : Apply envoie le formulaire (inactif sans changement) ;
+//   Clear applique aussitôt une sélection sans coche, en gardant le texte cherché (inactif sans
+//   coche), par son propre formulaire GET.
 // - Toujours conformes à l'URL : à chaque nouvelle sélection (lien de la Liste, fil d'Ariane,
 //   bouton Précédent), les cases reprennent les coches de l'URL ; le volume regardé et les
 //   rubriques dépliées restent, le chemin de la sélection est déplié en plus.
@@ -38,6 +41,7 @@ export function Facets({
   sections,
   checked: subtree,
   places,
+  text,
 }: {
   volumes: FacetVolume[];
   sections: FacetSection[];
@@ -46,6 +50,8 @@ export function Facets({
   /** rubriques qui contiennent les nœuds désignés : un nœud qui n'est pas une rubrique ne se
    * coche pas, mais les facettes le situent */
   places: readonly string[];
+  /** le texte cherché de la sélection affichée, que Clear garde */
+  text: string | undefined;
 }) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
   // les coches de la sélection affichée
@@ -164,6 +170,22 @@ export function Facets({
         </div>
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
+        <div className="facet-actions">
+          <button
+            type="submit"
+            form={QUERY_FORM}
+            className="facet-action facet-apply"
+            disabled={sameChecks(checked, initial)}
+          >
+            Apply selection
+          </button>
+          <form method="get">
+            {text !== undefined && <input type="hidden" name="text" value={text} />}
+            <button type="submit" className="facet-action" disabled={checked.size === 0}>
+              Clear
+            </button>
+          </form>
+        </div>
         <ul className="tree tree-root">{(tree.children.get(focus ?? "") ?? []).map(row)}</ul>
         {/* rubriques cochées des autres volumes, que Contents ne montre pas : envoyées aussi */}
         {[...checked]
@@ -171,12 +193,6 @@ export function Facets({
           .map((id) => (
             <input key={id} type="hidden" form={QUERY_FORM} name="subtree" value={id} />
           ))}
-        {/* seulement s'il y a des changements à appliquer */}
-        <div className="apply" hidden={sameChecks(checked, initial)}>
-          <button type="submit" form={QUERY_FORM} className="apply-button">
-            Apply selection
-          </button>
-        </div>
       </Panel>
     </section>
   );

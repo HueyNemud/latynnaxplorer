@@ -44,6 +44,7 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
         sections={structure.sections}
         checked={query.subtree ?? []}
         places={places}
+        text={query.text}
       />
       <div className="view">
         <SearchForm text={query.text} subtree={query.subtree} />
