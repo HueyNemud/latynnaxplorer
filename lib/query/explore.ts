@@ -5,7 +5,7 @@
 import { sections } from "./facets.ts";
 import type { Query } from "./query.ts";
 import { context, NodeNotFoundError, selection } from "./resolve.ts";
-import type { Detail, FacetSection, SubgraphNode } from "./types.ts";
+import type { Detail, FacetSection, SubgraphNode, Volume } from "./types.ts";
 import { ancestors, type LoadedVolume } from "./volume.ts";
 
 /**
@@ -13,16 +13,16 @@ import { ancestors, type LoadedVolume } from "./volume.ts";
  * rubrique (tout l'annuaire), ou si l'un de ses sous-arbres n'est dans aucun volume chargé (l'URL
  * ne dit pas de quel volume il est). `all` : les volumes de l'index, dans son ordre.
  */
-export function neededVolumes(
-  all: readonly string[],
+export function neededVolumes<V extends Volume>(
+  all: readonly V[],
   loaded: readonly LoadedVolume[],
   query: Query,
   focus: string | undefined,
-): string[] {
+): V[] {
   const searchesAll = query.text !== undefined && query.subtree === undefined;
-  const unplaced = query.subtree?.some((id) => !loaded.some((v) => v.byId.has(id)));
+  const unplaced = query.subtree?.some((id) => volumeOf(loaded, id) === undefined);
   if (searchesAll || unplaced) return [...all];
-  return focus === undefined ? [] : [focus];
+  return all.filter((v) => v.id === focus);
 }
 
 /** Volume chargé qui contient le nœud. */

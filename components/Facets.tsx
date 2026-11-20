@@ -42,7 +42,7 @@ import {
   toggleVolume,
   volumeState,
 } from "../lib/facets/selection.ts";
-import { serializeQuery } from "../lib/query/query.ts";
+import { type Query, queryUrl } from "../lib/query/query.ts";
 import type { FacetSection, Volume } from "../lib/query/types.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { ChevronIcon } from "./icons.tsx";
@@ -52,8 +52,7 @@ import { QUERY_FORM } from "./SearchForm.tsx";
 export function Facets({
   volumes,
   sections,
-  checked: subtree,
-  text,
+  query,
   focus,
   onFocus,
   loaded,
@@ -62,19 +61,18 @@ export function Facets({
   volumes: Volume[];
   /** les rubriques des volumes chargés */
   sections: FacetSection[];
-  /** les `subtree` de l'URL : rubriques cochées les plus hautes */
-  checked: readonly string[];
-  /** le texte cherché de la sélection affichée, gardé quand les coches changent */
-  text: string | undefined;
+  /** la requête de la sélection affichée : ses `subtree` sont les rubriques cochées les plus
+   * hautes ; son texte est gardé quand les coches changent */
+  query: Query;
   /** le volume regardé, dont Contents montre l'arbre */
   focus: string | undefined;
   onFocus: (volumeId: string) => void;
-  /** les volumes chargés */
-  loaded: ReadonlySet<string>;
+  /** les volumes chargés, par identifiant */
+  loaded: ReadonlyMap<string, unknown>;
 }) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
   // les coches, lues une fois depuis l'URL
-  const [checked, setChecked] = useState(() => checkedOf(tree, subtree));
+  const [checked, setChecked] = useState(() => checkedOf(tree, query.subtree ?? []));
   // à l'arrivée, le chemin des rubriques cochées est déplié
   const [open] = useState(() => pathTo(tree, checked));
 
@@ -87,11 +85,7 @@ export function Facets({
     setChecked(next);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
-      const query = serializeQuery({
-        ...(next.size > 0 && { subtree: [...next] }),
-        ...(text !== undefined && { text }),
-      });
-      const url = query.size > 0 ? `${pathname}?${query}` : pathname;
+      const url = queryUrl(pathname, { ...query, subtree: [...next] });
       startTransition(() => window.history.replaceState(null, "", url));
     }, 300);
   };
@@ -108,8 +102,7 @@ export function Facets({
 
   const row = (s: FacetSection): ReactNode => {
     const kids = tree.children.get(s.id) ?? [];
-    // la rubrique cochée qui couvre celle-ci, s'il y en a une
-    const cover = tree.byId.get(coveredBy(tree, checked, s.id) ?? "");
+    const cover = coveredBy(tree, checked, s.id);
     const label = plainText(s.text);
     const line = (
       <>

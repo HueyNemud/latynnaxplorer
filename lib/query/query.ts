@@ -49,3 +49,9 @@ export function serializeQuery(query: Query): URLSearchParams {
   if (query.text !== undefined) params.set("text", query.text);
   return params;
 }
+
+/** Adresse de la page pour la requête : `pathname`, et ses paramètres s'il y en a. */
+export function queryUrl(pathname: string, query: Query): string {
+  const params = serializeQuery(query);
+  return params.size > 0 ? `${pathname}?${params}` : pathname;
+}

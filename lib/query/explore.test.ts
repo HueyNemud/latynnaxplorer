@@ -21,18 +21,20 @@ const copy: VolumeFile = {
 };
 const first = indexVolume(file);
 const second = indexVolume(copy);
-const ALL = ["TEST", "AUTRE"];
+const ALL = [file.volume, copy.volume];
+const needed = (...args: Parameters<typeof neededVolumes>) =>
+  neededVolumes(...args).map((v) => v.id);
 
 describe("neededVolumes", () => {
   it("demande le volume regardé, rien d'autre sans texte ni sous-arbre inconnu", () => {
-    expect(neededVolumes(ALL, [], {}, "AUTRE")).toEqual(["AUTRE"]);
-    expect(neededVolumes(ALL, [first], { subtree: [T2] }, "TEST")).toEqual(["TEST"]);
-    expect(neededVolumes(ALL, [first], { subtree: [T2], text: "paix" }, "TEST")).toEqual(["TEST"]);
+    expect(needed(ALL, [], {}, "AUTRE")).toEqual(["AUTRE"]);
+    expect(needed(ALL, [first], { subtree: [T2] }, "TEST")).toEqual(["TEST"]);
+    expect(needed(ALL, [first], { subtree: [T2], text: "paix" }, "TEST")).toEqual(["TEST"]);
   });
 
   it("demande tous les volumes pour un texte seul, ou un sous-arbre d'aucun volume chargé", () => {
-    expect(neededVolumes(ALL, [first], { text: "paix" }, "TEST")).toEqual(ALL);
-    expect(neededVolumes(ALL, [first], { subtree: [other(T2)] }, "TEST")).toEqual(ALL);
+    expect(needed(ALL, [first], { text: "paix" }, "TEST")).toEqual(["TEST", "AUTRE"]);
+    expect(needed(ALL, [first], { subtree: [other(T2)] }, "TEST")).toEqual(["TEST", "AUTRE"]);
   });
 });
 

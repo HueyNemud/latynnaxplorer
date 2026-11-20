@@ -10,25 +10,17 @@
 
 import { IconButton, TextField } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
-import { parseQuery, type Query, serializeQuery } from "../lib/query/query.ts";
+import { parseQuery, type Query, queryUrl } from "../lib/query/query.ts";
 import { ClearIcon, SearchIcon } from "./icons.tsx";
 
 /** Identifiant du formulaire de la requête, auquel les cases des facettes se rattachent. */
 export const QUERY_FORM = "query";
 
-export function SearchForm({
-  text,
-  subtree,
-}: {
-  text: string | undefined;
-  /** rubriques de la sélection affichée : effacer la recherche les garde */
-  subtree?: readonly string[];
-}) {
+/** `query` : la requête de la sélection affichée ; effacer la recherche garde ses rubriques. */
+export function SearchForm({ query }: { query: Query }) {
+  const { text, ...cleared } = query;
   const pathname = usePathname();
-  const go = (query: Query) => {
-    const params = serializeQuery(query);
-    window.history.pushState(null, "", params.size > 0 ? `${pathname}?${params}` : pathname);
-  };
+  const go = (query: Query) => window.history.pushState(null, "", queryUrl(pathname, query));
   return (
     <search>
       <form
@@ -67,11 +59,11 @@ export function SearchForm({
             <TextField.Slot>
               <IconButton asChild size="1" variant="ghost" color="gray">
                 <a
-                  href={`?${serializeQuery(subtree ? { subtree } : {})}`}
+                  href={queryUrl(pathname, cleared)}
                   title="Clear search"
                   onClick={(event) => {
                     event.preventDefault();
-                    go(subtree ? { subtree } : {});
+                    go(cleared);
                   }}
                 >
                   <ClearIcon />

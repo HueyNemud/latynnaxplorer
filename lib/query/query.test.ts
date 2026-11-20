@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { parseQuery, type Query, QueryError, serializeQuery } from "./query.ts";
+import { parseQuery, type Query, QueryError, queryUrl, serializeQuery } from "./query.ts";
 
 const ID = "10000000-0000-0000-0000-000000000002";
 const ID2 = "20000000-0000-0000-0000-00000000000a";
@@ -76,5 +76,12 @@ describe("serializeQuery", () => {
     {},
   ])("est relue à l'identique par parseQuery : %o", (query) => {
     expect(parseQuery(serializeQuery(query))).toEqual(query);
+  });
+});
+
+describe("queryUrl", () => {
+  it("ajoute les paramètres au chemin, et rien sans critère", () => {
+    expect(queryUrl("/", { subtree: [ID], text: "paix" })).toBe(`/?subtree=${ID}&text=paix`);
+    expect(queryUrl("/", {})).toBe("/");
   });
 });
