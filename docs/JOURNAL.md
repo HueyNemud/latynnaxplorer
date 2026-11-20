@@ -1,5 +1,60 @@
 # Journal de développement
 
+## 2026-11-20 — Sprint 9 : nettoyage du code
+
+**Fait**
+- PR #18 (sprint 8) fusionnée ; branche `refactor/nettoyage`. État des lieux
+  d'abord (lint, types et 77 tests au vert), contenu validé tel quel, plus
+  un audit des styles demandé en cours de route.
+- Doublons : intitulé sans emphase calculé une fois (`plainText`), pages
+  de la fiche (`pages`) déplacées dans `lib/text/` et testées ; icônes
+  dessinées une fois (`components/icons.tsx`) ; regroupements par
+  `Map.groupBy`.
+- Découpage : règles des coches des facettes en fonctions pures
+  (`lib/facets/selection.ts`, testées sans rendu), `Panel` dans son
+  fichier ; types rendus par les requêtes dans `lib/query/types.ts` (les
+  composants et `lib/text` n'importent plus le module SQL) ; `contains`
+  dans `lib/query/contains.ts`.
+- Styles : feuille rangée par sections ; ce qui se répétait écrit une fois
+  (ligne `.row` et chevron communs à la Liste et à l'arbre, texte
+  secondaire, titres, surface en relief, survols, bouton d'icône, anneau
+  du focus) ; réinitialisations des boutons, listes et `<summary>` dans la
+  base ; jetons `--width-view`, `--line-pad-y`, `--radius-small`,
+  `--tracking-caps`, `--ring`. Règle `.apply[hidden]` inutile retirée.
+- Docs : README et section 3 du modèle de données remis à jour ; fiches de
+  composant (jetons, ligne de l'arbre). `AGENTS.md`, écrit par `next dev`,
+  versionné.
+- 94 tests (77 avant). Rendu vérifié par 24 captures (états, survols,
+  focus, panneaux, erreurs) sous Chromium et Firefox, en production, avant
+  et après.
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (20 novembre) : styles partagés dès que la
+  différence est faible.
+- Différences de rendu acceptées pour partager les styles : lignes de
+  l'arbre plus hautes de 2 px et chevron 2 px plus à gauche (ceux de la
+  Liste), anneau de la vignette à 2 px au lieu de 3, marges du lien d'un
+  nœud et rayon du « × » unifiés, marges des pages d'erreur celles de la
+  vue, plus de main sur une rubrique sans sous-rubrique.
+- Les arcs du sous-graphe, qu'aucune vue ne lit, sont gardés (modèle,
+  export à venir).
+
+**Pièges relevés**
+- Vérifier une factorisation : recompiler avec des règles temporaires qui
+  rétablissent les anciennes valeurs ; Firefox est alors identique au
+  pixel, Chromium ne diffère que par l'anticrénelage du texte (moins d'un
+  pixel), le positionnement relatif ayant changé d'élément.
+- Une capture de focus clavier : une touche, puis `focus()` ; parcourir la
+  page à la tabulation n'atteint pas la Liste derrière les 603 cases de
+  l'arbre.
+- `noDescendingSpecificity` de Biome : un sélecteur groupé tôt dans la
+  feuille (anneau du focus) gêne les règles plus loin ; un jeton (`--ring`)
+  évite de répéter la valeur.
+
+**Questions ouvertes**
+- Tests de rendu des composants : demanderaient une dépendance
+  (`docs/IDEES.md`).
+
 ## 2026-11-20 — Sprint 8 : facettes de structure
 
 **Fait**

@@ -88,6 +88,14 @@ plusieurs volumes en base.
 - Les panneaux ouverts prennent 34,5 rem : sur un téléphone, ils devraient
   passer par-dessus la vue (tiroir), repliés par défaut. À concevoir.
 
+## Tests de rendu des composants
+
+- Sprint 9 : la logique des facettes est testée en fonctions pures ; le
+  rendu des composants ne l'est que par les captures avant / après.
+- Des tests de rendu (Testing Library et jsdom, ou Vitest en mode
+  navigateur) demanderaient une dépendance ; à discuter si les composants
+  se multiplient.
+
 ## Recherche tolérante
 
 Sprint 7 : la recherche par texte est exacte (sans accents ni casse).

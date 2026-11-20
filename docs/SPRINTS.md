@@ -196,15 +196,23 @@ Choix validés :
 
 ## Sprint 9 : nettoyage du code
 
+Réalisé : doublons retirés (texte sans emphase, icônes, regroupements),
+règles des coches en fonctions pures testées (`lib/facets/selection.ts`),
+types séparés du SQL (`lib/query/types.ts`), feuille de style rangée et
+factorisée, README et modèle de données à jour ; 94 tests. Détail dans
+`docs/JOURNAL.md`.
+
 But : après huit sprints, remettre le code au propre avant d'ajouter des
 fonctionnalités, sans rien changer à ce que l'on voit.
 
-- Contenu exact proposé et validé au début du sprint, à partir d'un état
-  des lieux : code mort ou dupliqué, valeurs écrites en dur au lieu des
-  jetons (`app/globals.css`), découpage des composants, commentaires et
-  docs en retard sur le code, tests qui manquent.
-- Comportement et rendu inchangés : vérifiés sous Chromium et Firefox
-  avant et après.
+Choix validés :
+
+- Tout l'état des lieux appliqué, plus un audit des styles : réutiliser
+  autant que possible, surtout si la différence est faible. Différences
+  faibles acceptées (lignes de l'arbre, anneau de la vignette, pages
+  d'erreur), le reste identique sous Chromium et Firefox.
+- `AGENTS.md` de `next dev` versionné ; arcs du sous-graphe gardés.
+- Reporté (`docs/IDEES.md`) : tests de rendu des composants.
 
 ## Sprint 10 : exporter
 
