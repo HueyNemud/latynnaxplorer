@@ -18,7 +18,7 @@ interface Line {
 }
 
 /**
- * Ancres d'un nœud : par page, l'union des boîtes de ses lignes.
+ * Ancres d'un nœud : par page, dans l'ordre des pages, l'union des boîtes de ses lignes.
  * Une page où aucune de ses lignes n'a de boîte ne donne pas d'ancre.
  */
 export function anchorsOf(nodeId: string, lineIds: string[], lines: Map<string, Line>): Anchor[] {
@@ -40,7 +40,9 @@ export function anchorsOf(nodeId: string, lineIds: string[], lines: Map<string, 
         : line.bbox,
     );
   }
-  return [...boxes].map(([page, [x0, y0, x1, y1]]) => ({ page, x0, y0, x1, y1 }));
+  return [...boxes]
+    .sort(([a], [b]) => a - b)
+    .map(([page, [x0, y0, x1, y1]]) => ({ page, x0, y0, x1, y1 }));
 }
 
 /** Refuse une boucle dans les parents : le parcours des ancêtres ne finirait pas. */
@@ -111,7 +113,7 @@ export function toVolumeFile({ volume: meta, document, structure }: VolumeFiles)
         item.id,
         item.lines.map((ref) => ref.line),
         lines,
-      ).sort((a, b) => a.page - b.page);
+      );
       if (anchors.length > 0) node.anchors = anchors;
       return node;
     });
