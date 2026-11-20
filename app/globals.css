@@ -14,12 +14,12 @@
      autres (estompés) ; --gray-7 aussi pour un trait inactif ;
    - --radius-4 cartes et lignes, --radius-2 petits éléments (bouton d'icône, coude du guide) ;
      --shadow-4 surface en relief ; --font-size-2 texte petit.
-   Ici, seulement ce que Radix n'a pas : nos noms de teintes, notre police, notre mise en page. Définis sur
-   le thème, où les variables de Radix existent. */
+   Ici, seulement ce que Radix n'a pas : nos noms de teintes, notre police, notre mise en
+   page. Définis sur le thème, où les variables de Radix existent. */
 .radix-themes {
   /* champs : teintes transparentes de Radix (échelles alpha), qui se fondent dans le fond d'une
-     ligne survolée ou ouverte ; choisies sur une planche (sprint 11) */
-  --tint-subj: var(--cyan-a4);
+     ligne survolée ou ouverte ; choisies sur deux planches (sprint 11) */
+  --tint-subj: var(--violet-a4);
   --tint-desc: var(--teal-a4);
   --tint-addr: var(--yellow-a4);
 
