@@ -42,7 +42,7 @@ export function SearchForm({
             défaut) */}
         {text !== undefined && (
           <a
-            className="search-clear"
+            className="icon-button search-clear"
             href={`?${serializeQuery(subtree ? { subtree } : {})}`}
             title="Clear search"
           >

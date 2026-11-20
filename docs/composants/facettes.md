@@ -113,8 +113,8 @@ Une carte par volume, dans l'ordre des dates, 8 rem de large.
   nom du volume en petit et atténué, centrés. Rien sous la carte, pas de
   décompte.
 - **Focus** : un clic sur la vignette met le volume au focus ; Contents
-  montre son arbre. La vignette au focus est **cernée** (contour 2 px
-  `--color-text`, à 3 px de la vignette) et porte une **encoche** (triangle
+  montre son arbre. La vignette au focus est **cernée** de l'anneau du focus
+  clavier (`--ring` : 2 px `--color-text`, à 2 px de la vignette) et porte une **encoche** (triangle
   de 0,5 rem) sur son bord droit, pointée vers Contents. Un seul volume au
   focus ; par défaut le premier volume coché, sinon le premier volume. Le
   focus n'est pas dans l'URL.
@@ -139,8 +139,9 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 `<summary>` ; les autres sont une ligne simple.
 
 - **Ligne** : chevron (s'il y a des sous-rubriques), case, intitulé, décompte.
-  Grille `case | intitulé | décompte`, chevron dans la marge gauche, comme
-  dans la Liste.
+  Grille `case | intitulé | décompte`. La ligne est celle de la Liste
+  (`.row` dans `app/globals.css`) : mêmes marges, même chevron dans la marge
+  gauche, même fond au survol.
 - **Intitulé** : casse imprimée, une ligne, coupé par « … », entier en
   infobulle.
 - **Décompte** : nombre d'entrées du sous-arbre, compte tenu du texte cherché
@@ -199,8 +200,8 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 
 Jetons existants (`app/globals.css`, voir `docs/composants/noeud-liste.md`) :
 `--color-text`, `--color-muted`, `--color-background`, `--color-open`,
-`--shadow-raised`, `--radius-card`, `--line-pad`, `--icon`, `--size-small`,
-`--space-*`. Nouveaux :
+`--shadow-raised`, `--radius-card`, `--line-pad`, `--line-pad-y`, `--icon`,
+`--size-small`, `--tracking-caps`, `--ring`, `--space-*`. Nouveaux :
 
 | Jeton | Valeur | Usage |
 |---|---|---|

@@ -59,7 +59,7 @@ export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: S
 function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; open: boolean }) {
   return (
     <details className="item" open={open}>
-      <summary className="line" aria-labelledby={`text-${node.id}`}>
+      <summary className="row line" aria-labelledby={`text-${node.id}`}>
         <span className={`text text-${node.kind}`}>
           <ChevronIcon className="chevron" />
           {/* nom de la ligne : son texte seul, sans le lien */}
@@ -72,7 +72,7 @@ function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; 
           {/* nouvelle sélection : ce nœud seul (une section avec sa descendance) ; décrit par le
               texte de la ligne, pour distinguer les liens entre eux */}
           <Link
-            className="own-page"
+            className="icon-button own-page"
             href={`/?${serializeQuery({ subtree: [node.id] })}`}
             aria-label="Open on its own page"
             aria-describedby={`text-${node.id}`}

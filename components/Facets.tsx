@@ -63,7 +63,7 @@ export function Facets({
     const label = plainText(s.text);
     const line = (
       <>
-        {kids.length > 0 && <ChevronIcon className="tree-chevron" />}
+        {kids.length > 0 && <ChevronIcon className="chevron" />}
         <input
           type="checkbox"
           className="tree-box"
@@ -86,13 +86,13 @@ export function Facets({
         {kids.length > 0 ? (
           <details open={open.has(s.id)}>
             {/* nommé par son intitulé seul, sans la case ni le décompte */}
-            <summary className="tree-line" aria-labelledby={`tree-${s.id}`}>
+            <summary className="row tree-line" aria-labelledby={`tree-${s.id}`}>
               {line}
             </summary>
             <ul className="tree">{kids.map(row)}</ul>
           </details>
         ) : (
-          <div className="tree-line">{line}</div>
+          <div className="row tree-line">{line}</div>
         )}
       </li>
     );
