@@ -120,7 +120,9 @@ Une carte par volume, dans l'ordre des dates, 8 rem de large.
   2 px de la vignette) et porte une **encoche** (triangle
   de 0,5 rem) sur son bord droit, pointée vers Contents. Un seul volume au
   focus ; par défaut le premier volume coché, sinon le premier volume. Le
-  focus n'est pas dans l'URL.
+  focus n'est pas dans l'URL. Le volume au focus est téléchargé s'il ne
+  l'est pas : Contents montre un indicateur d'attente (Spinner) jusque-là,
+  et la coche ronde d'un volume pas encore chargé est inactive.
 - **Sélection** : une **coche ronde** de 1,5 rem en haut à gauche de la
   vignette, posée dessus : la Checkbox de Radix, rendue ronde par ses
   variables CSS (`--checkbox-size`, `--checkbox-border-radius`). Pleine si
@@ -167,9 +169,9 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 - **Dépliage à l'arrivée** : le chemin des rubriques cochées est déplié,
   le reste replié.
 - **Appliquer** : chaque coche s'applique, après 300 ms sans nouvelle
-  coche (les coches rapprochées font une seule requête) ; l'URL est
-  remplacée par une navigation client, sans nouvelle entrée d'historique ;
-  la vue est estompée pendant le chargement ; le volume regardé et l'arbre
+  coche (les coches rapprochées font un seul calcul) ; l'URL est
+  remplacée, sans nouvelle entrée d'historique ; la vue est estompée
+  pendant son calcul ; le volume regardé et l'arbre
   déplié restent. Les cases sont l'état du composant, lu une fois depuis
   l'URL. Une entrée désignée par l'URL ne coche rien et n'est pas située.
 
@@ -211,8 +213,8 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
   script, les facettes ne servent pas.
 - **Case dans un `<summary>`** : cliquer la case ne déplie pas la rubrique
   (vérifié sous Chromium).
-- **Décomptes** : une requête par page, groupée par rubrique ancêtre
-  (`parent_closure`), filtrée par le texte cherché.
+- **Décomptes** : calculés avec la vue, pour chaque rubrique ancêtre des
+  entrées qui contiennent le texte cherché (`lib/query/facets.ts`).
 
 ## Jetons
 

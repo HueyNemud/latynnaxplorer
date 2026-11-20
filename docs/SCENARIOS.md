@@ -44,13 +44,11 @@ même si deux nœuds désignés sont l'un sous l'autre.
   réduit à elle-même.
 
 **Erreurs** : uuid absent ou mal formé, même parmi d'autres (requête
-invalide) ; uuid inconnu de la base, même à côté d'uuid connus. Une valeur
+invalide) ; uuid d'aucun volume, même à côté d'uuid connus. Une valeur
 répétée est lue une fois.
 
-**Mesure** (1807) : les 43 rubriques de premier niveau ensemble
-(22 068 nœuds) en 11 ms pour la sélection seule en SQL.
-
-**Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`.
+**Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`,
+`lib/query/explore.test.ts`.
 
 ## 2. Les nœuds qui contiennent un texte
 
@@ -77,12 +75,11 @@ casse.
   une erreur.
 - Contexte : les rubriques ancêtres des résultats qui n'en font pas
   partie, chacune une fois, dans l'ordre de lecture. Vide sans résultat.
-- Servi par l'index trigrammes de `node.text`, puis restreint au
-  sous-arbre s'il est donné (raison dans `lib/query/resolve.ts`). Sur
-  1807, `resolve` : « rue de la Paix » (8 nœuds) 1 à 2 ms, « rue »
-  (17 402) 175 ms ; `context` en parallèle : 2 ms et 105 ms.
+- Sans rubrique, la recherche porte sur tous les volumes : ils sont tous
+  chargés.
 
 **Erreurs** : `text` répété ; avec `subtree`, celles du scénario 1 (un
 `subtree` inconnu reste une erreur, même sans résultat).
 
-**Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`.
+**Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`,
+`lib/query/fold.test.ts`.

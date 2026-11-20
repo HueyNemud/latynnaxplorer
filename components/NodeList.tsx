@@ -13,28 +13,24 @@ import { type Detail, NodeDetails } from "./NodeDetails.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
 /**
- * `context` : rubriques ancêtres de la sélection qui n'en font pas partie ; `nodes` : la
- * sélection. Une sélection d'un seul nœud le montre déplié. `load` : comment lire une fiche
- * (components/NodeDetails.tsx).
+ * `nodes` : la sélection et son contexte (rubriques ancêtres), volume après volume, chacun dans
+ * l'ordre de lecture ; `opened` : le nœud montré déplié (une sélection d'un seul nœud) ;
+ * `detail` : la fiche d'un nœud (components/NodeDetails.tsx).
  */
 export function NodeList({
-  context,
-  nodes,
-  load,
+  nodes: shown,
+  opened,
+  detail,
 }: {
-  context: SubgraphNode[];
   nodes: SubgraphNode[];
-  load?: (id: string) => Promise<Detail>;
+  opened: string | undefined;
+  detail: (id: string) => Detail;
 }) {
-  const shown = [...context, ...nodes].sort(
-    (a, b) => a.documentReadingOrder - b.documentReadingOrder,
-  );
   const ids = new Set(shown.map((n) => n.id));
   // enfants de chaque nœud montré, dans l'ordre de lecture ; null : les nœuds sans parent montré
   const children = Map.groupBy(shown, (n) =>
     n.parentId !== null && ids.has(n.parentId) ? n.parentId : null,
   );
-  const opened = nodes.length === 1 ? nodes[0]?.id : undefined;
 
   // un nœud et, pour une section, son groupe ; `path` : ses rubriques montrées, de la racine au
   // parent (chemin de sa fiche, profondeur de son groupe)
@@ -61,7 +57,7 @@ export function NodeList({
         <span className="page">Page</span>
       </div>
       {children.get(null)?.map((n) => render(n, []))}
-      <NodeDetails load={load} />
+      <NodeDetails detail={detail} />
     </>
   );
 }

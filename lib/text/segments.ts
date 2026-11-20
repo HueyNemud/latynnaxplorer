@@ -11,17 +11,19 @@ export interface Segment {
   text: string;
   emphasis: boolean;
   /** Empan auquel appartient le segment, s'il y en a un. */
-  span: { id: string; label: SpanLabel } | null;
+  span: { label: SpanLabel } | null;
 }
 
 /** Segments consécutifs de même emphase et de même empan, dans l'ordre du texte. */
 export function segments(
   text: string,
-  spans: readonly Pick<Span, "id" | "label" | "charStart" | "charEnd">[],
+  spans: readonly Pick<Span, "label" | "charStart" | "charEnd">[],
 ): Segment[] {
   const chars = Array.from(text); // points de code, comme les positions des empans
   const result: Segment[] = [];
   let emphasis = false;
+  // empan du dernier segment : deux empans voisins de même libellé restent distincts
+  let current: (typeof spans)[number] | undefined;
   for (let i = 0; i < chars.length; i++) {
     let char = chars[i] as string;
     if (char === "\\" && (chars[i + 1] === "*" || chars[i + 1] === "\\")) {
@@ -33,11 +35,11 @@ export function segments(
     }
     const found = spans.find((s) => s.charStart <= i && i < s.charEnd);
     const last = result.at(-1);
-    if (last && last.emphasis === emphasis && last.span?.id === found?.id) {
+    if (last && last.emphasis === emphasis && current === found) {
       last.text += char;
     } else {
-      const span = found ? { id: found.id, label: found.label } : null;
-      result.push({ text: char, emphasis, span });
+      result.push({ text: char, emphasis, span: found ? { label: found.label } : null });
+      current = found;
     }
   }
   return result;

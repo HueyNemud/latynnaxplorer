@@ -1,11 +1,11 @@
-// Résolution d'une requête en sous-graphe induit (docs/MODELE_DONNEES.md, section 3) :
-// SQL sélectionne les nœuds (avec leurs empans et leurs ancres), puis les arcs entre eux sont
-// déduits de leurs colonnes. Le contexte de la sélection (rubriques ancêtres) est lu à part.
+// Résolution d'une requête sur un volume chargé (docs/SCENARIOS.md, docs/MODELE_DONNEES.md) :
+// la sélection en sous-graphe induit, son contexte, et la fiche d'un nœud. Plusieurs volumes :
+// lib/query/explore.ts. Fonctions pures.
 
-import type postgres from "postgres";
-import { contains } from "./contains.ts";
+import { fold } from "./fold.ts";
 import type { Query } from "./query.ts";
-import type { Anchor, Arc, Span, Subgraph, SubgraphNode } from "./types.ts";
+import type { Arc, Subgraph, SubgraphNode } from "./types.ts";
+import type { LoadedVolume } from "./volume.ts";
 
 /** Le nœud désigné par la requête n'existe pas. */
 export class NodeNotFoundError extends Error {
@@ -18,8 +18,8 @@ export class NodeNotFoundError extends Error {
   }
 }
 
-/** Nœud sélectionné, tel que lu dans `node` : sans ses empans ni ses ancres, avec l'entrée qui le
- * suit dans son volume (null hors entrées). */
+/** Nœud sélectionné, sans ses empans ni ses ancres, avec l'entrée qui le suit dans son volume
+ * (null hors entrées). */
 export interface SelectedNode extends Omit<SubgraphNode, "spans" | "anchors"> {
   nextEntryId: string | null;
 }
@@ -45,166 +45,82 @@ export function inducedArcs(nodes: SelectedNode[]): Arc[] {
   });
 }
 
-/**
- * Nœuds que désigne la requête, avec les colonnes de `node` qui portent les trois arcs
- * (parent_id, next_entry_id) : rien à calculer en SQL. Chaque critère présent restreint la
- * sélection ; sans critère, tous les nœuds. Deux écritures, choisies pour l'index qui sert :
- *
- * - Avec un texte (scénario 2) : l'index trigrammes de `node.text` (expression écrite telle
- *   quelle), puis, s'il est donné, le sous-arbre. Partir du sous-arbre et le filtrer par le
- *   texte serait plus rapide au premier appel, mais PostgreSQL passe au plan générique des
- *   requêtes préparées après cinq appels, qui relit alors l'index pour chaque sous-rubrique :
- *   2 → 60 ms pour « rue de la paix » dans la plus grosse rubrique de 1807, contre 2 ms ici.
- * - Sans texte, le sous-arbre (scénario 1), sans parcours : les nœuds désignés, plus les
- *   enfants de chacun de leurs nœuds parents descendants, lus dans parent_closure (vide si le
- *   nœud n'a pas d'enfant) ; UNION plutôt que OR, qui lirait toute la table. UNION et non
- *   UNION ALL : deux nœuds désignés peuvent être l'un sous l'autre, chaque nœud ne doit venir
- *   qu'une fois (sur tout 1807, 43 rubriques : 11 ms contre 6).
- */
-/** Colonnes d'un nœud sélectionné (alias `n`), telles que `read` les relit. */
-const COLUMNS = (sql: postgres.Sql) =>
-  sql`n.id, n.kind, n.parent_id, n.document_reading_order, n.text, n.next_entry_id`;
-
-function selection(sql: postgres.Sql, { subtree, text }: Query) {
-  const columns = COLUMNS(sql);
-  if (text !== undefined) {
-    const inSubtree =
-      subtree === undefined
-        ? sql``
-        : sql`AND (n.id = ANY(${subtree}::uuid[]) OR n.parent_id IN (
-            SELECT c.descendant_id FROM parent_closure c
-            WHERE c.ancestor_id = ANY(${subtree}::uuid[])))`;
-    return sql`
-      SELECT ${columns} FROM node n
-      WHERE ${contains(sql, sql`n.text`, text)}
-        ${inSubtree}`;
-  }
-  // sans critère, rien n'est sélectionné
-  if (subtree === undefined) return sql`SELECT ${columns} FROM node n WHERE false`;
-  return sql`
-    SELECT ${columns} FROM node n WHERE n.id = ANY(${subtree}::uuid[])
-    UNION
-    SELECT ${columns} FROM parent_closure c JOIN node n ON n.parent_id = c.descendant_id
-    WHERE c.ancestor_id = ANY(${subtree}::uuid[])`;
+/** Le texte plié du nœud contient-il le texte cherché, plié (phrase entière, à la lettre) ? */
+export function matcher(text: string | undefined): (volume: LoadedVolume, i: number) => boolean {
+  if (text === undefined) return () => true;
+  const needle = fold(text);
+  return (volume, i) => volume.folded[i]?.includes(needle) ?? false;
 }
 
 /**
- * Sous-graphe induit par les nœuds que désigne la requête : conjonction de ses critères
- * (docs/SCENARIOS.md). Une sélection vide n'est pas une erreur ; un `subtree` inconnu, si, même
- * à côté d'autres connus.
+ * Nœuds que désigne la requête, dans l'ordre de lecture : conjonction de ses critères ; sans
+ * critère, rien. Sous-arbre : les nœuds désignés et tous leurs descendants (un nœud désigné qui
+ * n'est pas de ce volume n'y désigne rien).
  */
-export async function resolve(sql: postgres.Sql, query: Query): Promise<Subgraph> {
-  const [{ rows, nodes }, known] = await Promise.all([
-    read(sql, selection(sql, query)),
-    query.subtree === undefined
-      ? []
-      : sql<{ id: string }[]>`SELECT id FROM node WHERE id = ANY(${query.subtree}::uuid[])`,
-  ]);
-  const found = new Set(known.map((k) => k.id));
-  const unknown = query.subtree?.find((id) => !found.has(id));
-  if (unknown !== undefined) throw new NodeNotFoundError(unknown);
+function selection(volume: LoadedVolume, { subtree, text }: Query): SubgraphNode[] {
+  if (subtree === undefined && text === undefined) return [];
+  const roots = new Set(subtree);
+  // un nœud est dans l'union des sous-arbres s'il en est une racine ou si un ancêtre l'est
+  const inside = new Map<string, boolean>();
+  const isInside = (n: SubgraphNode): boolean => {
+    let result = inside.get(n.id);
+    if (result === undefined) {
+      const parent = n.parentId === null ? undefined : volume.byId.get(n.parentId);
+      result = roots.has(n.id) || (parent !== undefined && isInside(parent));
+      inside.set(n.id, result);
+    }
+    return result;
+  };
+  const matches = matcher(text);
+  return volume.nodes.filter(
+    (n, i) => matches(volume, i) && (subtree === undefined || isInside(n)),
+  );
+}
+
+/** Sous-graphe induit par les nœuds que désigne la requête dans ce volume. */
+export function resolve(volume: LoadedVolume, query: Query): Subgraph {
+  const nodes = selection(volume, query);
+  const rows: SelectedNode[] = nodes.map(({ spans: _, anchors: __, ...n }) => ({
+    ...n,
+    nextEntryId: volume.nextEntry.get(n.id) ?? null,
+  }));
   return { nodes, arcs: inducedArcs(rows) };
 }
 
 /**
- * Fiche d'un nœud, demandée au dépliage de sa ligne (components/NodeDetails.tsx) : le nœud seul,
- * avec ses empans et ses ancres, et le chemin de ses rubriques, de la racine à son parent (son
- * fil d'Ariane : leur texte seul).
- */
-export async function detail(
-  sql: postgres.Sql,
-  id: string,
-): Promise<{ node: SubgraphNode; path: Pick<SubgraphNode, "id" | "text">[] }> {
-  const [{ nodes }, path] = await Promise.all([
-    read(sql, sql`SELECT ${COLUMNS(sql)} FROM node n WHERE n.id = ${id}::uuid`),
-    sql<Pick<SubgraphNode, "id" | "text">[]>`
-      SELECT a.id, a.text
-      FROM node n
-      JOIN parent_closure c ON c.descendant_id = n.parent_id
-      JOIN node a ON a.id = c.ancestor_id
-      WHERE n.id = ${id}::uuid
-      ORDER BY a.document_reading_order`,
-  ]);
-  const node = nodes[0];
-  if (node === undefined) throw new NodeNotFoundError(id);
-  return { node, path };
-}
-
-/** Les nœuds d'une sélection, dans l'ordre de lecture, avec leurs empans et leurs ancres ; et
- * leurs lignes, pour les arcs. */
-async function read(
-  sql: postgres.Sql,
-  selected: postgres.PendingQuery<postgres.Row[]>,
-): Promise<{ rows: SelectedNode[]; nodes: SubgraphNode[] }> {
-  // Trois requêtes en parallèle, en lignes simples : nœuds, empans, ancres, rattachés ensuite en
-  // TypeScript. Regrouper par nœud dans PostgreSQL (JSON ou tableaux) est deux fois plus lent.
-  // Mesures : docs/MODELE_DONNEES.md, section 4.
-  const [rows, spans, anchors] = await Promise.all([
-    sql<SelectedNode[]>`
-      SELECT id, kind, parent_id AS "parentId", document_reading_order AS "documentReadingOrder",
-             text, next_entry_id AS "nextEntryId"
-      FROM (${selected}) n
-      ORDER BY document_reading_order`,
-    sql<(Span & { nodeId: string })[]>`
-      SELECT s.node_id AS "nodeId", s.id, s.label, s.char_start AS "charStart",
-             s.char_end AS "charEnd", s.normalized
-      FROM (${selected}) n JOIN span s ON s.node_id = n.id
-      ORDER BY s.char_start, s.char_end`,
-    sql<(Anchor & { nodeId: string })[]>`
-      SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
-      FROM (${selected}) n JOIN anchor a ON a.node_id = n.id
-      ORDER BY a.page`,
-  ]);
-  const spansOf = groupByNode(spans);
-  const anchorsOf = groupByNode(anchors);
-  return {
-    rows,
-    nodes: rows.map(({ nextEntryId: _, ...node }) => ({
-      ...node,
-      spans: spansOf.get(node.id) ?? [],
-      anchors: anchorsOf.get(node.id) ?? [],
-    })),
-  };
-}
-
-/** Lignes regroupées par nœud, dans l'ordre où elles arrivent, sans leur colonne `nodeId`. */
-function groupByNode<T extends { nodeId: string }>(rows: T[]): Map<string, Omit<T, "nodeId">[]> {
-  const groups = new Map<string, Omit<T, "nodeId">[]>();
-  for (const { nodeId, ...row } of rows) {
-    const group = groups.get(nodeId);
-    if (group) group.push(row);
-    else groups.set(nodeId, [row]);
-  }
-  return groups;
-}
-
-/**
  * Contexte de la sélection : les rubriques ancêtres de ses nœuds qui n'en font pas partie,
- * chacune une fois, dans l'ordre de lecture, quels que soient les critères. Un sous-arbre seul
- * a pour contexte les rubriques au-dessus de son nœud, de la racine à son parent. Vide pour une
- * sélection vide. Des nœuds complets, comme ceux du sous-graphe (une rubrique n'a pas d'empans),
- * pour être montrés de la même façon ; mais rendus à part : le contexte entoure la sélection sans
- * en faire partie (docs/DESIGN.md, « Principes d'affichage »).
+ * chacune une fois, dans l'ordre de lecture. Montrées comme la sélection, mais à part : le
+ * contexte l'entoure sans en faire partie (docs/DESIGN.md, « Principes d'affichage »).
  */
-export async function context(sql: postgres.Sql, query: Query): Promise<SubgraphNode[]> {
-  // parent_closure relie aussi chaque nœud parent à lui-même : le parent est compris.
-  const selected = selection(sql, query);
-  const ancestors = sql`
-    SELECT c.ancestor_id AS id
-    FROM (${selected}) n JOIN parent_closure c ON c.descendant_id = n.parent_id
-    EXCEPT
-    SELECT id FROM (${selected}) n`;
-  const [rows, anchors] = await Promise.all([
-    sql<Omit<SubgraphNode, "spans" | "anchors">[]>`
-      SELECT a.id, a.kind, a.parent_id AS "parentId",
-             a.document_reading_order AS "documentReadingOrder", a.text
-      FROM (${ancestors}) x JOIN node a ON a.id = x.id
-      ORDER BY a.document_reading_order`,
-    sql<(Anchor & { nodeId: string })[]>`
-      SELECT a.node_id AS "nodeId", a.page, a.x0, a.y0, a.x1, a.y1
-      FROM (${ancestors}) x JOIN anchor a ON a.node_id = x.id
-      ORDER BY a.page`,
-  ]);
-  const anchorsOf = groupByNode(anchors);
-  return rows.map((node) => ({ ...node, spans: [], anchors: anchorsOf.get(node.id) ?? [] }));
+export function context(volume: LoadedVolume, query: Query): SubgraphNode[] {
+  const selected = selection(volume, query);
+  const ids = new Set(selected.map((n) => n.id));
+  const ancestors = new Set<SubgraphNode>();
+  for (const n of selected) {
+    for (let a = n.parentId; a !== null; ) {
+      const parent = volume.byId.get(a);
+      if (parent === undefined || ancestors.has(parent)) break;
+      if (!ids.has(parent.id)) ancestors.add(parent);
+      a = parent.parentId;
+    }
+  }
+  return [...ancestors].sort((a, b) => a.documentReadingOrder - b.documentReadingOrder);
+}
+
+/** Fiche d'un nœud : le nœud, et le chemin de ses rubriques, de la racine à son parent (son fil
+ * d'Ariane : leur texte seul). */
+export function detail(
+  volume: LoadedVolume,
+  id: string,
+): { node: SubgraphNode; path: Pick<SubgraphNode, "id" | "text">[] } {
+  const node = volume.byId.get(id);
+  if (node === undefined) throw new NodeNotFoundError(id);
+  const path: Pick<SubgraphNode, "id" | "text">[] = [];
+  for (let a = node.parentId; a !== null; ) {
+    const parent = volume.byId.get(a);
+    if (parent === undefined) break;
+    path.unshift({ id: parent.id, text: parent.text });
+    a = parent.parentId;
+  }
+  return { node, path };
 }

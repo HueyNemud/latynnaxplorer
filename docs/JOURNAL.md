@@ -7,19 +7,18 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 
 ## Pièges connus
 
-- **Mesurer en production** (`next build`, puis `next start` sur un autre
-  port) : `pnpm dev` est 20 à 40 fois plus lent sur la Liste, et une grosse
-  requête y retarde les suivantes.
+- **Mesurer en production** (`next build`, puis servir `out/`, par exemple
+  `python3 -m http.server -d out 3100`) : `pnpm dev` est 20 à 40 fois plus
+  lent sur la Liste. Vérifier que le port est libre : un ancien serveur
+  encore lancé répond à la place du nouveau.
 - **Cache de navigation** (bfcache) : Chromium garde en mémoire les pages
   quittées qui y sont admises (une page statique, pas `/`) ; tas et nœuds
   DOM se cumulent d'une mesure à l'autre. Mesurer avec
   `--disable-features=BackForwardCache`.
-- **Requêtes préparées** : après cinq appels, PostgreSQL peut passer à un
-  plan générique bien plus lent ; mesurer `resolve` répété, pas une fois.
-- **Next** : une constante exportée d'un module `"use client"` devient une
-  référence client côté serveur ; un composant client gardé par une
-  navigation client ne relit pas son état initial ; les fonctions serveur
-  sont envoyées une par une (lecture : Route Handler).
+- **Next** : un composant client gardé par une navigation ne relit pas son
+  état initial ; `history.pushState` et `replaceState` tiennent
+  `useSearchParams` à jour sans requête ; `useSearchParams` dans une page
+  statique demande un `<Suspense>` autour.
 - **Radix** : il définit `--space-*` et `--color-background` sur
   `.radix-themes` (nos jetons ne doivent pas reprendre ces noms) ; ses
   composants portent `.rt-reset` et ont leur propre anneau de focus.
@@ -37,11 +36,11 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   `--window-size`) ; pour un focus clavier, `setFocusEmulationEnabled` ou
   une touche, puis `focus()`.
 
-## 2026-11-20 — Essai : données en local
+## 2026-11-20 — Sprint 12 : données en local (PR #22, #23)
 
-- Un fichier par volume, résolu dans le navigateur (`/essai`) : même
-  résultat que SQL sur tout 1807, interactions plus rapides et sans
-  réseau. Retenu.
+- Site statique : un fichier JSON par volume et un index, hébergés en
+  ligne ; volumes chargés à la demande, requêtes résolues dans le
+  navigateur (13 ms au plus sur 1807). 1807 : 1,3 Mo compressés.
 - Le DOM reste le goulot des grosses sélections (2,1 s de style et de mise
   en page pour 13 737 lignes).
 

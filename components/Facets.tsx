@@ -10,22 +10,24 @@
 //   qu'elle : la rubrique qui la couvre est décochée. Une rubrique ou un volume dont une partie
 //   seulement est cochée est semi-sélectionné (tiret) ; un clic le coche entier. Règles des
 //   coches : lib/facets/selection.ts.
+// - Volumes chargés à la demande (components/Explorer.tsx) : le volume regardé est l'état de la
+//   page, qui le charge ; Contents attend le sien. La coche ronde d'un volume pas encore chargé
+//   est inactive (ses rubriques ne sont pas connues).
 // - Les cases font partie du formulaire de la requête (#query, components/SearchForm.tsx) par
 //   l'attribut `form`. Une case couverte, sans nom, n'est pas envoyée : seules partent les
 //   rubriques cochées les plus hautes. Cases, coches et boutons de Radix Themes : une case Radix
 //   est un bouton, avec une case cachée pour le formulaire ; sans script, les facettes ne
 //   servent pas.
 // - Filtrer à la coche : chaque coche s'applique aussitôt. Les coches sont l'état de ce
-//   composant, lu une fois depuis l'URL ; l'URL les suit (navigation client, qui remplace
-//   l'entrée de l'historique), après un court délai qui regroupe les coches rapprochées. La vue
-//   est estompée pendant le chargement. Le volume regardé et l'arbre déplié restent.
+//   composant, lu une fois depuis l'URL ; l'URL les suit (l'entrée de l'historique est
+//   remplacée, sans requête au serveur), après un court délai qui regroupe les coches
+//   rapprochées. La vue est estompée pendant son calcul. Le volume regardé et l'arbre déplié
+//   restent.
 // - Contents est local au volume regardé (facettes hiérarchiques) : All coche tout ce volume,
 //   Clear le décoche ; les autres volumes ne changent pas.
-// - `navigate` (essai des données en local, app/essai) : comment l'URL suit les coches ; par
-//   défaut, une navigation client de Next, qui redemande la page au serveur.
 
-import { Button, Card, Checkbox } from "@radix-ui/themes";
-import { usePathname, useRouter } from "next/navigation";
+import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
+import { usePathname } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   checkedOf,
@@ -52,29 +54,31 @@ export function Facets({
   sections,
   checked: subtree,
   text,
-  navigate,
+  focus,
+  onFocus,
+  loaded,
 }: {
+  /** tous les volumes de l'index */
   volumes: FacetVolume[];
+  /** les rubriques des volumes chargés */
   sections: FacetSection[];
   /** les `subtree` de l'URL : rubriques cochées les plus hautes */
   checked: readonly string[];
   /** le texte cherché de la sélection affichée, gardé quand les coches changent */
   text: string | undefined;
-  /** remplace l'URL de la page ; par défaut, router.replace */
-  navigate?: (url: string) => void;
+  /** le volume regardé, dont Contents montre l'arbre */
+  focus: string | undefined;
+  onFocus: (volumeId: string) => void;
+  /** les volumes chargés */
+  loaded: ReadonlySet<string>;
 }) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
   // les coches, lues une fois depuis l'URL
   const [checked, setChecked] = useState(() => checkedOf(tree, subtree));
-  // focus : le volume de la première rubrique cochée, sinon le premier volume
-  const [focus, setFocus] = useState(
-    () => tree.byId.get([...checked][0] ?? "")?.volumeId ?? volumes[0]?.id,
-  );
   // à l'arrivée, le chemin des rubriques cochées est déplié
   const [open] = useState(() => pathTo(tree, checked));
 
   // appliquer : l'URL suit les coches, après 300 ms sans nouvelle coche
-  const router = useRouter();
   const pathname = usePathname();
   const [loading, startTransition] = useTransition();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -88,7 +92,7 @@ export function Facets({
         ...(text !== undefined && { text }),
       });
       const url = query.size > 0 ? `${pathname}?${query}` : pathname;
-      startTransition(() => (navigate ?? router.replace)(url));
+      startTransition(() => window.history.replaceState(null, "", url));
     }, 300);
   };
   // panneaux ouverts : toujours les premiers (Volumes, puis Contents) ; ouvrir un panneau ouvre
@@ -167,7 +171,7 @@ export function Facets({
                     aria-pressed={v.id === focus}
                     aria-label={`Show the contents of ${name}`}
                     onClick={() => {
-                      setFocus(v.id);
+                      onFocus(v.id);
                       setPanels(2);
                     }}
                   >
@@ -180,6 +184,7 @@ export function Facets({
                   size="3"
                   className="volume-box"
                   checked={volumeState(tree, checked, v.id)}
+                  disabled={!loaded.has(v.id)}
                   onCheckedChange={() => select(toggleVolume(tree, checked, v.id))}
                   aria-label={`Select ${name}`}
                 />
@@ -190,7 +195,12 @@ export function Facets({
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
         {/* tout le volume regardé, ou rien de lui ; inactifs quand ils ne changeraient rien */}
-        {focus !== undefined && (
+        {focus !== undefined && !loaded.has(focus) && (
+          <Flex justify="center" p="4">
+            <Spinner />
+          </Flex>
+        )}
+        {focus !== undefined && loaded.has(focus) && (
           <div className="facet-actions">
             <Button
               variant="soft"

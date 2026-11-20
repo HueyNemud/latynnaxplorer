@@ -45,8 +45,10 @@ export function NodeDetail({
       {node.spans.length > 0 && (
         <DataList.Root size="3" className="detail-group">
           {/* un champ par empan, dans l'ordre du texte (répétés pour un groupe à accolade) */}
-          {node.spans.map((span) => (
-            <DataList.Item key={span.id}>
+          {node.spans.map((span, i) => (
+            // empans sans identité propre, dans l'ordre du texte : la position suffit
+            // biome-ignore lint/suspicious/noArrayIndexKey: liste statique
+            <DataList.Item key={i}>
               <DataList.Label minWidth={LABEL_WIDTH}>{FIELD_LABELS[span.label]}</DataList.Label>
               <DataList.Value lang="fr">{span.normalized}</DataList.Value>
             </DataList.Item>

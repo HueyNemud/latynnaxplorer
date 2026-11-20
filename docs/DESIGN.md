@@ -188,7 +188,7 @@ Il n'y a pas de page « fiche » à concevoir à part.
   n'en montre que ce qui mène à elle, et n'est jamais compté dedans.
 - **Densité** : automatique par défaut (un nœud → déplié en sa fiche,
   plusieurs → compacte) ; dans une vue compacte, chaque nœud peut se déplier en sa
-  fiche (inspecter), demandée au serveur au premier dépliage.
+  fiche (inspecter), rendue au premier dépliage.
 - **Vues** : une à la fois pour commencer, avec un focus pensé dès le
   départ comme partagé ; à terme, deux vues côte à côte (Liste + Page,
   Liste + Carte…).
