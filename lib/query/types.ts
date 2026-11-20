@@ -47,7 +47,8 @@ export interface Subgraph {
   arcs: Arc[];
 }
 
-export interface FacetVolume {
+/** Métadonnées d'un volume. */
+export interface Volume {
   /** dc:identifier, ex. « 1807_AD75-PER292 » */
   id: string;
   /** dc:title ; null tant qu'il n'est pas renseigné */

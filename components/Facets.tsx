@@ -43,7 +43,7 @@ import {
   volumeState,
 } from "../lib/facets/selection.ts";
 import { serializeQuery } from "../lib/query/query.ts";
-import type { FacetSection, FacetVolume } from "../lib/query/types.ts";
+import type { FacetSection, Volume } from "../lib/query/types.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { Panel } from "./Panel.tsx";
@@ -59,7 +59,7 @@ export function Facets({
   loaded,
 }: {
   /** tous les volumes de l'index */
-  volumes: FacetVolume[];
+  volumes: Volume[];
   /** les rubriques des volumes chargés */
   sections: FacetSection[];
   /** les `subtree` de l'URL : rubriques cochées les plus hautes */
