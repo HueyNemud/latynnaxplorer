@@ -4,18 +4,19 @@
 
 /* ── Jetons ── */
 
-/* Contrastes : texte et texte atténué ≥ 4,5:1 sur blanc, sur --color-open et sur les fonds
-   pastel. */
-:root {
-  --color-text: #1f2328;
-  --color-muted: #59636e;
-  /* survol et élément ouvert */
-  --color-open: #f6f8fa;
-  /* survol d'une surface déjà sur --color-open (bande, vignette) : un cran plus foncé */
-  --color-press: #eef1f4;
-  /* guides de niveau : celui de la section la plus proche, les autres estompés */
-  --color-guide: #3d434a;
-  --color-guide-faded: #c9ced4;
+/* Couleurs, espacements, rayons, ombres, tailles de texte : ceux du thème Radix (app/layout.tsx),
+   sur l'échelle de gris du thème :
+   - --gray-12 texte, --gray-11 texte atténué (≥ 4,5:1 sur blanc, sur --gray-2 et sur les fonds
+     pastel) ;
+   - --gray-2 survol et élément ouvert, --gray-3 survol d'une surface déjà sur --gray-2 (bande,
+     vignette) ;
+   - guides de niveau : --gray-11 pour celui de la section la plus proche, --gray-7 pour les
+     autres (estompés) ; --gray-7 aussi pour un trait inactif ;
+   - --radius-4 cartes et lignes, --radius-2 petits éléments (bouton d'icône, coude du guide) ;
+     --shadow-4 surface en relief ; --font-size-2 texte petit.
+   Ici, seulement ce que Radix n'a pas : nos teintes, notre police, notre mise en page. Définis sur
+   le thème, où les variables de Radix existent. */
+.radix-themes {
   /* champs : palette néon de colorhunt.co (#63c8ff, #4dffbe, #fff83f) adoucie à 45 % dans du blanc */
   --tint-subj: #b9e6ff;
   --tint-desc: #afffe2;
@@ -27,7 +28,7 @@
   --font:
     var(--font-fira), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
-  --size-small: 0.875rem;
+  --default-font-family: var(--font);
   /* titres : espacement des capitales */
   --tracking-caps: 0.03em;
 
@@ -35,13 +36,8 @@
   --width-view: 64rem;
 
   /* anneau du focus, clavier ou de l'application */
-  --ring: 2px solid var(--color-text);
+  --ring: 2px solid var(--gray-12);
   --ring-offset: 2px;
-
-  --shadow-raised: 0 0 0 1px rgb(0 0 0 / 0.14), 0 4px 14px rgb(0 0 0 / 0.14);
-  /* cartes et lignes ; petits éléments (bouton d'icône, coude du guide) */
-  --radius-card: 0.5rem;
-  --radius-small: 0.25rem;
 
   /* lignes (vue Liste, arbre des facettes) : marges intérieures, à gauche et à droite, en haut
      et en bas ; icônes (chevron, lien) */
@@ -71,18 +67,9 @@
 
 /* ── Base ── */
 
-/* thème Radix (app/layout.tsx) : ses composants prennent notre police ; ses jetons d'espacement
-   (--space-1 à --space-9 : 4, 8, 12, 16, 24 px…) remplacent les nôtres */
-.radix-themes {
-  --default-font-family: var(--font);
-}
-
+/* police, taille, interligne, couleur et fond : ceux du thème */
 body {
   margin: 0;
-  font-family: var(--font);
-  line-height: 1.5;
-  color: var(--color-text);
-  background: var(--color-background);
 }
 
 /* Contenu de la page, et la vue à côté des facettes : à la largeur de la vue, centrés */
@@ -196,8 +183,8 @@ summary::-webkit-details-marker {
 .tree-count,
 .volume-name,
 .panel-strip {
-  font-size: var(--size-small);
-  color: var(--color-muted);
+  font-size: var(--font-size-2);
+  color: var(--gray-11);
 }
 
 .page,
@@ -241,18 +228,18 @@ summary::-webkit-details-marker {
   align-items: baseline;
   padding: var(--line-pad-y) var(--line-pad) var(--line-pad-y)
     calc(var(--line-pad) + var(--icon) + 0.125rem);
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-4);
 }
 
 .row:hover {
-  background: var(--color-open);
+  background: var(--gray-2);
 }
 
 .chevron {
   position: absolute;
   left: calc(var(--line-pad) - 0.125rem);
   top: calc(var(--line-pad-y) + (1lh - var(--icon)) / 2);
-  color: var(--color-muted);
+  color: var(--gray-11);
 }
 
 details[open] > summary .chevron {
@@ -262,23 +249,23 @@ details[open] > summary .chevron {
 /* Surface en relief (élément ouvert de la Liste, vignette d'un volume) */
 .item[open] > *,
 .volume-thumb {
-  background: var(--color-open);
-  box-shadow: var(--shadow-raised);
+  background: var(--gray-2);
+  box-shadow: var(--shadow-4);
 }
 
 /* survol d'une surface déjà grise (bande de repli, vignette) : un cran plus foncé */
 .panel-strip:hover,
 .volume-thumb:hover {
-  color: var(--color-text);
-  background: var(--color-press);
+  color: var(--gray-12);
+  background: var(--gray-3);
 }
 
 /* Bouton d'icône (effacer la recherche, ouvrir un nœud à part) : atténué au repos */
 .icon-button {
   display: inline-flex;
   padding: var(--space-1);
-  border-radius: var(--radius-small);
-  color: var(--color-muted);
+  border-radius: var(--radius-2);
+  color: var(--gray-11);
 }
 
 /* Inversé au survol (boutons des facettes, lien vers un nœud) : fond du texte, texte du fond */
@@ -286,7 +273,7 @@ details[open] > summary .chevron {
 .own-page:focus-visible,
 .facet-action:enabled:hover {
   color: var(--color-background);
-  background: var(--color-text);
+  background: var(--gray-12);
 }
 
 /* ── Champ de recherche (components/SearchForm.tsx), au-dessus de la vue ── */
@@ -306,7 +293,7 @@ details[open] > summary .chevron {
   position: absolute;
   top: 50%;
   translate: 0 -50%;
-  color: var(--color-muted);
+  color: var(--gray-11);
 }
 
 .search-icon {
@@ -319,7 +306,7 @@ details[open] > summary .chevron {
 }
 
 .search-clear:hover {
-  color: var(--color-text);
+  color: var(--gray-12);
 }
 
 /* un trait dessous, gris clair, foncé au focus ; ni fond ni cadre */
@@ -328,16 +315,16 @@ details[open] > summary .chevron {
   width: 100%;
   padding: 0.375rem 1.75rem;
   font: inherit;
-  color: var(--color-text);
+  color: var(--gray-12);
   background: transparent;
   border: 0;
-  border-bottom: 1px solid var(--color-guide-faded);
+  border-bottom: 1px solid var(--gray-7);
   border-radius: 0;
 }
 
 .search-input:focus-visible {
   outline: none;
-  border-bottom-color: var(--color-guide);
+  border-bottom-color: var(--gray-11);
 }
 
 /* le « × » du composant remplace celui de Chromium (Firefox n'en a pas) */
@@ -346,7 +333,7 @@ details[open] > summary .chevron {
 }
 
 .search-input::placeholder {
-  color: var(--color-muted);
+  color: var(--gray-11);
 }
 
 /* vue vide (app/page.tsx) : un grand aplat, le signe ∅ et une ligne */
@@ -358,10 +345,10 @@ details[open] > summary .chevron {
   gap: var(--space-2);
   min-height: 60vh;
   margin: 0;
-  border-radius: var(--radius-card);
-  background: var(--color-open);
-  color: var(--color-muted);
-  font-size: var(--size-small);
+  border-radius: var(--radius-4);
+  background: var(--gray-2);
+  color: var(--gray-11);
+  font-size: var(--font-size-2);
 }
 
 .empty-sign {
@@ -395,7 +382,7 @@ details[open] > summary .chevron {
 .group::after {
   content: "";
   position: absolute;
-  background: var(--color-guide);
+  background: var(--gray-11);
 }
 
 .group::before {
@@ -420,12 +407,12 @@ details[open] > summary .chevron {
   --guide-x: calc(var(--line-pad) + var(--guide-gap));
   margin-left: calc(-1 * (var(--guide-width) + var(--guide-gap)));
   padding-left: calc(var(--line-pad) + 2 * var(--guide-gap) + var(--guide-width));
-  border-left: var(--guide-width) solid var(--color-guide-faded);
+  border-left: var(--guide-width) solid var(--gray-7);
 }
 
 /* boule estompée si le groupe finit par un sous-groupe */
 .group:has(> .group:last-child)::after {
-  background: var(--color-guide-faded);
+  background: var(--gray-7);
 }
 
 /* Élément : le même pour tout nœud. Le <details> ne forme pas de boîte : sa ligne peut ainsi
@@ -451,12 +438,12 @@ details[open] > summary .chevron {
 /* Ouvert : ligne et fiche forment une carte en relief ; chaque morceau coupe son ombre du côté
    où il touche l'autre. */
 .item[open] > .line {
-  border-radius: var(--radius-card) var(--radius-card) 0 0;
+  border-radius: var(--radius-4) var(--radius-4) 0 0;
   clip-path: inset(-1rem -1rem 0 -1rem);
 }
 
 .item[open] > .detail {
-  border-radius: 0 0 var(--radius-card) var(--radius-card);
+  border-radius: 0 0 var(--radius-4) var(--radius-4);
   clip-path: inset(0 -1rem -1rem -1rem);
 }
 
@@ -490,14 +477,14 @@ details[open] > summary .chevron {
   top: calc(50% - var(--guide-width) / 2);
   bottom: 0;
   width: calc(var(--guide-width) + var(--guide-gap) + var(--line-pad) - 0.2rem);
-  border: solid var(--color-guide);
+  border: solid var(--gray-11);
   border-width: var(--guide-width) 0 0 var(--guide-width);
-  border-top-left-radius: var(--radius-small);
+  border-top-left-radius: var(--radius-2);
 }
 
 /* coude estompé s'il ne touche qu'un sous-groupe */
 .group:has(> .item:first-child + .group) > .item:first-child > .line::after {
-  border-color: var(--color-guide-faded);
+  border-color: var(--gray-7);
 }
 
 /* Texte, puis le lien. Ce qui distingue les types : seulement le texte (titres : voir
@@ -507,7 +494,7 @@ details[open] > summary .chevron {
 }
 
 .text-out_of_scope {
-  color: var(--color-muted);
+  color: var(--gray-11);
 }
 
 /* titre et hors champ : « … » sur l'intitulé seul, pour laisser la place au lien */
@@ -557,7 +544,7 @@ details[open] > summary .chevron {
 }
 
 .meta {
-  font-size: var(--size-small);
+  font-size: var(--font-size-2);
 }
 
 .identifier {
@@ -568,7 +555,7 @@ details[open] > summary .chevron {
    sauf la section la plus proche. */
 .breadcrumb {
   display: flex;
-  font-size: var(--size-small);
+  font-size: var(--font-size-2);
 }
 
 .breadcrumb li {
@@ -583,7 +570,7 @@ details[open] > summary .chevron {
 .breadcrumb li + li::before {
   content: "›";
   margin: 0 var(--space-2);
-  color: var(--color-muted);
+  color: var(--gray-11);
 }
 
 /* liens sans soulignement au repos ; souligné au survol et au focus clavier */
@@ -646,7 +633,7 @@ details[open] > summary .chevron {
   gap: var(--space-2);
   width: var(--strip-width);
   padding: var(--space-4) 0;
-  background: var(--color-open);
+  background: var(--gray-2);
   border: 0;
 }
 
@@ -680,7 +667,7 @@ details[open] > summary .chevron {
   aspect-ratio: 3 / 4;
   padding: var(--space-2);
   border: 0;
-  border-radius: var(--radius-card);
+  border-radius: var(--radius-4);
 }
 
 .volume-name {
@@ -701,7 +688,7 @@ details[open] > summary .chevron {
   right: -0.75rem;
   border: 0.5rem solid transparent;
   border-right-width: 0;
-  border-left-color: var(--color-text);
+  border-left-color: var(--gray-12);
 }
 
 /* sélection : une grosse coche ronde sur la vignette, case native redessinée */
@@ -713,19 +700,19 @@ details[open] > summary .chevron {
   width: var(--select-size);
   height: var(--select-size);
   margin: 0;
-  border: 2px solid var(--color-muted);
+  border: 2px solid var(--gray-11);
   border-radius: 50%;
   background: var(--color-background) center / 1rem no-repeat;
   cursor: pointer;
 }
 
 .volume-box:hover {
-  border-color: var(--color-text);
+  border-color: var(--gray-12);
 }
 
 .volume-box:checked {
-  border-color: var(--color-text);
-  background-color: var(--color-text);
+  border-color: var(--gray-12);
+  background-color: var(--gray-12);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.5 3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
 }
 
@@ -742,7 +729,7 @@ details[open] > summary .chevron {
 
 .tree-box {
   margin: 0;
-  accent-color: var(--color-text);
+  accent-color: var(--gray-12);
   translate: 0 0.125rem;
 }
 
@@ -766,20 +753,20 @@ details[open] > summary .chevron {
 
 .facet-action {
   padding: var(--space-1) var(--space-2);
-  font-size: var(--size-small);
-  color: var(--color-text);
+  font-size: var(--font-size-2);
+  color: var(--gray-12);
   background: var(--color-action);
-  border: 1px solid var(--color-text);
+  border: 1px solid var(--gray-12);
 }
 
 .facet-apply {
-  border-radius: var(--radius-card) 0 0 var(--radius-card);
+  border-radius: var(--radius-4) 0 0 var(--radius-4);
 }
 
 /* les deux traits du milieu superposés ; celui d'un bouton actif passe devant */
 .facet-actions > form > .facet-action {
   margin-left: -1px;
-  border-radius: 0 var(--radius-card) var(--radius-card) 0;
+  border-radius: 0 var(--radius-4) var(--radius-4) 0;
 }
 
 .facet-action:enabled {
@@ -787,7 +774,7 @@ details[open] > summary .chevron {
 }
 
 .facet-action:disabled {
-  color: var(--color-muted);
+  color: var(--gray-11);
   background: var(--color-background);
-  border-color: var(--color-guide-faded);
+  border-color: var(--gray-7);
 }
