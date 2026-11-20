@@ -27,11 +27,8 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
   ]);
   // le nœud désigné, s'il y en a un seul : dans la sélection, ou dans le contexte s'il ne
   // contient pas le texte
-  const known = new Map([...subgraph.nodes, ...sections].map((n) => [n.id, n]));
   const designated = query.subtree?.length === 1 ? query.subtree[0] : undefined;
-  const root = known.get(designated ?? "");
-  // la rubrique qui contient chaque nœud désigné : les facettes situent ceux qui ne se cochent pas
-  const places = (query.subtree ?? []).flatMap((id) => known.get(id)?.parentId ?? []);
+  const root = [...subgraph.nodes, ...sections].find((n) => n.id === designated);
   return (
     <div className="explorer">
       {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché,
@@ -43,7 +40,6 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
         volumes={structure.volumes}
         sections={structure.sections}
         checked={query.subtree ?? []}
-        places={places}
         text={query.text}
       />
       <div className="view">

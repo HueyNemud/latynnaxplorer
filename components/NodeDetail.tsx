@@ -1,8 +1,7 @@
 // Fiche d'un nœud dans la vue Liste : densité détaillée, en clé / valeur — texte, champs,
-// métadonnées —, puis le fil d'Ariane ; dépliée sous sa ligne (docs/composants/noeud-liste.md).
+// métadonnées —, puis le fil d'Ariane, en texte (seules les facettes changent la sélection) ;
+// dépliée sous sa ligne (docs/composants/noeud-liste.md).
 
-import Link from "next/link";
-import { serializeQuery } from "../lib/query/query.ts";
 import type { NodeKind, SpanLabel, SubgraphNode } from "../lib/query/types.ts";
 import { pages } from "../lib/text/pages.ts";
 import { PrintedText } from "./PrintedText.tsx";
@@ -62,9 +61,7 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Sub
           <ol className="breadcrumb">
             {context.map((section) => (
               <li key={section.id}>
-                <Link href={`/?${serializeQuery({ subtree: [section.id] })}`}>
-                  <PrintedText text={section.text} />
-                </Link>
+                <PrintedText text={section.text} />
               </li>
             ))}
           </ol>

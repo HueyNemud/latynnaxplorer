@@ -81,31 +81,9 @@ export function sameChecks(a: ReadonlySet<string>, b: ReadonlySet<string>): bool
   return a.size === b.size && [...a].every((id) => b.has(id));
 }
 
-/** Rubriques à déplier pour montrer la sélection : celles au-dessus de chaque coche ; et, pour
- * un nœud désigné qui n'est pas une rubrique, la rubrique qui le contient (`places`) avec celles
- * au-dessus d'elle. */
-export function pathTo(
-  tree: SectionTree,
-  checked: Iterable<string>,
-  places: readonly string[] = [],
-): Set<string> {
+/** Rubriques à déplier pour montrer les coches : celles au-dessus de chacune. */
+export function pathTo(tree: SectionTree, checked: ReadonlySet<string>): Set<string> {
   const path = new Set<string>();
   for (const id of checked) for (const p of ancestors(tree, id)) path.add(p);
-  for (const id of places) {
-    if (!tree.byId.has(id)) continue;
-    path.add(id);
-    for (const p of ancestors(tree, id)) path.add(p);
-  }
   return path;
-}
-
-/** Volume à regarder pour montrer des rubriques : le volume regardé s'il en contient une, sinon
- * celui de la première ; sans rubrique connue, le volume regardé. */
-export function focusFor(
-  tree: SectionTree,
-  sections: Iterable<string>,
-  current: string | undefined,
-): string | undefined {
-  const volumes = [...sections].flatMap((id) => tree.byId.get(id)?.volumeId ?? []);
-  return current !== undefined && volumes.includes(current) ? current : (volumes[0] ?? current);
 }

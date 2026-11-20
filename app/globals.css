@@ -258,21 +258,6 @@ details[open] > summary .chevron {
   background: var(--gray-3);
 }
 
-/* Bouton d'icône (effacer la recherche, ouvrir un nœud à part) : atténué au repos */
-.icon-button {
-  display: inline-flex;
-  padding: var(--space-1);
-  border-radius: var(--radius-2);
-  color: var(--gray-11);
-}
-
-/* Inversé au survol (lien vers un nœud) : fond du texte, texte du fond */
-.own-page:hover,
-.own-page:focus-visible {
-  color: var(--color-background);
-  background: var(--gray-12);
-}
-
 /* ── Champ de recherche (components/SearchForm.tsx), au-dessus de la vue ── */
 
 .search {
@@ -440,7 +425,7 @@ details[open] > summary .chevron {
   border-color: var(--gray-7);
 }
 
-/* Texte, puis le lien. Ce qui distingue les types : seulement le texte (titres : voir
+/* Texte. Ce qui distingue les types : seulement le texte (titres : voir
    « Titres », plus haut). */
 .text {
   min-width: 0;
@@ -450,27 +435,12 @@ details[open] > summary .chevron {
   color: var(--gray-11);
 }
 
-/* titre et hors champ : « … » sur l'intitulé seul, pour laisser la place au lien */
+/* titre et hors champ : « … » sur l'intitulé */
 .text-section .label,
 .text-out_of_scope .label {
   display: inline-block;
-  max-width: calc(100% - 1.75rem);
+  max-width: 100%;
   vertical-align: top;
-}
-
-/* Lien vers la nouvelle sélection : icône dans le fil du texte (en flex, les marges négatives
-   des champs faussaient la largeur sous Firefox), visible au survol de l'élément, quand il est
-   ouvert ou au focus clavier (opacity : il reste atteignable au clavier) */
-.own-page {
-  vertical-align: -0.2rem;
-  margin-left: var(--space-1);
-  opacity: 0;
-}
-
-.item:hover > .line .own-page,
-.item[open] > .line .own-page,
-.own-page:focus-visible {
-  opacity: 1;
 }
 
 /* page : l'information la moins importante, en petit, tout à droite */
@@ -524,16 +494,6 @@ details[open] > summary .chevron {
   content: "›";
   margin: 0 var(--space-2);
   color: var(--gray-11);
-}
-
-/* liens sans soulignement au repos ; souligné au survol et au focus clavier */
-.breadcrumb a {
-  text-decoration: none;
-}
-
-.breadcrumb a:hover,
-.breadcrumb a:focus-visible {
-  text-decoration: underline;
 }
 
 /* ── Facettes de structure (components/Facets.tsx, docs/composants/facettes.md) ── */

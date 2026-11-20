@@ -1,13 +1,11 @@
 // Vue Liste (docs/composants/noeud-liste.md) : la sélection dans ses rubriques, à plat. Toute
 // section, contexte compris, est un groupe marqué par son guide de niveau ; tout nœud est le
-// même élément, une ligne (chevron, texte, lien | page) qui déplie sa fiche juste dessous, par
-// <details> natif, sans script.
+// même élément, une ligne (chevron, texte | page) qui déplie sa fiche juste dessous, par
+// <details> natif. La Liste ne change pas la sélection : seules les facettes le font.
 
-import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
-import { serializeQuery } from "../lib/query/query.ts";
 import type { SubgraphNode } from "../lib/query/types.ts";
-import { ChevronIcon, OpenIcon } from "./icons.tsx";
+import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
@@ -62,24 +60,12 @@ function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; 
       <summary className="row line" aria-labelledby={`text-${node.id}`}>
         <span className={`text text-${node.kind}`}>
           <ChevronIcon className="chevron" />
-          {/* nom de la ligne : son texte seul, sans le lien */}
           <span id={`text-${node.id}`} className="label">
             {node.kind === "out_of_scope" && (
               <span className="visually-hidden">Out of scope: </span>
             )}
             <PrintedText text={node.text} spans={node.spans} />
           </span>
-          {/* nouvelle sélection : ce nœud seul (une section avec sa descendance) ; décrit par le
-              texte de la ligne, pour distinguer les liens entre eux */}
-          <Link
-            className="icon-button own-page"
-            href={`/?${serializeQuery({ subtree: [node.id] })}`}
-            aria-label="Open on its own page"
-            aria-describedby={`text-${node.id}`}
-            title="Open on its own page"
-          >
-            <OpenIcon />
-          </Link>
         </span>
         <span className="page">{node.anchors[0]?.page}</span>
       </summary>
