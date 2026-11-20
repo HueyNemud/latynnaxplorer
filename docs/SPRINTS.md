@@ -260,21 +260,40 @@ Choix validés :
 ## Sprint 11 : passage à Radix Themes
 
 But : une interface stylée et homogène, en s'appuyant sur Radix Themes
-plutôt qu'en dessinant chaque contrôle (`docs/DECISIONS.md`, 20 novembre).
+plutôt qu'en dessinant chaque contrôle (`docs/DECISIONS.md`, 20 novembre),
+sans rien changer à ce que fait l'interface.
 
-Pistes, à préciser et valider au début du sprint :
+Étapes, validées une à une :
 
-1. Thème et jetons : `Theme` de Radix, couleur d'accent et gris à choisir
-   (planche), Fira Sans gardée ; nos jetons remplacés par ceux de Radix.
-2. Contrôles : Apply / Clear, boutons d'icône, cases de l'arbre, coche
-   ronde des volumes, champ de recherche.
-3. Fiche d'un nœud en DataList, vignettes en Card ; panneaux et infobulles
-   (ScrollArea, Tooltip) si le gain se confirme.
-4. Vue Liste : lignes en HTML léger avec les jetons Radix (poids des très
-   grosses sélections) ; couleurs des champs rejouées dans les échelles
-   Radix (planche).
-5. Captures avant / après sous Chromium et Firefox ; poids mesuré en
-   production.
+1. **Thème et planche** : `<Theme>` à la racine (`app/layout.tsx`), Fira
+   Sans gardée ; planche sur la vraie page (Contents, Liste avec une fiche
+   dépliée, recherche) pour choisir couleur d'accent, gris, rayon et
+   densité.
+2. **Jetons** : nos couleurs, espacements, rayons et ombres remplacés par
+   ceux de Radix ; ne restent que les jetons de notre mise en page
+   (largeurs des panneaux, colonnes de la Liste, guides).
+3. **Contrôles** : Apply / Clear en Button ; « × » de la recherche, lien
+   « Open », peut-être les bandes de repli, en IconButton ; cases de
+   l'arbre et coche des volumes en Checkbox ; recherche en TextField.
+4. **Fiche et vignettes** : fiche en DataList, vignette en Card.
+5. **Vue Liste** : lignes en HTML léger avec les jetons Radix ; couleurs
+   des champs rejouées dans les échelles Radix (planche).
+6. Captures avant / après sous Chromium et Firefox ; poids mesuré en
+   production (arrivée, « LISTES PARTICULIÈRES » : 13 000 nœuds) ; fiches
+   de composant, `docs/DESIGN.md`, journal, décisions.
+
+Choix validés :
+
+- Une seule dépendance : `@radix-ui/themes` (3.3.0).
+- Fiche : DataList, sauf surpoids net mesuré (la fiche de chaque nœud est
+  dans le HTML, même repliée) ; sinon notre `<dl>` avec les jetons Radix.
+- Feuille complète de Radix d'abord ; import par morceaux si son poids
+  pèse.
+- Coche ronde des volumes : Checkbox Radix sous un `Theme` local à coins
+  pleins, montrée sur la planche.
+- Sans script, les facettes ne marchent plus (décidé au sprint 10).
+- Hors sprint : mode sombre (`docs/IDEES.md`), tout changement de
+  comportement ou de mise en page.
 
 ## Sprint 12 : exporter
 
