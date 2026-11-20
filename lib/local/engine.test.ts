@@ -3,15 +3,22 @@
 // scripts/compare-local.ts.
 
 import { afterAll, describe, expect, inject, it } from "vitest";
-import { E1, fixture, T1, T2 } from "../../scripts/fixture.ts";
+import { E1, E2, E3, fixture, O1, T1, T2 } from "../../scripts/fixture.ts";
 import { toRows } from "../../scripts/rows.ts";
 import { validateVolume } from "../../scripts/validate.ts";
 import { toVolumeFile } from "../../scripts/volume-file.ts";
 import { connect } from "../db/client.ts";
 import { facets } from "../query/facets.ts";
 import type { Query } from "../query/query.ts";
-import { context, NodeNotFoundError, resolve } from "../query/resolve.ts";
-import { contextLocal, facetsLocal, fold, indexVolume, resolveLocal } from "./engine.ts";
+import { context, detail, NodeNotFoundError, resolve } from "../query/resolve.ts";
+import {
+  contextLocal,
+  detailLocal,
+  facetsLocal,
+  fold,
+  indexVolume,
+  resolveLocal,
+} from "./engine.ts";
 
 const sql = connect(inject("databaseUrl"));
 afterAll(() => sql.end());
@@ -40,6 +47,10 @@ describe("moteur local, comparé à SQL sur la fixture", () => {
 
   it.each([{}, { text: "paix" }, { text: "introuvable" }])("facets : %o", async (query) => {
     expect(facetsLocal(volume, query)).toEqual(await facets(sql, query));
+  });
+
+  it.each([T1, T2, E1, E2, E3, O1])("detail : %s", async (id) => {
+    expect(detailLocal(volume, id)).toEqual(await detail(sql, id));
   });
 
   it("refuse un sous-arbre inconnu, comme SQL", () => {

@@ -136,6 +136,23 @@ export function contextLocal(volume: LocalVolume, query: Query): SubgraphNode[] 
     .map((n) => ({ ...n, spans: [] }));
 }
 
+/** Comme `detail` : le nœud, et le chemin de ses rubriques, de la racine à son parent. */
+export function detailLocal(
+  volume: LocalVolume,
+  id: string,
+): { node: SubgraphNode; path: Pick<SubgraphNode, "id" | "text">[] } {
+  const node = volume.byId.get(id);
+  if (node === undefined) throw new NodeNotFoundError(id);
+  const path: Pick<SubgraphNode, "id" | "text">[] = [];
+  for (let a = node.parentId; a !== null; ) {
+    const parent = volume.byId.get(a);
+    if (parent === undefined) break;
+    path.unshift({ id: parent.id, text: parent.text });
+    a = parent.parentId;
+  }
+  return { node, path };
+}
+
 /** Comme `facets` : le volume, et ses rubriques avec le nombre d'entrées de leur sous-arbre qui
  * contiennent le texte cherché. */
 export function facetsLocal(volume: LocalVolume, { text }: Pick<Query, "text">): Facets {

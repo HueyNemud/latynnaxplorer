@@ -9,14 +9,23 @@ import type { CSSProperties, ReactNode } from "react";
 import type { SubgraphNode } from "../lib/query/types.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
-import { NodeDetails } from "./NodeDetails.tsx";
+import { type Detail, NodeDetails } from "./NodeDetails.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
 /**
  * `context` : rubriques ancêtres de la sélection qui n'en font pas partie ; `nodes` : la
- * sélection. Une sélection d'un seul nœud le montre déplié.
+ * sélection. Une sélection d'un seul nœud le montre déplié. `load` : comment lire une fiche
+ * (components/NodeDetails.tsx).
  */
-export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: SubgraphNode[] }) {
+export function NodeList({
+  context,
+  nodes,
+  load,
+}: {
+  context: SubgraphNode[];
+  nodes: SubgraphNode[];
+  load?: (id: string) => Promise<Detail>;
+}) {
   const shown = [...context, ...nodes].sort(
     (a, b) => a.documentReadingOrder - b.documentReadingOrder,
   );
@@ -52,7 +61,7 @@ export function NodeList({ context, nodes }: { context: SubgraphNode[]; nodes: S
         <span className="page">Page</span>
       </div>
       {children.get(null)?.map((n) => render(n, []))}
-      <NodeDetails />
+      <NodeDetails load={load} />
     </>
   );
 }
