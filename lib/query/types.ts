@@ -9,7 +9,6 @@ export type SpanLabel = (typeof spanLabel.enumValues)[number];
 
 /** Champ structuré d'une entrée ; positions dans `text` brut, en points de code, fin exclue. */
 export interface Span {
-  id: string;
   label: SpanLabel;
   charStart: number;
   charEnd: number;

@@ -20,7 +20,7 @@ let start = performance.now();
 const volume = indexVolume(file);
 console.log(`indexVolume : ${(performance.now() - start).toFixed(0)} ms`);
 
-const sections = file.nodes.filter((n) => n.kind === "section");
+const sections = volume.nodes.filter((n) => n.kind === "section");
 const top = sections.filter((n) => n.parentId === null).map((n) => n.id);
 const texts = [
   ...["rue", "paix", "rue de la paix", "boulanger", "épicier", "EPICIER", "oeuvre", "œ"],

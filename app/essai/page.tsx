@@ -10,7 +10,7 @@ export default function Page() {
   // hors Git : absent tant qu'aucun volume n'est exporté (en CI notamment)
   const dir = "public/volumes";
   const volumeId = (existsSync(dir) ? readdirSync(dir) : [])
-    .filter((name) => name.endsWith(".json"))
+    .filter((name) => name.endsWith(".json") && name !== "index.json")
     .map((name) => name.slice(0, -".json".length))
     .sort()[0];
   if (volumeId === undefined) return <p>No volume exported.</p>;

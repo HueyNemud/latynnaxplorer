@@ -146,7 +146,7 @@ async function read(
       FROM (${selected}) n
       ORDER BY document_reading_order`,
     sql<(Span & { nodeId: string })[]>`
-      SELECT s.node_id AS "nodeId", s.id, s.label, s.char_start AS "charStart",
+      SELECT s.node_id AS "nodeId", s.label, s.char_start AS "charStart",
              s.char_end AS "charEnd", s.normalized
       FROM (${selected}) n JOIN span s ON s.node_id = n.id
       ORDER BY s.char_start, s.char_end`,

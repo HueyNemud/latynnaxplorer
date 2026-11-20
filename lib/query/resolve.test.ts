@@ -39,14 +39,12 @@ describe("resolve, sous-arbre", () => {
           text: "Dupont, rue de la Paix, 12.",
           spans: [
             {
-              id: "30000000-0000-0000-0000-000000000001",
               label: "SUBJ",
               charStart: 0,
               charEnd: 6,
               normalized: "Dupont",
             },
             {
-              id: "30000000-0000-0000-0000-000000000002",
               label: "ADDR",
               charStart: 8,
               charEnd: 27,

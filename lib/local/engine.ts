@@ -4,7 +4,14 @@
 
 import type { Query } from "../query/query.ts";
 import { inducedArcs, NodeNotFoundError, type SelectedNode } from "../query/resolve.ts";
-import type { FacetSection, Facets, Subgraph, SubgraphNode } from "../query/types.ts";
+import type {
+  FacetSection,
+  Facets,
+  FacetVolume,
+  Span,
+  Subgraph,
+  SubgraphNode,
+} from "../query/types.ts";
 import type { VolumeFile } from "./types.ts";
 
 /** Lettres et signes que `unaccent` de PostgreSQL remplace et que la décomposition NFKD ne
@@ -59,26 +66,46 @@ export function fold(text: string): string {
 
 /** Un volume prêt à être interrogé : ses nœuds, et ce qui se calcule une fois au chargement. */
 export interface LocalVolume {
-  file: VolumeFile;
+  meta: FacetVolume;
+  /** dans l'ordre de lecture, complets (empans et ancres, vides s'il n'y en a pas) */
+  nodes: SubgraphNode[];
   byId: Map<string, SubgraphNode>;
-  /** texte plié de chaque nœud, dans l'ordre de `file.nodes` */
+  /** texte plié de chaque nœud, dans l'ordre de `nodes` */
   folded: string[];
   /** entrée suivante dans l'ordre de lecture (arc follows), pour les entrées */
   nextEntry: Map<string, string>;
 }
 
+/** Le fichier d'un volume, décodé (ce que son format omet est rétabli) et indexé. */
 export function indexVolume(file: VolumeFile): LocalVolume {
+  const nodes = file.nodes.map(
+    ({ spans = [], anchors = [], ...n }, documentReadingOrder): SubgraphNode => {
+      const chars = Array.from(n.text); // positions des empans en points de code
+      return {
+        ...n,
+        documentReadingOrder,
+        spans: spans.map(
+          (s): Span => ({
+            ...s,
+            normalized: s.normalized ?? chars.slice(s.charStart, s.charEnd).join(""),
+          }),
+        ),
+        anchors,
+      };
+    },
+  );
   const nextEntry = new Map<string, string>();
   let next: string | undefined;
-  for (const n of file.nodes.toReversed()) {
+  for (const n of nodes.toReversed()) {
     if (n.kind !== "entry") continue;
     if (next !== undefined) nextEntry.set(n.id, next);
     next = n.id;
   }
   return {
-    file,
-    byId: new Map(file.nodes.map((n) => [n.id, n])),
-    folded: file.nodes.map((n) => fold(n.text)),
+    meta: file.volume,
+    nodes,
+    byId: new Map(nodes.map((n) => [n.id, n])),
+    folded: nodes.map((n) => fold(n.text)),
     nextEntry,
   };
 }
@@ -99,7 +126,7 @@ function selection(volume: LocalVolume, { subtree, text }: Query): SubgraphNode[
     return result;
   };
   const needle = text === undefined ? undefined : fold(text);
-  return volume.file.nodes.filter(
+  return volume.nodes.filter(
     (n, i) =>
       (needle === undefined || volume.folded[i]?.includes(needle)) &&
       (subtree === undefined || isInside(n)),
@@ -158,21 +185,21 @@ export function detailLocal(
 export function facetsLocal(volume: LocalVolume, { text }: Pick<Query, "text">): Facets {
   const needle = text === undefined ? undefined : fold(text);
   const entries = new Map<string, number>();
-  volume.file.nodes.forEach((n, i) => {
+  volume.nodes.forEach((n, i) => {
     if (n.kind !== "entry" || (needle !== undefined && !volume.folded[i]?.includes(needle))) return;
     for (let a = n.parentId; a !== null; a = volume.byId.get(a)?.parentId ?? null)
       entries.set(a, (entries.get(a) ?? 0) + 1);
   });
-  const sections = volume.file.nodes
+  const sections = volume.nodes
     .filter((n) => n.kind === "section")
     .map(
       (n): FacetSection => ({
         id: n.id,
         parentId: n.parentId,
-        volumeId: volume.file.volume.id,
+        volumeId: volume.meta.id,
         text: n.text,
         entries: entries.get(n.id) ?? 0,
       }),
     );
-  return { volumes: [volume.file.volume], sections };
+  return { volumes: [volume.meta], sections };
 }
