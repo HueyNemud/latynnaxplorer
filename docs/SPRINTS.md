@@ -260,8 +260,9 @@ Choix validés :
 ## Sprint 11 : passage à Radix Themes
 
 But : une interface stylée et homogène, en s'appuyant sur Radix Themes
-plutôt qu'en dessinant chaque contrôle (`docs/DECISIONS.md`, 20 novembre),
-sans rien changer à ce que fait l'interface.
+plutôt qu'en dessinant chaque contrôle (`docs/DECISIONS.md`, 20 novembre) ;
+en cours de sprint, une Liste allégée : plus de navigation qui double les
+facettes, fiche chargée au dépliage.
 
 Étapes, validées une à une :
 
@@ -275,25 +276,39 @@ sans rien changer à ce que fait l'interface.
 3. **Contrôles** : Apply / Clear en Button ; « × » de la recherche, lien
    « Open », peut-être les bandes de repli, en IconButton ; cases de
    l'arbre et coche des volumes en Checkbox ; recherche en TextField.
-4. **Fiche et vignettes** : fiche en DataList, vignette en Card.
-5. **Vue Liste** : lignes en HTML léger avec les jetons Radix ; couleurs
+4. **Une seule navigation, par les facettes** (ajouté en cours de sprint) :
+   « Open on its own page » supprimé ; fil d'Ariane de la fiche en texte,
+   sans liens ; la synchronisation du sprint 10 retirée (plus rien ne
+   change l'URL sans recharger la page) ; une entrée désignée par l'URL
+   n'est plus située dans les facettes.
+5. **Fiche au dépliage** (ajouté en cours de sprint) : la fiche n'est plus
+   rendue d'avance, mais demandée au serveur au premier dépliage (fonction
+   serveur), puis gardée ; une sélection d'un seul nœud garde sa fiche
+   rendue et dépliée. Mesuré : sur « LISTES PARTICULIÈRES », les fiches
+   font la moitié des 26 Mo de HTML (81 Mo avec le flux RSC). Fiche en
+   DataList.
+6. **Vignettes** en Card.
+7. **Vue Liste** : lignes en HTML léger avec les jetons Radix ; couleurs
    des champs rejouées dans les échelles Radix (planche).
-6. Captures avant / après sous Chromium et Firefox ; poids mesuré en
-   production (arrivée, « LISTES PARTICULIÈRES » : 13 000 nœuds) ; fiches
-   de composant, `docs/DESIGN.md`, journal, décisions.
+8. Captures avant / après sous Chromium et Firefox ; poids mesuré en
+   production (arrivée, « LISTES PARTICULIÈRES » : 13 737 nœuds), feuille
+   de Radix par morceaux si son poids pèse (668 Ko, 80 Ko compressés) ;
+   fiches de composant, `docs/DESIGN.md`, journal, décisions.
 
 Choix validés :
 
 - Une seule dépendance : `@radix-ui/themes` (3.3.0).
-- Fiche : DataList, sauf surpoids net mesuré (la fiche de chaque nœud est
-  dans le HTML, même repliée) ; sinon notre `<dl>` avec les jetons Radix.
+- Fiche : DataList, rendue seulement au dépliage. Sans script, une ligne
+  dépliée ne montre pas sa fiche.
+- Thème : accent iris sur gris mauve (planche de huit combinaisons) ;
+  ombre `--shadow-4` pour le relief.
 - Feuille complète de Radix d'abord ; import par morceaux si son poids
   pèse.
-- Coche ronde des volumes : Checkbox Radix sous un `Theme` local à coins
-  pleins, montrée sur la planche.
+- Coche ronde des volumes : Checkbox Radix rendue ronde par ses variables
+  CSS.
 - Sans script, les facettes ne marchent plus (décidé au sprint 10).
-- Hors sprint : mode sombre (`docs/IDEES.md`), tout changement de
-  comportement ou de mise en page.
+- Hors sprint : mode sombre (`docs/IDEES.md`), pagination de la Liste,
+  tout autre changement de mise en page.
 
 ## Sprint 12 : exporter
 
