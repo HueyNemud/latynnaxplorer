@@ -10,7 +10,9 @@
 //   lib/facets/selection.ts.
 // - Les cases font partie du formulaire de la requête (#query, components/SearchForm.tsx) par
 //   l'attribut `form`. Une case couverte, désactivée, n'est pas envoyée : seules partent les
-//   rubriques cochées les plus hautes. Le script ne sert qu'à propager les coches.
+//   rubriques cochées les plus hautes. Cases, coches et boutons de Radix Themes : une case Radix
+//   est un bouton, avec une case cachée pour le formulaire ; sans script, les facettes ne
+//   servent pas.
 // - En haut de Contents, toujours là : Apply envoie le formulaire (inactif sans changement) ;
 //   Clear applique aussitôt une sélection sans coche, en gardant le texte cherché (inactif sans
 //   coche), par son propre formulaire GET.
@@ -18,6 +20,7 @@
 //   bouton Précédent), les cases reprennent les coches de l'URL ; le volume regardé et les
 //   rubriques dépliées restent, le chemin de la sélection est déplié en plus.
 
+import { Button, Checkbox } from "@radix-ui/themes";
 import { type ReactNode, useMemo, useState } from "react";
 import {
   checkedOf,
@@ -86,15 +89,15 @@ export function Facets({
     const line = (
       <>
         {kids.length > 0 && <ChevronIcon className="chevron" />}
-        <input
-          type="checkbox"
+        <Checkbox
+          size="1"
           className="tree-box"
           form={QUERY_FORM}
           name="subtree"
           value={s.id}
           checked={covered || checked.has(s.id)}
           disabled={covered}
-          onChange={() => setChecked(toggleSection(tree, checked, s.id))}
+          onCheckedChange={() => setChecked(toggleSection(tree, checked, s.id))}
           aria-label={label}
         />
         <span id={`tree-${s.id}`} className="tree-label" lang="fr" title={label}>
@@ -157,11 +160,11 @@ export function Facets({
                   <span className="volume-name">{v.title ?? v.id}</span>
                 </button>
                 {/* la coche ronde, sur la vignette : sélectionne ou désélectionne tout le volume */}
-                <input
-                  type="checkbox"
+                <Checkbox
+                  size="3"
                   className="volume-box"
                   checked={isVolumeSelected(tree, checked, v.id)}
-                  onChange={() => setChecked(toggleVolume(tree, checked, v.id))}
+                  onCheckedChange={() => setChecked(toggleVolume(tree, checked, v.id))}
                   aria-label={`Select ${name}`}
                 />
               </div>
@@ -171,19 +174,14 @@ export function Facets({
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
         <div className="facet-actions">
-          <button
-            type="submit"
-            form={QUERY_FORM}
-            className="facet-action facet-apply"
-            disabled={sameChecks(checked, initial)}
-          >
+          <Button type="submit" form={QUERY_FORM} disabled={sameChecks(checked, initial)}>
             Apply selection
-          </button>
+          </Button>
           <form method="get">
             {text !== undefined && <input type="hidden" name="text" value={text} />}
-            <button type="submit" className="facet-action" disabled={checked.size === 0}>
+            <Button type="submit" variant="soft" disabled={checked.size === 0}>
               Clear
-            </button>
+            </Button>
           </form>
         </div>
         <ul className="tree tree-root">{(tree.children.get(focus ?? "") ?? []).map(row)}</ul>

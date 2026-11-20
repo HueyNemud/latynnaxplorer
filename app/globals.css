@@ -21,8 +21,6 @@
   --tint-subj: #b9e6ff;
   --tint-desc: #afffe2;
   --tint-addr: #fffca9;
-  /* boutons des facettes (Apply, Clear) quand ils servent */
-  --color-action: var(--tint-subj);
 
   /* Fira Sans chargée par next/font (app/layout.tsx), pour ses vraies petites capitales */
   --font:
@@ -268,10 +266,9 @@ details[open] > summary .chevron {
   color: var(--gray-11);
 }
 
-/* Inversé au survol (boutons des facettes, lien vers un nœud) : fond du texte, texte du fond */
+/* Inversé au survol (lien vers un nœud) : fond du texte, texte du fond */
 .own-page:hover,
-.own-page:focus-visible,
-.facet-action:enabled:hover {
+.own-page:focus-visible {
   color: var(--color-background);
   background: var(--gray-12);
 }
@@ -282,58 +279,14 @@ details[open] > summary .chevron {
   margin-bottom: var(--space-2);
 }
 
-/* loupe à gauche du champ, « × » à droite quand une recherche est en cours */
+/* le champ de Radix Themes, à une largeur raisonnable */
 .search-form {
-  position: relative;
   max-width: 24rem;
 }
 
-.search-icon,
-.search-clear {
-  position: absolute;
-  top: 50%;
-  translate: 0 -50%;
-  color: var(--gray-11);
-}
-
-.search-icon {
-  left: var(--space-1);
-  pointer-events: none;
-}
-
-.search-clear {
-  right: 0;
-}
-
-.search-clear:hover {
-  color: var(--gray-12);
-}
-
-/* un trait dessous, gris clair, foncé au focus ; ni fond ni cadre */
-.search-input {
-  box-sizing: border-box;
-  width: 100%;
-  padding: 0.375rem 1.75rem;
-  font: inherit;
-  color: var(--gray-12);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid var(--gray-7);
-  border-radius: 0;
-}
-
-.search-input:focus-visible {
-  outline: none;
-  border-bottom-color: var(--gray-11);
-}
-
 /* le « × » du composant remplace celui de Chromium (Firefox n'en a pas) */
-.search-input::-webkit-search-cancel-button {
+.search-input input::-webkit-search-cancel-button {
   display: none;
-}
-
-.search-input::placeholder {
-  color: var(--gray-11);
 }
 
 /* vue vide (app/page.tsx) : un grand aplat, le signe ∅ et une ligne */
@@ -691,29 +644,13 @@ details[open] > summary .chevron {
   border-left-color: var(--gray-12);
 }
 
-/* sélection : une grosse coche ronde sur la vignette, case native redessinée */
+/* sélection : une grosse coche ronde sur la vignette ; la case de Radix, ronde */
 .volume-box {
   position: absolute;
   top: var(--space-2);
   left: var(--space-2);
-  appearance: none;
-  width: var(--select-size);
-  height: var(--select-size);
-  margin: 0;
-  border: 2px solid var(--gray-11);
-  border-radius: 50%;
-  background: var(--color-background) center / 1rem no-repeat;
-  cursor: pointer;
-}
-
-.volume-box:hover {
-  border-color: var(--gray-12);
-}
-
-.volume-box:checked {
-  border-color: var(--gray-12);
-  background-color: var(--gray-12);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.5 3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  --checkbox-size: var(--select-size);
+  --checkbox-border-radius: 50%;
 }
 
 /* Arbre des rubriques (Contents) : simple retrait par niveau, sans guides */
@@ -728,20 +665,19 @@ details[open] > summary .chevron {
 }
 
 .tree-box {
-  margin: 0;
-  accent-color: var(--gray-12);
   translate: 0 0.125rem;
 }
 
-/* Apply et Clear : en haut de Contents, fixés au-dessus de l'arbre qui défile, toujours là ;
-   les deux moitiés d'un même bouton. Colorés quand ils servent, inversés au survol ; estompés
-   sinon. Clear est dans son propre formulaire, transparent pour la grille. */
+/* Apply et Clear (boutons de Radix Themes) : en haut de Contents, fixés au-dessus de l'arbre
+   qui défile, toujours là, chacun sur la moitié de la largeur. Clear est dans son propre
+   formulaire, transparent pour la grille. */
 .facet-actions {
   position: sticky;
   top: calc(-1 * var(--space-4));
   z-index: 1;
   display: grid;
   grid-template-columns: 1fr 1fr;
+  gap: var(--space-2);
   margin-top: calc(-1 * var(--space-4));
   padding: var(--space-4) 0 var(--space-2);
   background: var(--color-background);
@@ -749,32 +685,4 @@ details[open] > summary .chevron {
 
 .facet-actions > form {
   display: contents;
-}
-
-.facet-action {
-  padding: var(--space-1) var(--space-2);
-  font-size: var(--font-size-2);
-  color: var(--gray-12);
-  background: var(--color-action);
-  border: 1px solid var(--gray-12);
-}
-
-.facet-apply {
-  border-radius: var(--radius-4) 0 0 var(--radius-4);
-}
-
-/* les deux traits du milieu superposés ; celui d'un bouton actif passe devant */
-.facet-actions > form > .facet-action {
-  margin-left: -1px;
-  border-radius: 0 var(--radius-4) var(--radius-4) 0;
-}
-
-.facet-action:enabled {
-  position: relative;
-}
-
-.facet-action:disabled {
-  color: var(--gray-11);
-  background: var(--color-background);
-  border-color: var(--gray-7);
 }

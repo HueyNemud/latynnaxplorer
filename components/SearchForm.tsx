@@ -5,6 +5,7 @@
 // Carte, Page…) peut le poser au-dessus d'elle ; sans `action`, il renvoie à la page où il est
 // posé, et le lien qui efface la recherche aussi.
 
+import { IconButton, TextField } from "@radix-ui/themes";
 import { serializeQuery } from "../lib/query/query.ts";
 import { ClearIcon, SearchIcon } from "./icons.tsx";
 
@@ -22,12 +23,12 @@ export function SearchForm({
   return (
     <search className="search">
       <form id={QUERY_FORM} className="search-form" method="get">
-        <SearchIcon className="search-icon" />
         <label htmlFor="search-text" className="visually-hidden">
           Search text
         </label>
-        {/* clé : un champ neuf à chaque texte, même quand une navigation garde la page */}
-        <input
+        {/* champ de Radix Themes, loupe à gauche ; clé : un champ neuf à chaque texte, même quand
+            une navigation garde la page */}
+        <TextField.Root
           key={text}
           id="search-text"
           className="search-input"
@@ -37,19 +38,23 @@ export function SearchForm({
           placeholder="Search"
           autoComplete="off"
           spellCheck={false}
-        />
-        {/* effacer la recherche : la même sélection sans le texte (sans rubrique : rien à
-            afficher) */}
-        {text !== undefined && (
-          <a
-            className="icon-button search-clear"
-            href={`?${serializeQuery(subtree ? { subtree } : {})}`}
-            title="Clear search"
-          >
-            <ClearIcon />
-            <span className="visually-hidden">Clear search</span>
-          </a>
-        )}
+        >
+          <TextField.Slot>
+            <SearchIcon />
+          </TextField.Slot>
+          {/* effacer la recherche : la même sélection sans le texte (sans rubrique : rien à
+              afficher) */}
+          {text !== undefined && (
+            <TextField.Slot>
+              <IconButton asChild size="1" variant="ghost" color="gray">
+                <a href={`?${serializeQuery(subtree ? { subtree } : {})}`} title="Clear search">
+                  <ClearIcon />
+                  <span className="visually-hidden">Clear search</span>
+                </a>
+              </IconButton>
+            </TextField.Slot>
+          )}
+        </TextField.Root>
       </form>
     </search>
   );
