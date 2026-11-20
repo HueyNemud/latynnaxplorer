@@ -5,8 +5,8 @@ Il donne un filtre de `lib/query/` et au moins un test. Les filtres doivent
 pouvoir se combiner : un scénario n'est pas une fonction à part.
 
 Tous les critères sont facultatifs ; ceux qui sont présents se combinent
-(conjonction), sans cas particulier. Sans aucun critère, la page redirige
-vers une sélection par défaut. Chaque point d'entrée de l'interface (lien
+(conjonction), sans cas particulier. Sans aucun critère, rien n'est
+sélectionné : la vue le dit (« Nothing to show »). Chaque point d'entrée de l'interface (lien
 d'un nœud, champ de recherche) commence une nouvelle sélection.
 
 Principe : sans filtre explicite, le résultat contient tout ce que la

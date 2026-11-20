@@ -177,9 +177,9 @@ describe("resolve, texte", () => {
 });
 
 describe("resolve, sans critère", () => {
-  it("rend tous les nœuds", async () => {
-    const { nodes } = await resolve(sql, {});
-    expect(nodes.map((n) => n.id)).toEqual([T1, E3, T2, E1, E2, O1]);
+  it("ne rend rien", async () => {
+    expect(await resolve(sql, {})).toEqual({ nodes: [], arcs: [] });
+    expect(await context(sql, {})).toEqual([]);
   });
 });
 

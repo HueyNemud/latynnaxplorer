@@ -50,7 +50,13 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
         {subgraph.nodes.length > 0 ? (
           <NodeList context={sections} nodes={subgraph.nodes} />
         ) : (
-          <p className="no-match">No match.</p>
+          // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond
+          <p className="empty">
+            <span className="empty-sign" aria-hidden="true">
+              ∅
+            </span>
+            {query.subtree || query.text ? "No match" : "Nothing to show"}
+          </p>
         )}
       </div>
     </div>

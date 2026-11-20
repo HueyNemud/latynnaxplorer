@@ -1,8 +1,7 @@
 // Requête : ce que l'utilisateur demande, lisible depuis l'URL et réécrite à l'identique.
 // Les noms de paramètres sont en anglais (application internationale).
 // Filtres et scénarios : docs/SCENARIOS.md. Tous les critères sont facultatifs et se combinent
-// (conjonction) ; sans critère, la requête est vide (proxy.ts la remplace par la sélection par
-// défaut).
+// (conjonction) ; sans critère, la requête est vide et ne sélectionne rien.
 
 export interface Query {
   /**

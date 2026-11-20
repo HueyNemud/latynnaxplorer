@@ -75,7 +75,8 @@ function selection(sql: postgres.Sql, { subtree, text }: Query) {
       WHERE ${contains(sql, sql`n.text`, text)}
         ${inSubtree}`;
   }
-  if (subtree === undefined) return sql`SELECT ${columns} FROM node n`;
+  // sans critère, rien n'est sélectionné
+  if (subtree === undefined) return sql`SELECT ${columns} FROM node n WHERE false`;
   return sql`
     SELECT ${columns} FROM node n WHERE n.id = ANY(${subtree}::uuid[])
     UNION
