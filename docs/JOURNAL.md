@@ -44,9 +44,11 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - Fiche demandée au premier dépliage : « Listes particulières » (13 737
   nœuds) passe de 81 à 26 Mo et de 3,8 à 1,2 s en production ; une fiche,
   7 ms.
-- Filtre à la coche, All et Clear locaux au volume regardé.
+- Filtre à la coche, All et Clear locaux au volume regardé ; une case
+  couverte ne garde qu'elle au clic ; rubriques et volumes semi-sélectionnés
+  (tiret).
 - Champs teintés par les échelles transparentes de Radix (violet, sarcelle,
-  jaune), choisis sur planche. 99 tests.
+  jaune), choisis sur planche. 101 tests.
 
 ## 2026-11-20 — Sprint 10 : facettes et Liste d'accord (PR #20)
 
