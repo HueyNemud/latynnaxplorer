@@ -1,30 +1,14 @@
 "use client";
 
-// Facettes de structure (docs/composants/facettes.md) : panneaux Volumes et Contents, à gauche
-// de la vue, en colonnes de Miller.
-// - Sélection et focus distincts (docs/DESIGN.md) : la coche ronde d'un volume le sélectionne
-//   ou le désélectionne tout entier ; un clic sur sa vignette met le focus sur lui, et Contents
-//   montre son arbre. Un volume est sélectionné si une rubrique au moins l'est.
-// - Cocher une rubrique prend tout son sous-arbre : les cases de ses descendants sont couvertes
-//   (cochées, en pâle) ; la décocher les libère, décochées. Cliquer une case couverte ne garde
-//   qu'elle : la rubrique qui la couvre est décochée. Une rubrique ou un volume dont une partie
-//   seulement est cochée est semi-sélectionné (tiret) ; un clic le coche entier. Règles des
-//   coches : lib/facets/selection.ts.
-// - Volumes chargés à la demande (components/Explorer.tsx) : le volume regardé est l'état de la
-//   page, qui le charge ; Contents attend le sien. La coche ronde d'un volume pas encore chargé
-//   est inactive (ses rubriques ne sont pas connues).
-// - Les cases font partie du formulaire de la requête (#query, components/SearchForm.tsx) par
-//   l'attribut `form`. Une case couverte, sans nom, n'est pas envoyée : seules partent les
-//   rubriques cochées les plus hautes. Cases, coches et boutons de Radix Themes : une case Radix
-//   est un bouton, avec une case cachée pour le formulaire ; sans script, les facettes ne
-//   servent pas.
-// - Filtrer à la coche : chaque coche s'applique aussitôt. Les coches sont l'état de ce
-//   composant, lu une fois depuis l'URL ; l'URL les suit (l'entrée de l'historique est
-//   remplacée, sans requête au serveur), après un court délai qui regroupe les coches
-//   rapprochées. La vue est estompée pendant son calcul. Le volume regardé et l'arbre déplié
-//   restent.
-// - Contents est local au volume regardé (facettes hiérarchiques) : All coche tout ce volume,
-//   Clear le décoche ; les autres volumes ne changent pas.
+// Facettes de structure (docs/composants/facettes.md) : panneaux Volumes et Contents, en
+// colonnes de Miller ; règles des coches dans lib/facets/selection.ts.
+// - Les coches sont l'état de ce composant, lu une fois depuis l'URL : l'URL les suit après un
+//   court délai (entrée de l'historique remplacée) ; la vue est estompée pendant son calcul.
+// - Le volume regardé est l'état de la page (components/Explorer.tsx), qui le charge : Contents
+//   attend le sien, et la coche ronde d'un volume pas encore chargé est inactive.
+// - Les cases font partie du formulaire de la requête (components/SearchForm.tsx) par
+//   l'attribut `form` : seules partent les rubriques cochées les plus hautes (une case couverte
+//   n'a pas de nom).
 
 import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
@@ -157,7 +141,6 @@ export function Facets({
             const name = `${year} ${v.title ?? v.id}`;
             return (
               <div key={v.id} className="volume-card" data-focus={v.id === focus || undefined}>
-                {/* la vignette met le focus sur le volume : son arbre dans Contents */}
                 <Card asChild variant="classic" className="volume-thumb">
                   <button
                     type="button"
@@ -172,7 +155,6 @@ export function Facets({
                     <span className="volume-name">{v.title ?? v.id}</span>
                   </button>
                 </Card>
-                {/* la coche ronde, sur la vignette : sélectionne ou désélectionne tout le volume */}
                 <Checkbox
                   size="3"
                   className="volume-box"

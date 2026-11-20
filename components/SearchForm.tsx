@@ -1,12 +1,10 @@
 "use client";
 
-// Formulaire de la requête (scénarios 1 et 2 de docs/SCENARIOS.md) : le champ de recherche, et
-// les cases des facettes qui s'y rattachent par l'attribut `form` (components/Facets.tsx).
-// Entrée envoie le texte et les rubriques cochées ; sans rubrique cochée, la recherche porte sur
-// tout l'annuaire. L'envoi, comme le lien qui efface la recherche, change l'URL de la page sans
-// la recharger (nouvelle entrée de l'historique, comme un envoi natif) : la vue la suit.
-// Indépendant de la vue : toute vue (Liste, plus tard Carte, Page…) peut le poser au-dessus
-// d'elle.
+// Formulaire de la requête (docs/SCENARIOS.md) : le champ de recherche, et les cases des
+// facettes qui s'y rattachent par l'attribut `form` (components/Facets.tsx). Entrée envoie le
+// texte et les rubriques cochées ; sans rubrique cochée, la recherche porte sur tout l'annuaire.
+// L'envoi, comme le lien qui efface la recherche, ajoute une entrée à l'historique sans recharger
+// la page, comme un envoi natif.
 
 import { IconButton, TextField } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
@@ -38,8 +36,7 @@ export function SearchForm({ query }: { query: Query }) {
         <label htmlFor="search-text" className="visually-hidden">
           Search text
         </label>
-        {/* champ de Radix Themes, loupe à gauche ; clé : un champ neuf à chaque texte, même quand
-            une navigation garde la page */}
+        {/* clé : un champ neuf à chaque texte, même quand une navigation garde la page */}
         <TextField.Root
           key={text}
           id="search-text"
@@ -53,8 +50,6 @@ export function SearchForm({ query }: { query: Query }) {
           <TextField.Slot>
             <SearchIcon />
           </TextField.Slot>
-          {/* effacer la recherche : la même sélection sans le texte (sans rubrique : rien à
-              afficher) */}
           {text !== undefined && (
             <TextField.Slot>
               <IconButton asChild size="1" variant="ghost" color="gray">

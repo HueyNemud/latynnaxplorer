@@ -1,10 +1,10 @@
 "use client";
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous le champ de
-// recherche. Tout se résout dans le navigateur : l'index des volumes est lu à l'arrivée, chaque
-// volume est téléchargé quand on en a besoin (lib/query/explore.ts, neededVolumes), puis la
-// requête de l'URL est résolue sur les volumes chargés. Facettes et recherche changent l'URL sans
-// recharger la page ; Next garde useSearchParams à jour.
+// recherche. L'index des volumes est lu à l'arrivée, chaque volume téléchargé quand la requête
+// en a besoin (neededVolumes), puis la requête de l'URL est résolue sur les volumes chargés.
+// Facettes et recherche changent l'URL sans recharger la page ; Next garde useSearchParams à
+// jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";

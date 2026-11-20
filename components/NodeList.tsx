@@ -1,9 +1,8 @@
 // Vue Liste (docs/composants/noeud-liste.md) : la sélection dans ses rubriques, à plat. Toute
 // section, contexte compris, est un groupe marqué par son guide de niveau ; tout nœud est le
-// même élément, une ligne (chevron, texte | page) qui déplie sa fiche juste dessous, par
-// <details> natif. La fiche n'est rendue qu'au premier dépliage (components/NodeDetails.tsx),
-// sauf pour une sélection d'un seul nœud, dépliée d'emblée. La Liste ne change pas la
-// sélection : seules les facettes le font.
+// même élément, une ligne qui déplie sa fiche juste dessous (<details> natif). La fiche n'est
+// rendue qu'au premier dépliage (components/NodeDetails.tsx), sauf pour une sélection d'un seul
+// nœud, dépliée d'emblée.
 
 import type { CSSProperties, ReactNode } from "react";
 import type { Detail, SubgraphNode } from "../lib/query/types.ts";
@@ -15,7 +14,7 @@ import { PrintedText } from "./PrintedText.tsx";
 /**
  * `nodes` : la sélection et son contexte (rubriques ancêtres), volume après volume, chacun dans
  * l'ordre de lecture ; `opened` : le nœud montré déplié (une sélection d'un seul nœud) ;
- * `detail` : la fiche d'un nœud (components/NodeDetails.tsx).
+ * `detail` : la fiche d'un nœud.
  */
 export function NodeList({
   nodes: shown,

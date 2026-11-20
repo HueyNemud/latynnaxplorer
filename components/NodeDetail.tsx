@@ -1,8 +1,6 @@
-// Fiche d'un nœud dans la vue Liste : densité détaillée, en clé / valeur (DataList de Radix
-// Themes) — texte, champs, métadonnées —, puis le fil d'Ariane, en texte (seules les facettes
-// changent la sélection) ; dépliée sous sa ligne (docs/composants/noeud-liste.md). Rendue par le
-// serveur pour une sélection d'un seul nœud, par le navigateur au dépliage sinon
-// (components/NodeDetails.tsx).
+// Fiche d'un nœud, dépliée sous sa ligne dans la vue Liste (docs/composants/noeud-liste.md) :
+// texte, champs et métadonnées en clé / valeur (DataList de Radix), puis le fil d'Ariane, en
+// texte (seules les facettes changent la sélection).
 
 import { DataList } from "@radix-ui/themes";
 import type { NodeKind, SpanLabel, SubgraphNode } from "../lib/query/types.ts";
@@ -44,9 +42,8 @@ export function NodeDetail({
       </DataList.Root>
       {node.spans.length > 0 && (
         <DataList.Root size="3" className="detail-group">
-          {/* un champ par empan, dans l'ordre du texte (répétés pour un groupe à accolade) */}
+          {/* un champ par empan (répétés pour un groupe à accolade) */}
           {node.spans.map((span, i) => (
-            // empans sans identité propre, dans l'ordre du texte : la position suffit
             // biome-ignore lint/suspicious/noArrayIndexKey: liste statique
             <DataList.Item key={i}>
               <DataList.Label minWidth={LABEL_WIDTH}>{FIELD_LABELS[span.label]}</DataList.Label>
