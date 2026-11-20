@@ -22,14 +22,7 @@ dépendances, choix discutables).
 | 9, nettoyage du code | #19 | code et feuille de style remis au propre |
 | 10, facettes et Liste d'accord | #20 | sélection vide sans entrée par défaut |
 | 11, passage à Radix Themes | #21 | interface Radix, fiche au dépliage, filtre à la coche |
-| Essai, données en local | #22 | `/essai` : un fichier par volume, requêtes résolues dans le navigateur |
-
-## Sprint 12 : données en local
-
-But : le site entier sur des fichiers de volume, résolus dans le navigateur,
-sans base ni rendu serveur de la sélection ; format du fichier compact et
-mis en cache. L'état actuel est d'abord étiqueté `archive/postgresql` sur
-`main`. Contenu à proposer et valider au début du sprint.
+| 12, données en local | #22, #23 | site statique, un fichier par volume, volumes à la demande |
 
 ## Sprint 13 : exporter
 
@@ -39,10 +32,9 @@ début du sprint.
 
 ## À décider au moment voulu : format de l'API JSON
 
-Dès qu'une API HTTP publique exposera les sous-graphes : décrire ses
-réponses selon une pratique standard plutôt qu'un formalisme ad hoc
-(OpenAPI ou plus récent, à comparer alors). La route interne de la fiche
-(`/api/detail/<uuid>`) n'en fait pas partie.
+Dès qu'une API publique exposera les sous-graphes : décrire ses réponses
+selon une pratique standard plutôt qu'un formalisme ad hoc (OpenAPI ou plus
+récent, à comparer alors).
 
 ## Hors sprint : demandes à numrev
 

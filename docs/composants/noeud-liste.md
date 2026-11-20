@@ -22,9 +22,8 @@ La Liste ne change pas la sélection : seules les facettes le font.
   (chevron, texte | page) qui déplie sa vue détaillée juste dessous.
 - **Deux règles d'état**, communes à tous : survol, ouvert.
 - Les types ne se distinguent **que par leur texte** (titre, champs, gris).
-- **Natif d'abord** : dépliage par `<details>` / `<summary>`, sans
-  JavaScript ; la fiche, elle, est demandée au serveur au premier dépliage
-  (sans script, une ligne dépliée reste vide).
+- **Natif d'abord** : dépliage par `<details>` / `<summary>` ; la fiche
+  n'est rendue qu'au premier dépliage.
 
 ## Ce que les données imposent
 
@@ -138,10 +137,9 @@ tenir dans la largeur, sauf le dernier, la section la plus proche, toujours
 entier. Un peu d'air sous elle (`--space-2`) avant la ligne
 suivante ; aucun au-dessus, pour que la ligne cliquée ne bouge pas.
 
-**Fiche au dépliage** : une ligne repliée n'a qu'une case vide ;
-au premier dépliage, la fiche est demandée (`GET /api/detail/<uuid>`, interne
-au site), un indicateur de chargement (Spinner) en attendant, puis gardée.
-Une sélection d'un seul nœud a sa fiche rendue par le serveur, dépliée.
+**Fiche au dépliage** : une ligne repliée n'a qu'une case vide ; au premier
+dépliage, la fiche y est rendue (lue dans le volume chargé), puis gardée.
+Une sélection d'un seul nœud montre sa fiche dépliée d'emblée.
 
 ## États
 
