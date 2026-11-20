@@ -90,3 +90,9 @@ historiens, à partir de l'export.
 - **Mesurer** : effectifs par rubrique, rue ou période.
 - **Relier** des individus : associés, renvois « *Voyez* », occupants d'une
   même adresse.
+
+## Fiches de composant
+
+- `docs/composants/noeud-liste.md` et `facettes.md` (près de 300 lignes
+  chacune) n'ont pas été relues lors de l'audit du code : les resserrer de
+  la même façon, sur un état présent sans redites avec le code.
