@@ -78,7 +78,7 @@ function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; 
               texte de la ligne, pour distinguer les liens entre eux */}
           <Link
             className="own-page"
-            href={`/?${serializeQuery({ subtree: node.id })}`}
+            href={`/?${serializeQuery({ subtree: [node.id] })}`}
             aria-label="Open on its own page"
             aria-describedby={`text-${node.id}`}
             title="Open on its own page"

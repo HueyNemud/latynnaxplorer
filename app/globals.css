@@ -39,6 +39,17 @@
   --guide-gap: 0.25rem;
   --ball: 6px;
   --icon: 0.875rem;
+
+  /* facettes (docs/composants/facettes.md) : survol d'une bande ou d'une vignette, un cran sous
+     --color-open ; largeurs des panneaux (contenu, hors bande), de la bande, d'une carte de
+     volume ; coche ronde ; retrait d'un niveau de l'arbre */
+  --color-press: #eef1f4;
+  --panel-volumes: 9.5rem;
+  --panel-contents: 22rem;
+  --strip-width: 1.5rem;
+  --card-width: 8rem;
+  --select-size: 1.5rem;
+  --tree-indent: 1.25rem;
 }
 
 body {
@@ -53,6 +64,12 @@ main {
   max-width: 64rem;
   margin: 0 auto;
   padding: var(--space-4) var(--space-3);
+}
+
+/* page d'exploration : toute la fenêtre, panneaux collés à gauche, vue centrée à la même largeur */
+main:has(> .explorer) {
+  max-width: none;
+  padding: 0;
 }
 
 a {
@@ -481,4 +498,259 @@ a {
   font-size: var(--size-small);
   color: var(--color-muted);
   font-variant-numeric: tabular-nums;
+}
+
+/* ── Facettes de structure (components/Facets.tsx, docs/composants/facettes.md) ── */
+
+/* Colonnes de Miller : Volumes | Contents | vue. Les panneaux sont des colonnes de la grille (leur
+   conteneur sans boîte) ; chacun tient la hauteur de la fenêtre et défile à part, la vue défile
+   avec la page. */
+.explorer {
+  display: grid;
+  grid-template-columns: auto auto minmax(0, 1fr);
+  align-items: start;
+}
+
+.facets {
+  display: contents;
+}
+
+/* la vue : centrée dans la place que laissent les panneaux, à la largeur du site */
+.view {
+  box-sizing: border-box;
+  justify-self: center;
+  width: 100%;
+  min-width: 0;
+  max-width: calc(64rem + 2 * var(--space-4));
+  padding: var(--space-3) var(--space-4);
+}
+
+/* Panneau : son contenu, puis à droite la bande qui le replie ; replié, il ne reste que la bande */
+.panel {
+  position: sticky;
+  top: 0;
+  display: flex;
+  height: 100vh;
+}
+
+.panel-body {
+  box-sizing: border-box;
+  overflow-y: auto;
+  padding: var(--space-3) var(--space-2);
+}
+
+.panel-volumes {
+  width: var(--panel-volumes);
+}
+
+.panel-contents {
+  width: var(--panel-contents);
+  padding-bottom: 0;
+}
+
+/* bande de repli : chevron, puis titre écrit de bas en haut ; sépare aussi les colonnes */
+.panel-strip {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  width: var(--strip-width);
+  padding: var(--space-3) 0;
+  font: inherit;
+  font-size: var(--size-small);
+  color: var(--color-muted);
+  background: var(--color-open);
+  border: 0;
+  cursor: pointer;
+}
+
+.panel-strip:hover {
+  color: var(--color-text);
+  background: var(--color-press);
+}
+
+.panel-strip-title {
+  writing-mode: vertical-rl;
+  rotate: 180deg;
+}
+
+/* Carte de volume */
+.volume-cards {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.volume-card {
+  position: relative;
+  width: var(--card-width);
+}
+
+/* vignette provisoire : un aplat, l'année et le nom du volume dessus ; un clic met le focus sur
+   le volume */
+.volume-thumb {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  padding: var(--space-2);
+  font: inherit;
+  color: inherit;
+  border: 0;
+  border-radius: var(--radius-card);
+  background: var(--color-open);
+  box-shadow: var(--shadow-raised);
+  cursor: pointer;
+}
+
+.volume-thumb:hover {
+  background: var(--color-press);
+}
+
+.volume-year {
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.volume-name {
+  font-size: var(--size-small);
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+/* focus : vignette cernée, encoche pointée vers Contents, qui montre son arbre */
+.volume-card[data-focus] .volume-thumb {
+  outline: 2px solid var(--color-text);
+  outline-offset: 3px;
+}
+
+.volume-card[data-focus]::after {
+  content: "";
+  position: absolute;
+  top: calc(50% - 0.5rem);
+  right: -0.75rem;
+  border: 0.5rem solid transparent;
+  border-right-width: 0;
+  border-left-color: var(--color-text);
+}
+
+/* sélection : une grosse coche ronde sur la vignette, case native redessinée */
+.volume-box {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+  appearance: none;
+  width: var(--select-size);
+  height: var(--select-size);
+  margin: 0;
+  border: 2px solid var(--color-muted);
+  border-radius: 50%;
+  background: var(--color-background) center / 1rem no-repeat;
+  cursor: pointer;
+}
+
+.volume-box:hover {
+  border-color: var(--color-text);
+}
+
+.volume-box:checked {
+  border-color: var(--color-text);
+  background-color: var(--color-text);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m3.5 8.5 3 3 6-7' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+}
+
+/* Arbre des rubriques (Contents) : simple retrait par niveau, sans guides */
+.tree {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tree .tree {
+  padding-left: var(--tree-indent);
+}
+
+/* chevron (dans la marge gauche) | case | intitulé | décompte */
+.tree-line {
+  position: relative;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  gap: var(--space-2);
+  align-items: baseline;
+  padding: 0.0625rem var(--line-pad) 0.0625rem calc(var(--line-pad) + var(--icon) + 0.125rem);
+  border-radius: var(--radius-card);
+  list-style: none;
+  cursor: pointer;
+}
+
+.tree-line::-webkit-details-marker {
+  display: none;
+}
+
+.tree-line:hover {
+  background: var(--color-open);
+}
+
+/* chevron de l'arbre : celui de la Liste, dans la marge gauche de la ligne */
+.tree-chevron {
+  position: absolute;
+  left: var(--line-pad);
+  top: calc(0.0625rem + (1lh - var(--icon)) / 2);
+  color: var(--color-muted);
+}
+
+details[open] > .tree-line > .tree-chevron {
+  transform: rotate(90deg);
+}
+
+.tree-box {
+  margin: 0;
+  accent-color: var(--color-text);
+  translate: 0 0.125rem;
+}
+
+.tree-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-count {
+  font-size: var(--size-small);
+  color: var(--color-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Appliquer : en bas de Contents, fixé, sur toute sa largeur ; seulement s'il y a des
+   changements à appliquer. Un trait autour, sans fond ; foncé au survol. */
+.apply {
+  position: sticky;
+  bottom: 0;
+  padding: var(--space-2) 0 var(--space-3);
+  background: var(--color-background);
+}
+
+.apply[hidden] {
+  display: none;
+}
+
+.apply-button {
+  width: 100%;
+  padding: 0.25rem var(--space-3);
+  font: inherit;
+  font-size: var(--size-small);
+  color: var(--color-text);
+  background: var(--color-background);
+  border: 1px solid var(--color-text);
+  border-radius: var(--radius-card);
+  cursor: pointer;
+}
+
+.apply-button:hover {
+  color: var(--color-background);
+  background: var(--color-text);
 }

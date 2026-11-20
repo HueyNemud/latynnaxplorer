@@ -115,8 +115,9 @@ Choix validés :
 - `docs/demandes/numrev_intitules_titres.md` : deux intitulés de titres
   gardent des marques Markdown (`##` au milieu, `\` final).
 - `docs/demandes/numrev_noeud_racine.md` : un vrai nœud racine par volume.
-  Sans lui, 1807 a 133 racines : on ne peut ni ouvrir le volume entier, ni
-  (plus tard) le choisir dans une facette.
+  Sans lui, 1807 a 133 racines : on ne peut pas ouvrir le volume entier,
+  et ses 90 éléments hors champ à la racine ne se sélectionnent que par la
+  recherche (les facettes n'en ont plus besoin pour le reste).
 
 ## Sprint 7 : sélectionner par le contenu (PR #17)
 
@@ -159,25 +160,53 @@ Choix validés :
   (sprint 8).
 - Surlignage des correspondances hors sprint (`docs/IDEES.md`).
 
-## Sprint 8 : facettes à plusieurs niveaux
+## Sprint 8 : facettes de structure (PR #18)
 
-But : restreindre la sélection par des facettes emboîtées, d'abord les
-volumes (un seul pour l'instant), puis les rubriques au sein des volumes ;
-la recherche par texte s'applique dans ce périmètre (`subtree` + `text`
-déjà valide dans l'URL). Prioritaire sur l'export.
+Réalisé : concept (`docs/DESIGN.md`, « Sélection et focus » et
+« Facettes »), maquette revue à l'écran sous Chromium et Firefox, fiche de
+composant (`docs/composants/facettes.md`) ; `subtree` répétable (union des
+sous-arbres), volumes et rubriques avec leurs décomptes
+(`lib/query/facets.ts`) ; panneaux Volumes et Contents
+(`components/Facets.tsx`) ; le champ de recherche et les cases forment un
+seul formulaire. Détail dans `docs/JOURNAL.md`.
 
-- Gros sprint, qui commence par une séance de design comme pour la vue
-  Liste (sprints 5 et 6) : concept dans `docs/DESIGN.md` (facettes comme
-  critères de sélection, place dans l'interface, lien avec les vues),
-  maquette revue à l'écran sous Chromium et Firefox, fiche de composant ;
-  puis implémentation.
-- À discuter au début du sprint : critères et paramètres d'URL (volume,
-  plusieurs rubriques), union dans une facette et conjonction entre
-  facettes, décomptes par valeur, `nuqs` si les facettes changent la
-  requête sans recharger la page (`docs/IDEES.md`), lien avec la demande
-  à numrev d'un vrai nœud racine par volume.
+But : restreindre la sélection par des facettes emboîtées, volumes puis
+rubriques ; la recherche par texte s'applique dans ce périmètre.
 
-## Sprint 9 : exporter
+Choix validés :
+
+- Sélection et focus distingués dans toute l'application : une case pour
+  sélectionner, un clic sur l'objet pour le regarder.
+- Colonnes de Miller collées à gauche (Volumes | Contents | vue), chacune
+  repliable par une bande sur son côté droit, liées par niveau ; vue
+  centrée dans la place restante. Carrousel de volumes écarté.
+- Carte de volume : coche ronde sur la vignette (tout le volume, ou rien),
+  clic sur la vignette pour le focus (cernée, encoche vers Contents) ;
+  année et nom dans la vignette, rien dessous. Contents : arbre du volume
+  au focus, casse imprimée, retrait simple, décomptes.
+- Rubrique cochée = tout son sous-arbre, descendants couverts (grisés) ;
+  volume sélectionné si une rubrique au moins l'est ; pas de paramètre
+  `volume`. Nœuds hors de toute rubrique : par la recherche seulement.
+- Un seul formulaire GET : la recherche porte sur les rubriques cochées
+  (remplace la décision du sprint 7) ; « Apply selection » en bas de
+  Contents, seulement s'il y a des changements ; sans `nuqs`.
+- Arrivée inchangée (l'entrée de démonstration) ; arbre déplié jusqu'aux
+  rubriques cochées.
+- Reportés (`docs/IDEES.md`) : écran étroit, poids de l'arbre.
+
+## Sprint 9 : nettoyage du code
+
+But : après huit sprints, remettre le code au propre avant d'ajouter des
+fonctionnalités, sans rien changer à ce que l'on voit.
+
+- Contenu exact proposé et validé au début du sprint, à partir d'un état
+  des lieux : code mort ou dupliqué, valeurs écrites en dur au lieu des
+  jetons (`app/globals.css`), découpage des composants, commentaires et
+  docs en retard sur le code, tests qui manquent.
+- Comportement et rendu inchangés : vérifiés sous Chromium et Firefox
+  avant et après.
+
+## Sprint 10 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (section suivante).

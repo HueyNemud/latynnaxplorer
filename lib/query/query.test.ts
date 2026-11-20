@@ -1,21 +1,28 @@
 import { describe, expect, it } from "vitest";
-import { parseQuery, QueryError, serializeQuery } from "./query.ts";
+import { parseQuery, type Query, QueryError, serializeQuery } from "./query.ts";
 
 const ID = "10000000-0000-0000-0000-000000000002";
+const ID2 = "20000000-0000-0000-0000-00000000000a";
 
 describe("parseQuery", () => {
   it("lit le nœud du sous-arbre", () => {
-    expect(parseQuery(new URLSearchParams(`subtree=${ID}`))).toEqual({ subtree: ID });
+    expect(parseQuery(new URLSearchParams(`subtree=${ID}`))).toEqual({ subtree: [ID] });
   });
 
   it("met l'uuid en minuscules", () => {
     expect(parseQuery(new URLSearchParams("subtree=ABCDEF00-0000-0000-0000-00000000000A"))).toEqual(
-      { subtree: "abcdef00-0000-0000-0000-00000000000a" },
+      { subtree: ["abcdef00-0000-0000-0000-00000000000a"] },
     );
   });
 
+  it("lit plusieurs sous-arbres, dans l'ordre, sans doublon", () => {
+    expect(
+      parseQuery(new URLSearchParams(`subtree=${ID2}&subtree=${ID}&subtree=${ID2.toUpperCase()}`)),
+    ).toEqual({ subtree: [ID2, ID] });
+  });
+
   it("ignore les paramètres inconnus", () => {
-    expect(parseQuery(new URLSearchParams(`view=list&subtree=${ID}`))).toEqual({ subtree: ID });
+    expect(parseQuery(new URLSearchParams(`view=list&subtree=${ID}`))).toEqual({ subtree: [ID] });
   });
 
   it("lit le texte cherché, blancs réduits", () => {
@@ -26,7 +33,7 @@ describe("parseQuery", () => {
 
   it("combine les critères", () => {
     expect(parseQuery(new URLSearchParams(`subtree=${ID}&text=paix`))).toEqual({
-      subtree: ID,
+      subtree: [ID],
       text: "paix",
     });
   });
@@ -35,7 +42,7 @@ describe("parseQuery", () => {
     ["vide", "text="],
     ["blanc", "text=%20%20"],
   ])("ignore un texte %s", (_, search) => {
-    expect(parseQuery(new URLSearchParams(`subtree=${ID}&${search}`))).toEqual({ subtree: ID });
+    expect(parseQuery(new URLSearchParams(`subtree=${ID}&${search}`))).toEqual({ subtree: [ID] });
   });
 
   it.each([
@@ -47,7 +54,7 @@ describe("parseQuery", () => {
 
   it.each([
     ["vide", "subtree="],
-    ["répété", `subtree=${ID}&subtree=${ID}`],
+    ["mal formé parmi d'autres", `subtree=${ID}&subtree=x`],
     ["mal formé", "subtree=10000000-0000-0000-0000"],
     ["avec des caractères en trop", `subtree=${ID}x`],
     ["texte répété", "text=a&text=b"],
@@ -58,13 +65,14 @@ describe("parseQuery", () => {
 
 describe("serializeQuery", () => {
   it("écrit la requête en paramètres d'URL", () => {
-    expect(serializeQuery({ subtree: ID }).toString()).toBe(`subtree=${ID}`);
+    expect(serializeQuery({ subtree: [ID, ID2] }).toString()).toBe(`subtree=${ID}&subtree=${ID2}`);
   });
 
-  it.each([
-    { subtree: ID },
+  it.each<Query>([
+    { subtree: [ID] },
+    { subtree: [ID, ID2] },
     { text: "rue de la Paix, 12 % _ \\" },
-    { subtree: ID, text: "paix" },
+    { subtree: [ID], text: "paix" },
     {},
   ])("est relue à l'identique par parseQuery : %o", (query) => {
     expect(parseQuery(serializeQuery(query))).toEqual(query);

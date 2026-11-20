@@ -1,5 +1,61 @@
 # Journal de développement
 
+## 2026-11-20 — Sprint 8 : facettes de structure
+
+**Fait**
+- PR #17 (sprint 7) fusionnée ; branche `feat/facettes`. Séance de design
+  d'abord, comme aux sprints 5 et 6 : concept, maquette (`app/maquette/`,
+  non versionnée, supprimée à l'implémentation), fiche de composant
+  (`docs/composants/facettes.md`), puis requête et implémentation.
+- `docs/DESIGN.md` : section « Sélection et focus » (distinction valable
+  dans toute l'application) et section « Facettes ».
+- Requête : `subtree` répétable, la sélection est l'union des sous-arbres
+  (`UNION`, chaque nœud une fois même emboîtés) ; un uuid inconnu reste une
+  erreur parmi des uuid connus. `lib/query/facets.ts` : volumes, arbre des
+  rubriques et nombre d'entrées de chaque sous-arbre, filtré par le texte
+  cherché. Condition « contient le texte » partagée (`contains`).
+- `components/Facets.tsx` : panneaux Volumes et Contents en colonnes de
+  Miller, collés à gauche, repliables par une bande à droite et liés par
+  niveau ; carte de volume (coche ronde = sélection, vignette = focus,
+  cernée avec une encoche) ; arbre du volume au focus, cases qui couvrent
+  leurs descendants, décomptes ; « Apply selection » en bas de Contents,
+  seulement s'il y a des changements. Vue centrée dans la place restante.
+- `SearchForm` devient le formulaire de la requête (`#query`) : les cases
+  s'y rattachent par l'attribut `form` ; une case couverte, désactivée,
+  n'est pas envoyée. Effacer la recherche garde les rubriques.
+- Vérifié sous Chromium et Firefox (états, envoi, retour de l'URL) ; arbre
+  d'accessibilité de Chromium : bandes `expanded`, vignette `pressed`,
+  cases nommées, lignes dépliables nommées par leur intitulé seul.
+- Mesures sur 1807 : union des 43 rubriques de premier niveau
+  (22 068 nœuds) 11 ms en SQL ; décomptes 12 ms sans texte, 44 ms pour
+  « rue ». Page par défaut en production : 415 Ko (69 Ko compressés), dont
+  272 Ko de HTML pour l'arbre et environ 119 Ko de données pour le
+  composant client ; 53 ms.
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (20 novembre) : sélection et focus, union des
+  sous-arbres, recherche dans les rubriques cochées, facettes.
+- Le volume n'est pas un critère : il est sélectionné si une rubrique au
+  moins l'est ; les nœuds hors de toute rubrique (90 dans 1807) ne se
+  sélectionnent que par la recherche. Le nœud racine demandé à numrev ne
+  bloque plus rien.
+
+**Pièges relevés**
+- Une constante exportée d'un module `"use client"` devient une référence
+  client côté serveur : l'identifiant du formulaire est exporté par
+  `SearchForm.tsx`, module serveur.
+- Une case dans un `<summary>` donne au `summary` un nom à rallonge
+  (intitulé deux fois et décompte) : `aria-labelledby` vers l'intitulé.
+- Biome (`noDescendingSpecificity`) : le chevron de l'arbre a sa propre
+  classe plutôt que de surcharger `.chevron` de la Liste.
+- Capture headless : `--window-size` ne suffit pas, il faut
+  `Emulation.setDeviceMetricsOverride`.
+
+**Questions ouvertes**
+- Écran étroit : les panneaux ouverts prennent 34,5 rem.
+- Poids de l'arbre sur les petites sélections (voir `docs/IDEES.md`).
+- Lecteur d'écran réel : case dans un `summary`, case couverte.
+
 ## 2026-11-19 — Sprint 7 : sélectionner par le contenu
 
 **Fait**

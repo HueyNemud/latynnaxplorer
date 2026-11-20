@@ -61,7 +61,7 @@ export function NodeDetail({ node, context }: { node: SubgraphNode; context: Sub
           <ol className="breadcrumb">
             {context.map((section) => (
               <li key={section.id}>
-                <Link href={`/?${serializeQuery({ subtree: section.id })}`}>
+                <Link href={`/?${serializeQuery({ subtree: [section.id] })}`}>
                   <PrintedText text={section.text} />
                 </Link>
               </li>
