@@ -6,21 +6,22 @@
 
 /* Couleurs, espacements, rayons, ombres, tailles de texte : ceux du thème Radix (app/layout.tsx),
    sur l'échelle de gris du thème :
-   - --gray-12 texte, --gray-11 texte atténué (≥ 4,5:1 sur blanc, sur --gray-2 et sur les fonds
-     pastel) ;
+   - --gray-12 texte, --gray-11 texte atténué (≥ 4,5:1 sur blanc, sur --gray-2 et sur les
+     teintes des champs) ;
    - --gray-2 survol et élément ouvert, --gray-3 survol d'une surface déjà sur --gray-2 (bande,
      vignette) ;
    - guides de niveau : --gray-11 pour celui de la section la plus proche, --gray-7 pour les
      autres (estompés) ; --gray-7 aussi pour un trait inactif ;
    - --radius-4 cartes et lignes, --radius-2 petits éléments (bouton d'icône, coude du guide) ;
      --shadow-4 surface en relief ; --font-size-2 texte petit.
-   Ici, seulement ce que Radix n'a pas : nos teintes, notre police, notre mise en page. Définis sur
+   Ici, seulement ce que Radix n'a pas : nos noms de teintes, notre police, notre mise en page. Définis sur
    le thème, où les variables de Radix existent. */
 .radix-themes {
-  /* champs : palette néon de colorhunt.co (#63c8ff, #4dffbe, #fff83f) adoucie à 45 % dans du blanc */
-  --tint-subj: #b9e6ff;
-  --tint-desc: #afffe2;
-  --tint-addr: #fffca9;
+  /* champs : teintes transparentes de Radix (échelles alpha), qui se fondent dans le fond d'une
+     ligne survolée ou ouverte ; choisies sur une planche (sprint 11) */
+  --tint-subj: var(--cyan-a4);
+  --tint-desc: var(--teal-a4);
+  --tint-addr: var(--yellow-a4);
 
   /* Fira Sans chargée par next/font (app/layout.tsx), pour ses vraies petites capitales */
   --font:
