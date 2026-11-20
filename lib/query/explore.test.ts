@@ -1,15 +1,13 @@
 // Deux volumes : la fixture (TEST, 1807) et sa copie (AUTRE, 1820), aux identifiants préfixés
-// de « autre- ». Fixture : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } } (scripts/fixture.ts).
+// de « autre- ».
 
 import { describe, expect, it } from "vitest";
-import { E1, E2, fixture, O1, T1, T2 } from "../../scripts/fixture.ts";
-import { validateVolume } from "../../scripts/validate.ts";
-import { toVolumeFile } from "../../scripts/volume-file.ts";
+import { E1, E2, fixtureFile, O1, T1, T2 } from "../../scripts/fixture.ts";
 import { detail, neededVolumes, view, volumeOf } from "./explore.ts";
 import { NodeNotFoundError } from "./resolve.ts";
 import { indexVolume, type VolumeFile } from "./volume.ts";
 
-const file = toVolumeFile(validateVolume(fixture()));
+const file = fixtureFile();
 const other = (id: string) => `autre-${id}`;
 const copy: VolumeFile = {
   volume: { id: "AUTRE", title: null, temporalStart: "1820-01-01" },

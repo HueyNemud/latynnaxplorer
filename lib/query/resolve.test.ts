@@ -1,16 +1,11 @@
-// Scénarios 1 et 2 (docs/SCENARIOS.md) sur la fixture : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } }, dans
-// l'ordre de lecture T1, E3, T2, E1, E2, O1 (scripts/fixture.ts). E1 a deux empans, E2 est sur
-// deux pages, E3 n'a pas d'ancre.
+// Scénarios 1 et 2 (docs/SCENARIOS.md) sur la fixture.
 
 import { describe, expect, it } from "vitest";
-import { E1, E2, E3, fixture, O1, T1, T2 } from "../../scripts/fixture.ts";
-import { validateVolume } from "../../scripts/validate.ts";
-import { toVolumeFile } from "../../scripts/volume-file.ts";
+import { E1, E2, E3, fixtureVolume, O1, T1, T2 } from "../../scripts/fixture.ts";
 import type { Query } from "./query.ts";
 import { context as contextOf, inducedArcs, resolve, selection } from "./resolve.ts";
-import { indexVolume } from "./volume.ts";
 
-const volume = indexVolume(toVolumeFile(validateVolume(fixture())));
+const volume = fixtureVolume();
 const context = (query: Query) => contextOf(volume, selection(volume, query));
 
 describe("resolve, sous-arbre", () => {
