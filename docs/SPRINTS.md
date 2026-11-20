@@ -257,7 +257,7 @@ Choix validés :
   sélection.
 - Vérifié sous Chromium et Firefox.
 
-## Sprint 11 : passage à Radix Themes (PR à venir)
+## Sprint 11 : passage à Radix Themes (PR #21)
 
 Réalisé : thème Radix (iris sur gris mauve) et ses jetons ; contrôles,
 fiche (DataList), vignette (Card) et vue vide en composants Radix ; une
