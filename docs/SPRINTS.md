@@ -214,7 +214,31 @@ Choix validés :
 - `AGENTS.md` de `next dev` versionné ; arcs du sous-graphe gardés.
 - Reporté (`docs/IDEES.md`) : tests de rendu des composants.
 
-## Sprint 10 : exporter
+## Sprint 10 : facettes et Liste, des interactions sans accroc
+
+But : que les facettes et la Liste disent toujours la même chose, et que
+cocher suffise à filtrer.
+
+- **Filtrer à la coche** : cocher ou décocher une rubrique ou un volume
+  applique la sélection aussitôt, sans le bouton « Apply selection ».
+  À régler : rythme des requêtes quand on coche plusieurs cases de suite,
+  focus et dépliage de l'arbre gardés d'une sélection à l'autre,
+  historique du navigateur (une entrée par coche ou non), fonctionnement
+  sans script.
+- **Facettes toujours conformes à l'URL** : aujourd'hui, cocher une
+  sous-rubrique puis suivre dans la Liste « Open on its own page » vers la
+  rubrique mère (ou un lien du fil d'Ariane) montre la rubrique mère dans
+  la Liste, mais les facettes gardent l'ancienne coche. Cause probable :
+  la navigation de Next garde le composant client, dont l'état n'est lu
+  qu'au premier rendu. Toute navigation (lien, fil d'Ariane, recherche,
+  bouton Précédent) doit redonner aux facettes les coches de l'URL.
+- À trancher aussi : ce que montrent les facettes quand la sélection est
+  un nœud qui n'est pas une rubrique (une entrée ouverte à part : rien
+  n'est coché aujourd'hui).
+- Contenu exact proposé et validé au début du sprint ; vérifié sous
+  Chromium et Firefox.
+
+## Sprint 11 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (section suivante).
