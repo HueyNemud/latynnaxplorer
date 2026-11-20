@@ -6,7 +6,7 @@
 import Link from "next/link";
 import type { CSSProperties, ReactNode } from "react";
 import { serializeQuery } from "../lib/query/query.ts";
-import type { SubgraphNode } from "../lib/query/resolve.ts";
+import type { SubgraphNode } from "../lib/query/types.ts";
 import { NodeDetail } from "./NodeDetail.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 

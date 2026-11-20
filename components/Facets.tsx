@@ -12,7 +12,7 @@
 //   rubriques cochées les plus hautes. Le script ne sert qu'à propager les coches.
 
 import { type ReactNode, useMemo, useState } from "react";
-import type { FacetSection, FacetVolume } from "../lib/query/facets.ts";
+import type { FacetSection, FacetVolume } from "../lib/query/types.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { QUERY_FORM } from "./SearchForm.tsx";
 

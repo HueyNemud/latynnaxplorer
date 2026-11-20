@@ -4,7 +4,7 @@
 // ne s'emboîtent pas toujours (un empan peut commencer au milieu d'une emphase) : on découpe
 // aux bornes des deux.
 
-import type { Span, SpanLabel } from "../query/resolve.ts";
+import type { Span, SpanLabel } from "../query/types.ts";
 
 export interface Segment {
   /** Texte à afficher, sans marques d'emphase. */

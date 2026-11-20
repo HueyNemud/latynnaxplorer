@@ -3,7 +3,7 @@
 
 import Link from "next/link";
 import { serializeQuery } from "../lib/query/query.ts";
-import type { NodeKind, SpanLabel, SubgraphNode } from "../lib/query/resolve.ts";
+import type { NodeKind, SpanLabel, SubgraphNode } from "../lib/query/types.ts";
 import { pages } from "../lib/text/pages.ts";
 import { PrintedText } from "./PrintedText.tsx";
 

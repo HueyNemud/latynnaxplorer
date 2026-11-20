@@ -4,35 +4,9 @@
 // cochées : le décompte dit ce que l'on obtiendrait en cochant la rubrique).
 
 import type postgres from "postgres";
+import { contains } from "./contains.ts";
 import type { Query } from "./query.ts";
-import { contains } from "./resolve.ts";
-
-export interface FacetVolume {
-  /** dc:identifier, ex. « 1807_AD75-PER292 » */
-  id: string;
-  /** dc:title ; null tant qu'il n'est pas renseigné */
-  title: string | null;
-  /** début de dcterms:temporal, AAAA-MM-JJ */
-  temporalStart: string;
-}
-
-export interface FacetSection {
-  id: string;
-  /** rubrique parente ; null au premier niveau du volume */
-  parentId: string | null;
-  volumeId: string;
-  /** intitulé tel que numrev le donne */
-  text: string;
-  /** entrées du sous-arbre, la rubrique comprise, qui contiennent le texte cherché s'il y en a un */
-  entries: number;
-}
-
-export interface Facets {
-  /** dans l'ordre des dates */
-  volumes: FacetVolume[];
-  /** par volume, dans l'ordre de lecture : un parent vient avant ses enfants */
-  sections: FacetSection[];
-}
+import type { FacetSection, Facets, FacetVolume } from "./types.ts";
 
 /**
  * Volumes et rubriques, avec leurs décomptes. Décomptes lus par parent_closure (chaque rubrique
