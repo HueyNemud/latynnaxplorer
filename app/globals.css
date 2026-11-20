@@ -244,16 +244,14 @@ details[open] > summary .chevron {
   transform: rotate(90deg);
 }
 
-/* Surface en relief (élément ouvert de la Liste, vignette d'un volume) */
-.item[open] > *,
-.volume-thumb {
+/* Surface en relief (élément ouvert de la Liste) */
+.item[open] > * {
   background: var(--gray-2);
   box-shadow: var(--shadow-4);
 }
 
-/* survol d'une surface déjà grise (bande de repli, vignette) : un cran plus foncé */
-.panel-strip:hover,
-.volume-thumb:hover {
+/* survol d'une surface déjà grise (bande de repli) : un cran plus foncé */
+.panel-strip:hover {
   color: var(--gray-12);
   background: var(--gray-3);
 }
@@ -560,10 +558,9 @@ details[open] > summary .chevron {
   width: var(--card-width);
 }
 
-/* vignette provisoire : un aplat en relief, l'année et le nom du volume dessus ; un clic met le
-   focus sur le volume */
+/* vignette provisoire : une carte de Radix (relief, survol), l'année et le nom du volume dessus ;
+   un clic met le focus sur le volume */
 .volume-thumb {
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -572,8 +569,7 @@ details[open] > summary .chevron {
   width: 100%;
   aspect-ratio: 3 / 4;
   padding: var(--space-2);
-  border: 0;
-  border-radius: var(--radius-4);
+  text-align: center;
 }
 
 .volume-name {

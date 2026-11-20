@@ -19,7 +19,7 @@
 // - Seules les facettes changent la sélection, et toujours en rechargeant la page (formulaires
 //   GET natifs) : l'état ci-dessous est lu une fois, depuis l'URL.
 
-import { Button, Checkbox } from "@radix-ui/themes";
+import { Button, Card, Checkbox } from "@radix-ui/themes";
 import { type ReactNode, useMemo, useState } from "react";
 import {
   checkedOf,
@@ -119,19 +119,20 @@ export function Facets({
             return (
               <div key={v.id} className="volume-card" data-focus={v.id === focus || undefined}>
                 {/* la vignette met le focus sur le volume : son arbre dans Contents */}
-                <button
-                  type="button"
-                  className="volume-thumb"
-                  aria-pressed={v.id === focus}
-                  aria-label={`Show the contents of ${name}`}
-                  onClick={() => {
-                    setFocus(v.id);
-                    setPanels(2);
-                  }}
-                >
-                  <span className="volume-year">{year}</span>
-                  <span className="volume-name">{v.title ?? v.id}</span>
-                </button>
+                <Card asChild variant="classic" className="volume-thumb">
+                  <button
+                    type="button"
+                    aria-pressed={v.id === focus}
+                    aria-label={`Show the contents of ${name}`}
+                    onClick={() => {
+                      setFocus(v.id);
+                      setPanels(2);
+                    }}
+                  >
+                    <span className="volume-year">{year}</span>
+                    <span className="volume-name">{v.title ?? v.id}</span>
+                  </button>
+                </Card>
                 {/* la coche ronde, sur la vignette : sélectionne ou désélectionne tout le volume */}
                 <Checkbox
                   size="3"
