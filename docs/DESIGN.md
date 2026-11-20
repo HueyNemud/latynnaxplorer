@@ -104,7 +104,7 @@ Une facette montre **toutes les valeurs possibles** d'un critère, cochées
 ou non, là où la vue ne montre que la sélection (une rubrique exclue
 disparaît de la Liste : on ne pourrait pas l'y recocher). Les facettes
 servent à composer la sélection ; la vue sert à la regarder. Premier
-domaine couvert (sprint 8) : la Structure, volumes et rubriques.
+domaine couvert : la Structure, volumes et rubriques.
 
 - **Place** : colonnes de Miller, collées au bord gauche de la fenêtre :
   Volumes, puis Contents, puis la vue, centrée dans la place qui reste.
@@ -134,7 +134,7 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
   ce périmètre). Les nœuds hors de toute rubrique (1807 : 90 éléments
   hors champ à la racine) ne sont pas sélectionnables par les facettes,
   seulement par la recherche, en attendant un vrai nœud racine de numrev.
-- **Application** (sprint 11) : **à la coche**. Chaque coche s'applique
+- **Application** : **à la coche**. Chaque coche s'applique
   aussitôt ; l'URL suit les cases (navigation client qui remplace l'entrée
   de l'historique), après un court délai qui regroupe les coches
   rapprochées ; la vue est estompée pendant le chargement. Contents est
@@ -142,7 +142,7 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
   coche tout ce volume, « Clear » le décoche, sans toucher aux autres
   volumes. Le champ de recherche envoie aussi les cases (attribut `form`),
   en gardant les coches.
-- **Une seule navigation** (sprint 11) : seules les facettes et la
+- **Une seule navigation** : seules les facettes et la
   recherche changent la sélection ; la Liste n'a pas de lien qui le fasse
   (ni « ouvrir à part », ni fil d'Ariane cliquable). Les cases sont l'état
   des facettes, et l'URL les suit : aucune synchronisation. Un nœud qui
@@ -189,7 +189,7 @@ Il n'y a pas de page « fiche » à concevoir à part.
 - **Vues** : une à la fois pour commencer, avec un focus pensé dès le
   départ comme partagé ; à terme, deux vues côte à côte (Liste + Page,
   Liste + Carte…).
-- **Composants** (sprint 11) : ceux de Radix Themes, sur son thème (accent
+- **Composants** : ceux de Radix Themes, sur son thème (accent
   iris, gris mauve) : boutons, cases, champ de recherche, cartes, listes
   clé / valeur. Nos styles seulement pour ce que Radix n'a pas (Liste à
   guides, arbre de Contents, panneaux), avec ses jetons.

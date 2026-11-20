@@ -2,10 +2,8 @@
 
 Fiche de composant. Elle décline la représentation d'un nœud dans la vue Liste
 (`docs/DESIGN.md`, « Représentation d'un nœud ») et la façon dont la vue les
-compose. Densité détaillée (la fiche) : sprint 4. Densité compacte et
-composition : maquette du sprint 5, reprise au sprint 6 (liste à plat, guides
-de niveau). Sprint 11 : jetons et fiche de Radix Themes, plus de lien vers sa
-propre page, fiche demandée au dépliage. Essais écartés en fin de fiche.
+compose : densité compacte (la ligne) et détaillée (la fiche). Jetons et fiche
+de Radix Themes. Essais écartés en fin de fiche.
 
 ## Problème
 
@@ -119,8 +117,8 @@ Champs d'une entrée :
 | DESC | sarcelle transparent `--teal-a4` | normal |
 | ADDR | jaune transparent `--yellow-a4` | normal |
 
-Échelles transparentes (alpha) de Radix Themes, choisies sur deux planches au
-sprint 11 : elles se fondent dans le fond d'une ligne survolée ou ouverte au
+Échelles transparentes (alpha) de Radix Themes, choisies sur deux planches :
+elles se fondent dans le fond d'une ligne survolée ou ouverte au
 lieu d'y poser des pastilles. Le fond déborde de 0,08 em de chaque côté (marge négative) :
 coins arrondis visibles, texte non décalé, filet blanc entre deux champs
 voisins. Le texte entre les empans n'a pas de fond. Afficher ou masquer la
@@ -140,7 +138,7 @@ tenir dans la largeur, sauf le dernier, la section la plus proche, toujours
 entier. Un peu d'air sous elle (`--space-2`) avant la ligne
 suivante ; aucun au-dessus, pour que la ligne cliquée ne bouge pas.
 
-**Fiche au dépliage** (sprint 11) : une ligne repliée n'a qu'une case vide ;
+**Fiche au dépliage** : une ligne repliée n'a qu'une case vide ;
 au premier dépliage, la fiche est demandée (`GET /api/detail/<uuid>`, interne
 au site), un indicateur de chargement (Spinner) en attendant, puis gardée.
 Une sélection d'un seul nœud a sa fiche rendue par le serveur, dépliée.
@@ -183,8 +181,7 @@ changent ni au survol ni au dépliage. Pas de transition.
 
 ## Jetons
 
-Depuis le sprint 11, couleurs, espacements, rayons, ombres et tailles de
-texte sont ceux du thème Radix Themes (`app/layout.tsx` : accent iris, gris
+Couleurs, espacements, rayons, ombres et tailles de texte sont ceux du thème Radix Themes (`app/layout.tsx` : accent iris, gris
 mauve) ; `app/globals.css` ne définit que ce que Radix n'a pas. Contrastes :
 texte et texte atténué ≥ 4,5:1 sur blanc, sur `--gray-2` et sur les teintes
 des champs.
@@ -218,10 +215,7 @@ Police : **Fira Sans**, pour toute l'interface (vraies petites capitales,
 nettes à l'écran), chargée par `next/font/google` (copiée sur le site au
 build, aucune requête à Google). Texte des lignes, titres et valeurs de la
 fiche à la même taille ; page, en-tête et clés de la fiche plus petits.
-Disparaissent au sprint 6 : cartes de section et `--shadow-rest`, colonne et
-pastille Open, `--row-gap`, gras du sujet. Au sprint 11 : nos gris, rayons,
-ombre et espacements (remplacés par ceux de Radix), le lien vers sa propre
-page et son icône.
+
 
 ## Accessibilité
 
@@ -259,61 +253,25 @@ page et son icône.
 
 ## Essais écartés
 
-Sprint 11 :
-
-- Lien « Open on its own page » sur chaque ligne et liens du fil d'Ariane :
-  une seconde navigation, qui doublait les facettes et les désaccordait.
-- Teintes des champs : pastels néon gardés, `sky` / `mint` / `yellow` aux
-  pas 3 à 5, `blue` / `jade` / `amber` ; en transparence, `cyan` /
-  `teal` (sujet et description trop proches), `blue` / `grass`, `sky` /
-  `lime`, `cyan` / `pink`, `blue` / `orange`.
-
-Sprint 6 :
-
-- Cartes de section emboîtées (sprint 5) : lourdes dès quelques niveaux, et
-  peu claires sur l'endroit où l'on est.
-- Intitulé de la rubrique écrit le long de son guide (seul ou avec les
-  titres fixés) : il faut pencher la tête, intitulés coupés, 2 rem de large
-  par niveau.
-- Titre en « marque-page » de la couleur du guide (bande sur toute la ligne,
-  ou languette derrière l'intitulé) : lourd.
-- Guides bleu-lavande `#8e9be6`, puis gris moyen `#8c959f` ; guides de 1 et
-  1,5 px (fins, puis inégaux) ; coude au rayon de 0,5 rem.
-- Écart entre les lignes : gêne la sélection et le survol ; marge au-dessus
-  d'un élément ouvert : la ligne cliquée saute.
-- Relief au survol (remplacé par le seul fond) ; grège `#f6f6f4` (jaunâtre)
-  et grège éclairci `#fafaf8` (survol invisible).
-- Bouton « Open » à droite de la ligne : loin du texte, sens obscur. Puis
-  « Show only this » en haut de la fiche, et « Open on its own page » en
-  bouton pleine largeur sous la fiche.
-- Titres en petites capitales (hauteurs inégales selon la casse imprimée) ;
-  toutes petites capitales (`all-small-caps`).
-- Sujet en gras : rivalise avec les titres. Champs sans fond, ou sujet seul
-  surligné ; fonds pâlis à 30 % et 20 %.
-- Polices : Noto Sans (système, petites capitales fabriquées et grêles),
-  Source Sans 3, Alegreya Sans, IBM Plex Sans, Source Serif 4,
-  EB Garamond, Alegreya.
-
-Sprint 5 :
-
-- Texte souligné de la couleur du champ, nom sous le trait (avec ou sans
-  légende) ; texte des champs en couleur ; surligneur sur la moitié basse.
-- Table à colonnes Subject / Description / Address ; à plat avec une colonne
-  Section.
-- Filets et lignes de séparation horizontaux ; bandeaux gris sous les
-  titres ; feuille unique sur fond teinté.
-- Fil d'Ariane et décompte des nœuds au-dessus de la liste (le contexte
-  prend la forme de la liste).
-- Halo bleu au survol.
-- Titre ouvert qui se replie seul en atteignant le haut (sauts) ; titre
-  ouvert non fixé.
-- Bouton et script à la place de `<details>`.
-- « Open » toujours visible ; en-tête « Text ».
+- Cartes de section emboîtées : lourdes dès quelques niveaux, et peu claires
+  sur l'endroit où l'on est. Intitulé écrit le long du guide ; titre en
+  « marque-page » coloré.
+- Filets et lignes de séparation, zébrage, bandeaux sous les titres ; écart
+  entre les lignes (gêne la sélection) ; relief au survol.
+- Lien vers sa propre page (« Open ») sur chaque ligne et fil d'Ariane
+  cliquable : une seconde navigation qui doublait les facettes.
+- Champs soulignés, ou texte des champs en couleur ; table à colonnes
+  Subject / Description / Address ; sujet en gras ; pastels néon, puis
+  teintes Radix opaques ; sujet et description en cyan et sarcelle (trop
+  proches).
+- Titres en petites capitales ; autres polices (Noto Sans, Source Sans 3,
+  IBM Plex Sans, Alegreya, EB Garamond…).
+- Fiche en pleine page à part ; fiche rendue d'avance pour chaque ligne
+  (moitié du poids de la page).
 
 ## Questions ouvertes
 
-- **Poids de la page** : depuis le sprint 11, les fiches ne sont plus dans
-  le HTML ; mesuré en production pour 13 737 nœuds : 25,8 Mo (1,9 Mo
-  compressés), 81 Mo avant. Les lignes elles-mêmes restent : la pagination
-  est la vraie réponse (`docs/IDEES.md`).
+- **Poids de la page** : 25,8 Mo (1,9 Mo compressés) pour 13 737 nœuds,
+  en production ; restent les lignes, la pagination est la vraie réponse
+  (`docs/IDEES.md`).
 - **Lecteur d'écran réel** : titres en capitales.

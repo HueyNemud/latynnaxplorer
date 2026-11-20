@@ -21,7 +21,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={fira.variable}>
       <body>
-        {/* thème Radix (docs/DECISIONS.md, 20 novembre) : couleurs, espacements, rayons, et ses
+        {/* thème Radix (docs/DECISIONS.md, « Interface ») : couleurs, espacements, rayons, et ses
             composants ; accent iris sur gris mauve, choisis sur une planche (sprint 11) */}
         <Theme accentColor="iris" grayColor="mauve">
           <main>{children}</main>

@@ -3,8 +3,7 @@
 Fiche de composant. Elle décline la section « Facettes » de `docs/DESIGN.md`
 (et « Sélection et focus ») : les panneaux à gauche de la vue, la carte d'un
 volume, la ligne de l'arbre des rubriques, le bouton qui applique la
-sélection. Maquette du sprint 8, revue à l'écran sous Chromium et Firefox ;
-contrôles de Radix Themes depuis le sprint 11. Essais écartés en fin de fiche.
+sélection. Contrôles de Radix Themes. Essais écartés en fin de fiche.
 
 ## Problème
 
@@ -24,10 +23,10 @@ n'en a pas besoin.
   sur son côté droit.
 - **Sélection et focus distincts** : une case pour sélectionner, un clic sur
   l'objet pour le regarder.
-- **Filtrer à la coche** : chaque coche s'applique aussitôt (sprint 11) ;
+- **Filtrer à la coche** : chaque coche s'applique aussitôt ;
   le champ de recherche envoie aussi les cases (formulaire GET, attribut
   `form`).
-- **Radix d'abord** (sprint 11) : boutons, cases, coche ronde et vignette
+- **Radix d'abord** : boutons, cases, coche ronde et vignette
   sont des composants de Radix Themes ; `<details>` natif pour déplier
   l'arbre. Les facettes demandent du script.
 - **Seule navigation** : seules les facettes (et la recherche) changent la
@@ -248,46 +247,22 @@ Volumes 9,5 rem, Contents 22 rem, bande 1,5 rem, carte 8 rem, coche ronde
 
 ## Essais écartés
 
-Sprint 8 :
-
-- Carrousel de volumes (le volume au centre donne l'arbre) : tient mal la
-  quantité, mélangeait sélection et focus.
-- Panneaux empilés verticalement dans une seule colonne, dépliables par
-  `<details>`, puis repliés en bande avec le titre en haut à gauche.
-- Panneaux décalés du bord de la fenêtre (vue et panneaux centrés ensemble).
-- Volume racine de l'arbre, coché comme une rubrique (tout l'arbre grisé) ;
-  arbre de tous les volumes, chacun sous sa ligne de volume.
-- Rubrique cochée = ses seuls nœuds propres (on pouvait décocher une
-  sous-rubrique) : trop complexe.
-- Volume « mi-coché » (tiret) quand une partie de ses rubriques l'est.
-- Vignette enfoncée pour le volume coché, puis pour le volume au focus :
-  confondait les deux.
-- Petite case carrée sur la vignette ; bandeau « Select / Partly selected /
-  Selected » sous la vignette.
-- Nom, identifiant et décompte sous la carte ; nom du volume rappelé en tête
-  de Contents.
-- Intitulés de l'arbre en capitales, comme les titres de la Liste.
-- Bouton « Apply » plein, foncé, toujours visible en bas de la pile ; bouton
-  à droite du champ de recherche.
-
-Sprint 10 :
-
-- Filtrer à la coche, sans bouton (`docs/IDEES.md`).
-- Apply en bas de Contents, visible seulement s'il y a des changements :
-  remonté en haut, toujours là, avec Clear.
-- Boutons séparés en pilule ; teintes vert, jaune, gris (planche) ; le
-  bleu retenu en attendant Radix Themes.
-- Synchronisation des cases avec l'URL après une navigation client :
-  retirée au sprint 11, plus rien ne change l'URL sans recharger la page.
-
-Sprint 11 :
-
-- Apply et Clear en deux moitiés d'un même bouton, faits main : « extrêmement
-  moches » ; Primer React (ButtonGroup) et shadcn/ui écartés pour Radix.
-- Bouton « Apply selection » (sprints 8 à 11) : remplacé par le filtre à la
-  coche. All et Clear sur tous les volumes : écartés, Contents est local au
-  volume regardé. Une entrée d'historique par sélection : écartée.
-- Vignette en Card « surface » et « ghost » (planche) : « classic » retenue.
+- Carrousel de volumes ; panneaux empilés dans une seule colonne ; panneaux
+  décalés du bord de la fenêtre.
+- Volume racine coché comme une rubrique ; arbre de tous les volumes à la
+  fois.
+- Rubrique cochée = ses seuls nœuds propres ; volume « mi-coché » : trop
+  complexes.
+- Vignette enfoncée pour la sélection ou le focus (confondait les deux) ;
+  case carrée ou bandeau « Selected » sous la vignette ; nom et décompte
+  sous la carte.
+- Intitulés de l'arbre en capitales.
+- Bouton « Apply » (en bas puis en haut de Contents, visible ou non selon
+  les changements) : remplacé par le filtre à la coche. All et Clear sur
+  tous les volumes : Contents est local au volume regardé. Une entrée
+  d'historique par coche.
+- Boutons faits main (deux moitiés d'un même bouton, teintes pastel) ;
+  Primer React et shadcn/ui, pour Radix.
 
 ## Questions ouvertes
 
@@ -295,6 +270,6 @@ Sprint 11 :
   téléphone, il faudra qu'ils passent par-dessus la vue (à concevoir).
 - **Lecteur d'écran réel** : case dans un `summary`, case couverte.
 - **Focus dans Contents** : une rubrique pourrait avoir le focus (atteindre
-  sa place dans la vue) ; pas dans ce sprint.
+  sa place dans la vue).
 - **Poids de l'arbre** : rendu entier, branches repliées comprises
   (`docs/IDEES.md`).
