@@ -77,7 +77,6 @@ export function Facets({
         {kids.length > 0 && <ChevronIcon className="chevron" />}
         <Checkbox
           size="1"
-          className="tree-box"
           form={QUERY_FORM}
           name="subtree"
           value={s.id}

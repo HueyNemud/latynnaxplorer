@@ -1,6 +1,7 @@
 // La sélection désignée par l'URL, dans la vue Liste, entourée de son contexte, sous le champ de
 // recherche ; à gauche, les facettes de structure (volumes et rubriques) qui la composent.
 
+import { Flex, Text } from "@radix-ui/themes";
 import { notFound } from "next/navigation";
 import { Facets } from "../components/Facets.tsx";
 import { NodeList } from "../components/NodeList.tsx";
@@ -48,12 +49,21 @@ export default async function Page({ searchParams }: { searchParams: Promise<Sea
           <NodeList context={sections} nodes={subgraph.nodes} />
         ) : (
           // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond
-          <p className="empty">
-            <span className="empty-sign" aria-hidden="true">
+          <Flex
+            className="empty"
+            direction="column"
+            align="center"
+            justify="center"
+            gap="2"
+            minHeight="60vh"
+          >
+            <Text size="6" color="gray" aria-hidden="true">
               ∅
-            </span>
-            {query.subtree || query.text ? "No match" : "Nothing to show"}
-          </p>
+            </Text>
+            <Text size="2" color="gray">
+              {query.subtree || query.text ? "No match" : "Nothing to show"}
+            </Text>
+          </Flex>
         )}
       </div>
     </div>

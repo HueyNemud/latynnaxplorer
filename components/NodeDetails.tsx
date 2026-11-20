@@ -6,7 +6,7 @@
 // composant pour toute la Liste, à l'écoute des dépliages (l'événement toggle ne remonte pas :
 // écouté à la capture). Sans script, une ligne dépliée ne montre pas sa fiche.
 
-import { Spinner } from "@radix-ui/themes";
+import { Spinner, Text } from "@radix-ui/themes";
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import type { SubgraphNode } from "../lib/query/types.ts";
@@ -72,6 +72,11 @@ function Fetched({ id }: { id: string }) {
     };
   }, [id]);
   if (detail === undefined) return <Spinner />;
-  if (detail === "error") return <p className="detail-error">This node could not be loaded.</p>;
+  if (detail === "error")
+    return (
+      <Text as="p" color="gray" mb="4">
+        This node could not be loaded.
+      </Text>
+    );
   return <NodeDetail node={detail.node} context={detail.path} />;
 }

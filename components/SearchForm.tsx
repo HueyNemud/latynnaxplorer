@@ -21,7 +21,7 @@ export function SearchForm({
   subtree?: readonly string[];
 }) {
   return (
-    <search className="search">
+    <search>
       <form id={QUERY_FORM} className="search-form" method="get">
         <label htmlFor="search-text" className="visually-hidden">
           Search text
@@ -31,7 +31,6 @@ export function SearchForm({
         <TextField.Root
           key={text}
           id="search-text"
-          className="search-input"
           type="search"
           name="text"
           defaultValue={text}
