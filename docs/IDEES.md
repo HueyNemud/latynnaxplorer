@@ -70,6 +70,10 @@ plusieurs volumes en base.
   en production, dont 70 % de charge RSC et 0,7 Mo de fiches repliées.
   Leviers notés : moins d'éléments par ligne, coût de `next/link`, fiche
   rendue au premier dépliage (un peu de JavaScript), `content-visibility`.
+- Sprint 11 : fiche rendue au premier dépliage et lien de chaque ligne
+  retiré. « Listes particulières » en production : 81 → 25,8 Mo (3,95 →
+  1,86 Mo compressés), 3,9 → 1,2 s côté serveur. Restent les lignes et leur
+  copie RSC : la pagination reste la vraie réponse.
 
 ## Poids de l'arbre des rubriques
 

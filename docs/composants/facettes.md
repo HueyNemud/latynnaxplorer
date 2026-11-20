@@ -3,8 +3,8 @@
 Fiche de composant. Elle décline la section « Facettes » de `docs/DESIGN.md`
 (et « Sélection et focus ») : les panneaux à gauche de la vue, la carte d'un
 volume, la ligne de l'arbre des rubriques, le bouton qui applique la
-sélection. Maquette du sprint 8, revue à l'écran sous Chromium et Firefox.
-Essais écartés en fin de fiche.
+sélection. Maquette du sprint 8, revue à l'écran sous Chromium et Firefox ;
+contrôles de Radix Themes depuis le sprint 11. Essais écartés en fin de fiche.
 
 ## Problème
 
@@ -27,8 +27,11 @@ n'en a pas besoin.
 - **Une seule requête** : le champ de recherche et les cases des rubriques
   forment un seul formulaire GET natif ; le script ne sert qu'à propager les
   coches.
-- **Natif d'abord** : `<details>` pour déplier l'arbre, cases à cocher
-  natives (`disabled` natif pour une case couverte), boutons natifs.
+- **Radix d'abord** (sprint 11) : boutons, cases, coche ronde et vignette
+  sont des composants de Radix Themes ; `<details>` natif pour déplier
+  l'arbre. Les facettes demandent du script.
+- **Seule navigation** : seules les facettes (et la recherche) changent la
+  sélection, toujours en rechargeant la page ; la Liste ne le fait pas.
 
 ## Ce que les données imposent
 
@@ -38,7 +41,7 @@ Relevé sur 1807 :
 |---|---|
 | Un volume en base, des dizaines (voire centaines) à terme | cartes en colonne dans un panneau étroit, qui défile ; pas de carrousel |
 | `volume.json` sans titre (`dc:title` vide) | la carte montre l'année et l'identifiant (`1807_AD75-PER292`), coupé où il faut |
-| Aucune image de volume pour l'instant (IIIF plus tard) | vignette provisoire : un aplat, l'année dessus |
+| Aucune image de volume pour l'instant (IIIF plus tard) | vignette provisoire : une carte, l'année dessus |
 | 603 rubriques, 43 au premier niveau, jusqu'à 149 sous une même rubrique, 7 niveaux | arbre replié par défaut, dépliable par niveau ; retrait simple |
 | Intitulés : 24 caractères en médiane, 71 au-delà de 60, 197 au plus ; casse imprimée variable | une ligne, coupée par « … », intitulé entier en infobulle ; casse imprimée gardée |
 | Deux intitulés gardent des marques Markdown (`##`, `\`) | affichés tels quels (demande à numrev en cours) |
@@ -86,7 +89,7 @@ Un `<section>` nommé par son titre : son contenu, puis à sa droite la
 **bande de repli**.
 
 - **Bande** : bouton de toute la hauteur, 1,5 rem de large, fond
-  `--color-open`, chevron puis titre écrit de bas en haut (`writing-mode`),
+  `--gray-2`, chevron puis titre écrit de bas en haut (`writing-mode`),
   en petit et atténué. Chevron vers la gauche (‹) panneau ouvert, vers la
   droite (›) replié. Elle sert aussi de séparation entre les colonnes : pas
   d'autre filet.
@@ -101,37 +104,36 @@ Un `<section>` nommé par son titre : son contenu, puis à sa droite la
 
 | État de la bande | Rendu |
 |---|---|
-| Repos | fond `--color-open`, chevron et titre `--color-muted` |
-| Survol | fond `--color-press`, chevron et titre `--color-text` |
-| Focus clavier | contour habituel |
+| Repos | fond `--gray-2`, chevron et titre `--gray-11` |
+| Survol | fond `--gray-3`, chevron et titre `--gray-12` |
+| Focus clavier | anneau `--focus-8`, comme les composants de Radix |
 
 ## Carte de volume
 
 Une carte par volume, dans l'ordre des dates, 8 rem de large.
 
-- **Vignette** (provisoire) : aplat `--color-open` au format 3 : 4, coins
-  `--radius-card`, en relief (`--shadow-raised`) ; l'année en gras, puis le
-  nom du volume en petit et atténué, centrés. Rien sous la carte, pas de
-  décompte.
+- **Vignette** (provisoire) : Card « classic » de Radix (fond blanc, relief
+  et survol de Radix) au format 3 : 4 ; l'année en gras, puis le nom du
+  volume en petit et atténué, centrés. Rien sous la carte, pas de décompte.
 - **Focus** : un clic sur la vignette met le volume au focus ; Contents
-  montre son arbre. La vignette au focus est **cernée** de l'anneau du focus
-  clavier (`--ring` : 2 px `--color-text`, à 2 px de la vignette) et porte une **encoche** (triangle
+  montre son arbre. La vignette au focus est **cernée** (2 px `--gray-12`, à
+  2 px de la vignette) et porte une **encoche** (triangle
   de 0,5 rem) sur son bord droit, pointée vers Contents. Un seul volume au
   focus ; par défaut le premier volume coché, sinon le premier volume. Le
   focus n'est pas dans l'URL.
 - **Sélection** : une **coche ronde** de 1,5 rem en haut à gauche de la
-  vignette, posée dessus. Un volume est sélectionné si une rubrique au moins
+  vignette, posée dessus : la Checkbox de Radix, rendue ronde par ses
+  variables CSS (`--checkbox-size`, `--checkbox-border-radius`). Un volume est sélectionné si une rubrique au moins
   l'est. Cocher sélectionne tout le volume (toutes ses rubriques de premier
   niveau, qui restent actives) ; décocher le désélectionne tout entier.
 
 | État | Vignette | Coche ronde |
 |---|---|---|
-| Repos | aplat en relief | cercle vide, trait 2 px `--color-muted`, fond blanc |
-| Survol de la vignette | fond `--color-press` | — |
-| Survol de la coche | — | trait `--color-text` |
+| Repos | carte en relief | cercle vide (Radix) |
+| Survol de la vignette | relief de Radix | — |
 | Focus (volume regardé) | cernée, encoche à droite | — |
-| Sélectionné | — | disque `--color-text`, coche blanche |
-| Focus clavier | contour habituel, sur la vignette ou sur la coche | idem |
+| Sélectionné | — | disque iris (accent), coche blanche |
+| Focus clavier | anneau de Radix, sur la vignette ou sur la coche | idem |
 
 ## Ligne de l'arbre (Contents)
 
@@ -152,51 +154,38 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
 - **Clic** : sur la case, coche sans déplier ; sur l'intitulé ou le chevron,
   déplie sans cocher.
 - **Cocher** prend la rubrique avec tout son sous-arbre : les cases de ses
-  descendants sont **couvertes**, cochées et grisées (`disabled` natif) ; la
+  descendants sont **couvertes**, cochées et grisées (`disabled`) ; la
   décocher les réactive, décochées.
 - **Dépliage à l'arrivée** : le chemin des rubriques cochées est déplié,
   le reste replié.
-- **Après une navigation** (lien de la Liste, fil d'Ariane, Précédent) :
-  les cases reprennent les coches de l'URL ; le volume au focus et les
-  rubriques dépliées restent, le chemin de la nouvelle sélection est
-  déplié en plus. Une sélection qui n'est pas une rubrique (une entrée) ne
-  coche rien : sa rubrique est dépliée, son volume mis au focus.
+- **Toujours conformes à l'URL** : toute nouvelle sélection recharge la
+  page (formulaires GET), les cases repartent donc des coches de l'URL. Une
+  entrée désignée par l'URL ne coche rien et n'est pas située.
 
 | État | Rendu |
 |---|---|
-| Repos | case native, intitulé `--color-text` |
-| Survol | fond `--color-open` sur la ligne |
-| Cochée | case native cochée (`accent-color: --color-text`) |
-| Couverte | case cochée grisée par le navigateur, inactive ; intitulé inchangé |
+| Repos | Checkbox de Radix (taille 1), intitulé `--gray-12` |
+| Survol | fond `--gray-2` sur la ligne |
+| Cochée | Checkbox cochée, iris (accent) |
+| Couverte | Checkbox cochée grisée, inactive ; intitulé inchangé |
 | Dépliée | chevron tourné vers le bas |
-| Focus clavier | contour habituel, sur la case ou sur la ligne |
+| Focus clavier | anneau de Radix sur la case, anneau `--focus-8` sur la ligne |
 
-## Boutons Apply et Clear (sprint 10)
+## Boutons Apply et Clear
 
 - En haut de Contents, fixés (`position: sticky`) au-dessus de l'arbre qui
   défile, fond blanc derrière eux ; **toujours là**, pour que rien ne se
-  décale.
-- Les **deux moitiés d'un même bouton**, chacune sur la moitié de la
-  largeur : coins arrondis à l'extérieur seulement, un seul trait au
-  milieu (celui d'un bouton actif passe devant).
-- **Apply selection** : envoie le formulaire de la requête
-  (`form="query"`) : le texte, et une valeur `subtree` par rubrique cochée
-  **non couverte** (une case désactivée n'est pas envoyée), y compris
+  décale ; chacun sur la moitié de la largeur.
+- **Apply selection** : Button plein de Radix ; envoie le formulaire de la
+  requête (`form="query"`) : le texte, et une valeur `subtree` par rubrique
+  cochée **non couverte** (une case désactivée n'est pas envoyée), y compris
   celles des volumes qui ne sont pas au focus (champs cachés). Inactif
   quand les cases ne diffèrent pas de la sélection affichée.
-- **Clear** : son propre formulaire GET, qui ne porte que le texte cherché
-  de la sélection affichée : applique aussitôt une sélection sans coche
-  (tout l'annuaire si un texte est cherché, rien sinon). Inactif quand rien
-  n'est coché.
-
-| État | Rendu |
-|---|---|
-| Actif | fond `--color-action`, trait `--color-text` |
-| Survol (actif) | inversé : fond `--color-text`, texte blanc |
-| Inactif | fond blanc, texte `--color-muted`, trait `--color-guide-faded` |
-
-Rendu provisoire : jugé « extrêmement moche », il sera refait avec Radix
-Themes au sprint 11 (`docs/SPRINTS.md`).
+- **Clear** : Button doux de Radix, dans son propre formulaire GET, qui ne
+  porte que le texte cherché de la sélection affichée : applique aussitôt
+  une sélection sans coche (tout l'annuaire si un texte est cherché, rien
+  sinon). Inactif quand rien n'est coché.
+- États (survol, inactif, focus) : ceux de Radix.
 
 ## Implémentation : ce qui est inévitable
 
@@ -206,53 +195,39 @@ Themes au sprint 11 (`docs/SPRINTS.md`).
   panneaux, le formulaire au-dessus de la vue ; l'attribut `form` les y
   rattache sans imbriquer les formulaires.
 - **Propagation des coches** : un composant client (état des cases, focus,
-  panneaux ouverts, rubriques dépliées). Sans script, Entrée dans le champ
-  de recherche envoie encore les cases, sans propagation ni case grisée ;
-  Apply, inactif au rendu du serveur, ne sert pas.
-- **Conformité à l'URL** : la navigation de Next garde le composant ; il
-  retient les `subtree` reçus et, quand ils changent, reprend les coches
-  pendant le rendu (sans effet). Le dépliage est suivi par `onToggle` sur
-  les `<details>`, pour qu'il survive à la navigation.
+  panneaux ouverts), lu une fois depuis l'URL. Une case Radix est un
+  bouton, avec une case cachée (attribut `form`) pour le formulaire ; sans
+  script, les facettes ne servent pas.
 - **Case dans un `<summary>`** : cliquer la case ne déplie pas la rubrique
-  (vérifié sous Chromium et Firefox).
-- **Coche ronde** : case native redessinée (`appearance: none`), coche en SVG
-  en image de fond ; reste une case pour le clavier et les lecteurs d'écran.
+  (vérifié sous Chromium).
 - **Décomptes** : une requête par page, groupée par rubrique ancêtre
   (`parent_closure`), filtrée par le texte cherché.
 
 ## Jetons
 
-Jetons existants (`app/globals.css`, voir `docs/composants/noeud-liste.md`) :
-`--color-text`, `--color-muted`, `--color-background`, `--color-open`,
-`--shadow-raised`, `--radius-card`, `--line-pad`, `--line-pad-y`, `--icon`,
-`--size-small`, `--tracking-caps`, `--ring`, `--space-*`. Nouveaux :
-
-| Jeton | Valeur | Usage |
-|---|---|---|
-| `--color-press` | `#eef1f4` | survol d'une bande ou d'une vignette (un cran sous `--color-open`) |
-| `--color-action` | `--tint-subj` | Apply et Clear quand ils servent (sprint 10, provisoire) |
-| `--panel-volumes` | `9.5rem` | largeur de Volumes |
-| `--panel-contents` | `22rem` | largeur de Contents |
-| `--strip-width` | `1.5rem` | bande de repli |
-| `--card-width` | `8rem` | carte de volume |
-| `--select-size` | `1.5rem` | coche ronde |
-| `--tree-indent` | `1.25rem` | retrait par niveau de l'arbre |
+Ceux du thème Radix (`--gray-*`, `--space-*`, `--radius-*`, `--focus-8`) et
+ceux de la Liste (`--line-pad`, `--line-pad-y`, `--icon` : voir
+`docs/composants/noeud-liste.md`). Les dimensions propres aux facettes, qui
+ne servent qu'une fois, sont écrites sur place dans `app/globals.css` :
+Volumes 9,5 rem, Contents 22 rem, bande 1,5 rem, carte 8 rem, coche ronde
+1,5 rem, retrait de l'arbre 1,25 rem.
 
 ## Accessibilité
 
 - **Régions** : les panneaux sont dans une `<section>` nommée « Selection » ;
   chaque panneau est une `<section>` nommée par son titre.
-- **Bande** : bouton natif, `aria-expanded`, `aria-controls` vers le contenu
+- **Bande** : bouton, `aria-expanded`, `aria-controls` vers le contenu
   du panneau ; infobulle « Collapse Volumes » / « Expand Volumes ».
-- **Vignette** : bouton natif, `aria-pressed` (volume au focus), nom
+- **Vignette** : bouton (Card de Radix), `aria-pressed` (volume au focus), nom
   « Show the contents of 1807 1807_AD75-PER292 ».
-- **Coche ronde** : case native, nom « Select 1807 1807_AD75-PER292 ».
+- **Coche ronde** : Checkbox de Radix (rôle `checkbox`), nom « Select 1807
+  1807_AD75-PER292 ».
 - **Arbre** : listes emboîtées et `<details>` natifs (rôle, état, clavier) ;
   chaque case nommée par l'intitulé de sa rubrique, chaque `summary` par
   l'intitulé seul (`aria-labelledby`), sans la case ni le décompte. Case dans un `summary` :
-  élément interactif dans un autre, comme le lien de la Liste ; accepté, à
-  tester avec un lecteur d'écran.
-- **Couverte** : `disabled` natif, annoncé comme « indisponible » ; la raison
+  élément interactif dans un autre ; accepté, à tester avec un lecteur
+  d'écran.
+- **Couverte** : `disabled`, annoncé comme « indisponible » ; la raison
   (rubrique parente cochée) n'est pas dite : à tester.
 - **Sélection et focus** ne reposent pas sur la couleur seule : coche
   dessinée, contour et encoche.
@@ -263,7 +238,7 @@ Jetons existants (`app/globals.css`, voir `docs/composants/noeud-liste.md`) :
 |---|---|
 | une case pour sélectionner, un clic sur l'objet pour le regarder | un même geste pour les deux |
 | un seul formulaire pour toute la requête | un bouton ou une URL par facette |
-| cases natives, `disabled` natif pour une case couverte | état mi-coché, cases dessinées en script |
+| composants de Radix, `disabled` pour une case couverte | état mi-coché, contrôles dessinés à la main |
 | montrer toutes les valeurs, même à 0 | masquer les rubriques sans résultat |
 | intitulés tels qu'imprimés | capitales forcées, intitulés corrigés |
 | séparer les colonnes par les bandes | filets, cadres autour des panneaux |
@@ -299,6 +274,14 @@ Sprint 10 :
   remonté en haut, toujours là, avec Clear.
 - Boutons séparés en pilule ; teintes vert, jaune, gris (planche) ; le
   bleu retenu en attendant Radix Themes.
+- Synchronisation des cases avec l'URL après une navigation client :
+  retirée au sprint 11, plus rien ne change l'URL sans recharger la page.
+
+Sprint 11 :
+
+- Apply et Clear en deux moitiés d'un même bouton, faits main : « extrêmement
+  moches » ; Primer React (ButtonGroup) et shadcn/ui écartés pour Radix.
+- Vignette en Card « surface » et « ghost » (planche) : « classic » retenue.
 
 ## Questions ouvertes
 

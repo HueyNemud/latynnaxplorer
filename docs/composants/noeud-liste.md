@@ -4,15 +4,16 @@ Fiche de composant. Elle décline la représentation d'un nœud dans la vue List
 (`docs/DESIGN.md`, « Représentation d'un nœud ») et la façon dont la vue les
 compose. Densité détaillée (la fiche) : sprint 4. Densité compacte et
 composition : maquette du sprint 5, reprise au sprint 6 (liste à plat, guides
-de niveau). Essais écartés en fin de fiche.
+de niveau). Sprint 11 : jetons et fiche de Radix Themes, plus de lien vers sa
+propre page, fiche demandée au dépliage. Essais écartés en fin de fiche.
 
 ## Problème
 
 Montrer une sélection de nœuds tels que l'annuaire les imprime, champs
 repérables d'un coup d'œil, dans leur hiérarchie de rubriques, sans que la
 structure ne prenne le pas sur le contenu des entrées ; savoir à tout moment
-où l'on est dans cette hiérarchie ; inspecter n'importe quel nœud sur place ;
-ouvrir un nœud comme nouvelle sélection.
+où l'on est dans cette hiérarchie ; inspecter n'importe quel nœud sur place.
+La Liste ne change pas la sélection : seules les facettes le font.
 
 ## Principe : une liste à plat, peu de règles
 
@@ -20,11 +21,12 @@ ouvrir un nœud comme nouvelle sélection.
   lit par des **guides de niveau** (*indent guides*) : un filet vertical à
   gauche de chaque rubrique, coudé vers son titre, terminé par une boule.
 - **Un seul élément** pour tout nœud, quel que soit son type : une ligne
-  (chevron, texte, lien | page) qui déplie sa vue détaillée juste dessous.
+  (chevron, texte | page) qui déplie sa vue détaillée juste dessous.
 - **Deux règles d'état**, communes à tous : survol, ouvert.
 - Les types ne se distinguent **que par leur texte** (titre, champs, gris).
 - **Natif d'abord** : dépliage par `<details>` / `<summary>`, sans
-  JavaScript.
+  JavaScript ; la fiche, elle, est demandée au serveur au premier dépliage
+  (sans script, une ligne dépliée reste vide).
 
 ## Ce que les données imposent
 
@@ -44,7 +46,7 @@ Relevé sur 1807 (22 158 nœuds) :
 
 ## Langue
 
-Interface en anglais (« Page », infobulle du lien, clés de la fiche) ;
+Interface en anglais (« Page », clés de la fiche) ;
 traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
 (`lang="fr"`).
 
@@ -57,7 +59,7 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
 │ │ › [M. Rousseau], [maire], [rue des Jeuneurs, 9.]             199   ← ligne d'entrée
 │ │ › Mairies du canton de Paris.                                200   ← ligne hors champ (gris)
 │ │ ┌› TRIBUNAL DE PAIX.                                         200
-│ │ │╭ ⌄ [Juge de paix.] [M. Véron fils], [rue …, 34.] ↗         200 ╮ ← ligne ouverte :
+│ │ │╭ ⌄ [Juge de paix.] [M. Véron fils], [rue …, 34.]           200 ╮ ← ligne ouverte :
 │ │ ││   Text · champs · Type · Source · Identifier · chemin        │   ligne + fiche,
 │ │ │╰──────────────────────────────────────────────────────────────╯   une carte en relief
 │ │ •                                                                  ← fin du groupe
@@ -76,8 +78,8 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
 - **Guide** : filet de 2 px à gauche du groupe, de sous sa ligne de titre
   jusqu'à la fin du groupe, terminé par une **boule** (6 px). Une seule
   teinte pour tous les niveaux, en deux intensités : à hauteur de chaque
-  ligne, seul le guide de sa section est gris foncé (`--color-guide`) ; ceux
-  des sections englobantes sont estompés (`--color-guide-faded`) le long de
+  ligne, seul le guide de sa section est gris foncé (`--gray-11`) ; ceux
+  des sections englobantes sont estompés (`--gray-7`) le long de
   leurs sous-groupes. Coude et boule suivent la même règle : estompés s'ils ne
   touchent qu'un sous-groupe (section qui ne contient que des sections, fin
   de groupe sur un sous-groupe).
@@ -101,24 +103,25 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
 ## Élément (tout nœud)
 
 `<details>` dont la ligne est le `<summary>` et la vue détaillée le contenu.
-La ligne : chevron, texte, lien vers sa propre page, puis la page à droite.
+La ligne : chevron, texte, puis la page à droite.
 
 | Type | Texte de la ligne |
 |---|---|
 | Section | intitulé en capitales grasses (`text-transform: uppercase`, quelle que soit la casse imprimée), une ligne, « … » |
-| Entrée | texte imprimé, champs sur fond pastel aux coins arrondis, sujet en petites capitales ; passe à la ligne si long |
+| Entrée | texte imprimé, champs sur fond teinté aux coins arrondis, sujet en petites capitales ; passe à la ligne si long |
 | Hors champ | texte atténué (gris), une ligne, « … » |
 
 Champs d'une entrée :
 
 | Libellé | Fond | Style |
 |---|---|---|
-| SUBJ | bleu pastel `#b9e6ff` | petites capitales |
-| DESC | menthe pastel `#afffe2` | normal |
-| ADDR | jaune pastel `#fffca9` | normal |
+| SUBJ | violet transparent `--violet-a4` | petites capitales |
+| DESC | sarcelle transparent `--teal-a4` | normal |
+| ADDR | jaune transparent `--yellow-a4` | normal |
 
-Palette néon de colorhunt.co (`#63c8ff`, `#4dffbe`, `#fff83f`) adoucie à 45 %
-dans du blanc. Le fond déborde de 0,08 em de chaque côté (marge négative) :
+Échelles transparentes (alpha) de Radix Themes, choisies sur deux planches au
+sprint 11 : elles se fondent dans le fond d'une ligne survolée ou ouverte au
+lieu d'y poser des pastilles. Le fond déborde de 0,08 em de chaque côté (marge négative) :
 coins arrondis visibles, texte non décalé, filet blanc entre deux champs
 voisins. Le texte entre les empans n'a pas de fond. Afficher ou masquer la
 couleur d'un champ : réglage envisagé plus tard (`docs/IDEES.md`).
@@ -127,22 +130,20 @@ couleur d'un champ : réglage envisagé plus tard (`docs/IDEES.md`).
 atténué, tourné vers le bas quand l'élément est ouvert. Le texte garde sa
 place à droite du chevron, même sur plusieurs lignes.
 
-**Lien vers sa propre page** : icône (carré et flèche, ↗) juste après le
-texte, lien vers `?subtree=<uuid>`, nouvelle sélection : une section montre sa
-liste, un autre nœud est montré seul, déplié, dans son contexte. Infobulle et
-nom accessible « Open on its own page ». Visible seulement au survol de
-l'élément, quand il est ouvert, ou au focus clavier (masqué par `opacity`,
-pour rester atteignable au clavier) ; fond foncé au survol. Pour un titre ou
-un hors champ trop long, la coupure « … » porte sur l'intitulé seul : l'icône
-reste visible.
-
-**Vue détaillée** : la fiche du sprint 4 (`components/NodeDetail.tsx`) :
-Text, champs (valeur `normalized`), Type, Source, Identifier, puis le chemin
-des rubriques en dernier, sur une ligne, intitulés séparés par « › ».
+**Vue détaillée** : la fiche (`components/NodeDetail.tsx`), en DataList de
+Radix Themes, trois groupes aux valeurs alignées : Text ; champs (valeur
+`normalized`) ; Type, Source, Identifier, plus petits. Puis le chemin des
+rubriques en dernier, en texte (pas de liens : seules les facettes changent
+la sélection), sur une ligne, intitulés séparés par « › ».
 Chaque intitulé est borné (16 rem) et tronqué (« … ») s'il le faut pour
 tenir dans la largeur, sauf le dernier, la section la plus proche, toujours
 entier. Un peu d'air sous elle (`--space-2`) avant la ligne
 suivante ; aucun au-dessus, pour que la ligne cliquée ne bouge pas.
+
+**Fiche au dépliage** (sprint 11) : une ligne repliée n'a qu'une case vide ;
+au premier dépliage, la fiche est demandée (`GET /api/detail/<uuid>`, interne
+au site), un indicateur de chargement (Spinner) en attendant, puis gardée.
+Une sélection d'un seul nœud a sa fiche rendue par le serveur, dépliée.
 
 ## États
 
@@ -150,8 +151,8 @@ Deux règles, pour tous les éléments :
 
 | État | Rendu |
 |---|---|
-| Survol | la ligne prend le fond `--color-open`, sans relief |
-| Ouvert | ligne et vue détaillée forment une carte en relief (`--shadow-raised`) sur fond `--color-open` |
+| Survol | la ligne prend le fond `--gray-2`, sans relief |
+| Ouvert | ligne et vue détaillée forment une carte en relief (`--shadow-4`) sur fond `--gray-2` |
 
 Focus clavier : contour visible sur la ligne. La sélection et l'URL ne
 changent ni au survol ni au dépliage. Pas de transition.
@@ -175,43 +176,52 @@ changent ni au survol ni au dépliage. Pas de transition.
   classe à part.
 - **Épaisseurs en pixels entiers** : 1,5 px s'affiche tantôt sur 1, tantôt
   sur 2 pixels selon la position ; guides et coudes à 2 px.
-- **Lien dans le fil du texte**, pas en flexbox : Firefox sous-estime la
-  largeur d'un texte dont les champs ont des marges négatives, et le passe à
-  la ligne trop tôt.
+- **Fiches au dépliage** : un seul composant client pour toute la Liste
+  (`components/NodeDetails.tsx`) écoute les dépliages (l'événement `toggle`
+  ne remonte pas : écouté à la capture) et rend chaque fiche demandée dans sa
+  case par un portail ; une demande par fiche, gardée.
 
 ## Jetons
 
-Dans `app/globals.css`. Contrastes : texte et texte atténué ≥ 4,5:1 sur blanc,
-sur `--color-open` et sur les fonds pastel.
+Depuis le sprint 11, couleurs, espacements, rayons, ombres et tailles de
+texte sont ceux du thème Radix Themes (`app/layout.tsx` : accent iris, gris
+mauve) ; `app/globals.css` ne définit que ce que Radix n'a pas. Contrastes :
+texte et texte atténué ≥ 4,5:1 sur blanc, sur `--gray-2` et sur les teintes
+des champs.
 
-| Jeton | Valeur | Usage |
+| Jeton (Radix) | Usage |
+|---|---|
+| `--gray-12` | texte |
+| `--gray-11` | hors champ, page, en-tête, chevron, clés de la fiche ; guide de la section la plus proche, coude, boule |
+| `--gray-7` | guides des sections englobantes, le long de leurs sous-groupes |
+| `--color-background` | page, lignes, cache du coude |
+| `--gray-2` | survol, élément ouvert |
+| `--shadow-4` | élément ouvert |
+| `--radius-4` / `--radius-2` | ligne survolée, élément ouvert / coude du guide |
+| `--space-1` à `--space-5` | 4, 8, 12, 16, 24 px |
+| `--font-size-2` | page, en-tête, texte petit |
+| `--focus-8` | anneau du focus clavier (2 px, à 2 px), comme les composants de Radix |
+
+| Jeton (nôtre) | Valeur | Usage |
 |---|---|---|
-| `--color-text` | `#1f2328` | texte |
-| `--color-muted` | `#59636e` | hors champ, page, en-tête, chevron, lien, clés de la fiche |
-| `--color-background` | `#ffffff` | page, lignes, cache du coude |
-| `--color-open` | `#f6f8fa` | survol, élément ouvert (gris bleuté) |
-| `--color-guide` | `#3d434a` | guide de la section la plus proche, coude, boule |
-| `--color-guide-faded` | `#c9ced4` | guides des sections englobantes, le long de leurs sous-groupes |
-| `--tint-subj` / `--tint-desc` / `--tint-addr` | `#b9e6ff` / `#afffe2` / `#fffca9` | fonds des champs |
-| `--shadow-raised` | contour 1 px à 14 % + ombre 4 px / 14 px à 14 % | élément ouvert |
-| `--radius-card` | `0.5rem` | ligne survolée, élément ouvert |
-| `--radius-small` | `0.25rem` | coude du guide, boutons d'icône |
+| `--tint-subj` / `--tint-desc` / `--tint-addr` | `--violet-a4` / `--teal-a4` / `--yellow-a4` | fonds des champs |
 | `--title-height` | `1.75rem` | hauteur d'une ligne de titre, pas de la pile |
 | `--line-pad` | `0.375rem` | marge intérieure gauche et droite d'une ligne ; retrait d'un sous-groupe |
 | `--line-pad-y` | `0.125rem` | marge intérieure haute et basse d'une ligne (Liste et arbre des facettes) |
-| `--tracking-caps` | `0.03em` | espacement des titres en capitales |
-| `--ring` / `--ring-offset` | `2px solid --color-text` / `2px` | anneau du focus, clavier ou de l'application |
-| `--width-view` | `64rem` | largeur de la vue, hors gouttières |
 | `--guide-width` / `--guide-gap` / `--ball` | `2px` / `0.25rem` / `6px` | guide, écart avec les lignes, boule |
-| `--icon` | `0.875rem` | chevron et icône du lien |
-| `--columns` | `1fr 2.5rem` | texte, page |
+| `--icon` | `0.875rem` | chevron |
+
+Écrits sur place (une seule fois) : largeur de la vue (64 rem), colonnes
+texte | page (`1fr 2.5rem`), espacement des titres en capitales (0,03 em).
 
 Police : **Fira Sans**, pour toute l'interface (vraies petites capitales,
 nettes à l'écran), chargée par `next/font/google` (copiée sur le site au
 build, aucune requête à Google). Texte des lignes, titres et valeurs de la
 fiche à la même taille ; page, en-tête et clés de la fiche plus petits.
 Disparaissent au sprint 6 : cartes de section et `--shadow-rest`, colonne et
-pastille Open, `--row-gap`, gras du sujet.
+pastille Open, `--row-gap`, gras du sujet. Au sprint 11 : nos gris, rayons,
+ombre et espacements (remplacés par ceux de Radix), le lien vers sa propre
+page et son icône.
 
 ## Accessibilité
 
@@ -221,13 +231,8 @@ pastille Open, `--row-gap`, gras du sujet.
 - **Dépliage** : `<details>` / `<summary>` natifs (rôle, état, clavier,
   Ctrl+F qui ouvre l'élément trouvé). `display: contents` sur `<details>` ne
   masque ni le `summary` ni son état (arbre d'accessibilité de Chromium). Le
-  `summary` est nommé par son texte seul (`aria-labelledby`), sans le lien ni
-  le numéro de page.
-- **Lien dans le `summary`** : élément interactif dans un autre, mal annoncé
-  par certains lecteurs d'écran ; accepté pour la simplicité, à tester. Son
-  nom est court (« Open on its own page ») et il est décrit par le texte de
-  sa ligne (`aria-describedby`), pour ne pas donner des dizaines de liens
-  identiques.
+  `summary` est nommé par son texte seul (`aria-labelledby`), sans le
+  numéro de page.
 - **Titres en capitales** : Chromium transmet l'intitulé en capitales ;
   certains lecteurs d'écran épellent les mots courts en capitales. À tester.
 - **Titres** : un `summary` ne peut pas contenir de vrai titre (aplati par
@@ -249,9 +254,19 @@ pastille Open, `--row-gap`, gras du sujet.
 | structurer par les guides, le retrait et les titres fixés | cartes de section, filets de séparation, zébrage, bandeaux |
 | même élément et mêmes règles pour tous les types | variante ou cas particulier par type |
 | éléments natifs (`<details>`) | script là où le navigateur suffit |
+| changer la sélection par les facettes | liens dans la Liste qui changent la sélection |
 | épaisseurs en pixels entiers | épaisseurs fractionnaires (rendu inégal) |
 
 ## Essais écartés
+
+Sprint 11 :
+
+- Lien « Open on its own page » sur chaque ligne et liens du fil d'Ariane :
+  une seconde navigation, qui doublait les facettes et les désaccordait.
+- Teintes des champs : pastels néon gardés, `sky` / `mint` / `yellow` aux
+  pas 3 à 5, `blue` / `jade` / `amber` ; en transparence, `cyan` /
+  `teal` (sujet et description trop proches), `blue` / `grass`, `sky` /
+  `lime`, `cyan` / `pink`, `blue` / `orange`.
 
 Sprint 6 :
 
@@ -297,8 +312,8 @@ Sprint 5 :
 
 ## Questions ouvertes
 
-- **Poids de la page** : chaque vue détaillée est dans le HTML (repliée).
-  Mesuré au sprint 5 : 66 Mo pour 13 736 nœuds, dont 46 Mo de charge RSC ;
-  accepté pour l'instant, la pagination est la vraie réponse
-  (`docs/IDEES.md`).
-- **Lecteur d'écran réel** : lien dans le `summary`, titres en capitales.
+- **Poids de la page** : depuis le sprint 11, les fiches ne sont plus dans
+  le HTML ; mesuré en production pour 13 737 nœuds : 25,8 Mo (1,9 Mo
+  compressés), 81 Mo avant. Les lignes elles-mêmes restent : la pagination
+  est la vraie réponse (`docs/IDEES.md`).
+- **Lecteur d'écran réel** : titres en capitales.

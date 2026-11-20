@@ -138,19 +138,17 @@ domaine couvert (sprint 8) : la Structure, volumes et rubriques.
   de recherche et les cases des rubriques (rattachées par l'attribut
   `form`) ; une case grisée est désactivée, donc pas envoyée : seules
   partent les rubriques cochées les plus hautes. En haut de Contents,
-  fixés, toujours là, les deux moitiés d'un même bouton : « Apply
-  selection » envoie les cases (inactif si elles ne diffèrent pas de la
+  fixés, toujours là, côte à côte : « Apply selection » envoie les cases (inactif si elles ne diffèrent pas de la
   sélection affichée) ; « Clear » applique aussitôt une sélection sans
   coche, en gardant le texte cherché (inactif si rien n'est coché).
   Entrée dans le champ de recherche applique aussi les cases. Un peu de
   script propage les coches, sans `nuqs`.
-- **Toujours conformes à l'URL** : l'URL est la seule source de la
-  sélection. Après toute navigation (lien d'un nœud, fil d'Ariane,
-  recherche, Précédent), les cases reprennent les coches de l'URL ; le
-  volume au focus et les rubriques dépliées restent, le chemin de la
-  sélection est déplié en plus. Un nœud qui n'est pas une rubrique (une
-  entrée ouverte à part) ne se coche pas : les facettes le situent (focus
-  sur son volume, chemin de sa rubrique déplié).
+- **Une seule navigation** (sprint 11) : seules les facettes et la
+  recherche changent la sélection, toujours en rechargeant la page ; la
+  Liste n'a pas de lien qui le fasse (ni « ouvrir à part », ni fil
+  d'Ariane cliquable). Les facettes disent donc toujours ce que dit l'URL,
+  sans synchronisation. Un nœud qui n'est pas une rubrique, désigné par
+  l'URL, ne se coche pas.
 - **Sélection vide** : sans aucun critère, rien n'est sélectionné ; la vue
   le dit par un grand aplat (« Nothing to show », ou « No match » quand
   des critères ne trouvent rien). Pas d'entrée par défaut.
@@ -189,9 +187,13 @@ Il n'y a pas de page « fiche » à concevoir à part.
   n'en montre que ce qui mène à elle, et n'est jamais compté dedans.
 - **Densité** : automatique par défaut (un nœud → déplié en sa fiche,
   plusieurs → compacte) ; dans une vue compacte, chaque nœud peut se déplier en sa
-  fiche (inspecter).
+  fiche (inspecter), demandée au serveur au premier dépliage.
 - **Vues** : une à la fois pour commencer, avec un focus pensé dès le
   départ comme partagé ; à terme, deux vues côte à côte (Liste + Page,
   Liste + Carte…).
+- **Composants** (sprint 11) : ceux de Radix Themes, sur son thème (accent
+  iris, gris mauve) : boutons, cases, champ de recherche, cartes, listes
+  clé / valeur. Nos styles seulement pour ce que Radix n'a pas (Liste à
+  guides, arbre de Contents, panneaux), avec ses jetons.
 - **La source à un clic** : depuis tout nœud, dans toute vue, la page
   d'origine est accessible.

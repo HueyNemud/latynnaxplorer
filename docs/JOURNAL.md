@@ -1,5 +1,50 @@
 # Journal de développement
 
+## 2026-11-20 — Sprint 11 : passage à Radix Themes
+
+**Fait**
+- PR #20 (sprint 10) fusionnée ; branche `feat/radix-themes`. Contenu
+  validé, puis élargi en cours de sprint (une seule navigation, fiche au
+  dépliage).
+- Thème Radix à la racine ; ses espacements, gris, rayons, ombre et tailles
+  à la place des nôtres (Radix définissait déjà `--space-*` et
+  `--color-background`, aux mêmes noms que nos jetons). Thème iris sur gris
+  mauve, choisi sur une planche de huit combinaisons ; ombre `--shadow-4`
+  sur une planche d'ombres.
+- Contrôles de Radix : Apply / Clear (Button), cases de l'arbre et coche
+  ronde (Checkbox, ronde par ses variables CSS), recherche (TextField,
+  « × » en IconButton), vignette (Card « classic »), vue vide (Flex, Text).
+  Bandes de repli gardées faites main (un IconButton ne s'y prête pas).
+- Une seule navigation : « Open on its own page » supprimé, fil d'Ariane en
+  texte, synchronisation du sprint 10 retirée (160 lignes de moins).
+- Fiche demandée au premier dépliage (`GET /api/detail/<uuid>`, requête
+  `detail` testée), en DataList ; une sélection d'un seul nœud garde sa
+  fiche rendue par le serveur.
+- Champs teintés par les échelles transparentes de Radix (violet, sarcelle,
+  jaune), sur deux planches : cyan et sarcelle se distinguaient mal.
+- Feuille nettoyée : seulement ce que Radix n'a pas, jetons d'un seul usage
+  écrits sur place, notre anneau du focus réservé à nos éléments (deux
+  contours au focus du champ de recherche) ; 793 → 574 lignes.
+- Mesures en production (face à `main`) : « Listes particulières »
+  (13 737 nœuds) 80,7 → 25,8 Mo, 3,95 → 1,86 Mo compressés, 3,8 → 1,2 s ;
+  une fiche 7 ms côté serveur, affichée 78 ms après le clic ; petites pages
+  plus lourdes d'environ 200 Ko bruts (6 Ko compressés : les 603 cases
+  Radix de l'arbre) ; CSS et JS 179 → 282 Ko compressés.
+- Vérifié sous Chromium et Firefox (captures avant / après, focus clavier
+  de chaque contrôle, dépliage). 97 tests.
+
+**Décisions**
+- Voir `docs/DECISIONS.md` (20 novembre) : Radix appliqué, une seule
+  navigation, fiche au dépliage.
+- Route Handler plutôt que fonction serveur pour la fiche (Next réserve les
+  fonctions serveur aux écritures, envoyées une par une).
+- Feuille de Radix gardée entière : la découper ne gagnerait qu'environ
+  23 Ko compressés.
+
+**Remarques**
+- Sans script, les facettes ne marchent plus et une ligne dépliée reste
+  vide : assumé.
+
 ## 2026-11-20 — Sprint 10 : facettes et Liste, toujours d'accord
 
 **Fait**
