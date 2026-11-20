@@ -13,24 +13,28 @@
 //   rubriques cochées les plus hautes. Cases, coches et boutons de Radix Themes : une case Radix
 //   est un bouton, avec une case cachée pour le formulaire ; sans script, les facettes ne
 //   servent pas.
-// - En haut de Contents, toujours là : Apply envoie le formulaire (inactif sans changement) ;
-//   Clear applique aussitôt une sélection sans coche, en gardant le texte cherché (inactif sans
-//   coche), par son propre formulaire GET.
-// - Seules les facettes changent la sélection, et toujours en rechargeant la page (formulaires
-//   GET natifs) : l'état ci-dessous est lu une fois, depuis l'URL.
+// - Filtrer à la coche : chaque coche s'applique aussitôt. Les coches sont l'état de ce
+//   composant, lu une fois depuis l'URL ; l'URL les suit (navigation client, qui remplace
+//   l'entrée de l'historique), après un court délai qui regroupe les coches rapprochées. La vue
+//   est estompée pendant le chargement. Le volume regardé et l'arbre déplié restent.
+// - Contents est local au volume regardé (facettes hiérarchiques) : All coche tout ce volume,
+//   Clear le décoche ; les autres volumes ne changent pas.
 
 import { Button, Card, Checkbox } from "@radix-ui/themes";
-import { type ReactNode, useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   checkedOf,
   isCovered,
+  isVolumeFull,
   isVolumeSelected,
   pathTo,
-  sameChecks,
   sectionTree,
+  setVolume,
   toggleSection,
   toggleVolume,
 } from "../lib/facets/selection.ts";
+import { serializeQuery } from "../lib/query/query.ts";
 import type { FacetSection, FacetVolume } from "../lib/query/types.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { ChevronIcon } from "./icons.tsx";
@@ -47,19 +51,35 @@ export function Facets({
   sections: FacetSection[];
   /** les `subtree` de l'URL : rubriques cochées les plus hautes */
   checked: readonly string[];
-  /** le texte cherché de la sélection affichée, que Clear garde */
+  /** le texte cherché de la sélection affichée, gardé quand les coches changent */
   text: string | undefined;
 }) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
-  // les coches de la sélection affichée
-  const initial = useMemo(() => checkedOf(tree, subtree), [tree, subtree]);
-  const [checked, setChecked] = useState(initial);
+  // les coches, lues une fois depuis l'URL
+  const [checked, setChecked] = useState(() => checkedOf(tree, subtree));
   // focus : le volume de la première rubrique cochée, sinon le premier volume
   const [focus, setFocus] = useState(
-    () => tree.byId.get([...initial][0] ?? "")?.volumeId ?? volumes[0]?.id,
+    () => tree.byId.get([...checked][0] ?? "")?.volumeId ?? volumes[0]?.id,
   );
   // à l'arrivée, le chemin des rubriques cochées est déplié
-  const [open] = useState(() => pathTo(tree, initial));
+  const [open] = useState(() => pathTo(tree, checked));
+
+  // appliquer : l'URL suit les coches, après 300 ms sans nouvelle coche
+  const router = useRouter();
+  const [loading, startTransition] = useTransition();
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+  useEffect(() => () => clearTimeout(timer.current), []);
+  const select = (next: Set<string>) => {
+    setChecked(next);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => {
+      const query = serializeQuery({
+        ...(next.size > 0 && { subtree: [...next] }),
+        ...(text !== undefined && { text }),
+      });
+      startTransition(() => router.replace(query.size > 0 ? `/?${query}` : "/"));
+    }, 300);
+  };
   // panneaux ouverts : toujours les premiers (Volumes, puis Contents) ; ouvrir un panneau ouvre
   // ceux des niveaux au-dessus, en replier un replie ceux des niveaux en dessous
   const [panels, setPanels] = useState(2);
@@ -82,7 +102,7 @@ export function Facets({
           value={s.id}
           checked={covered || checked.has(s.id)}
           disabled={covered}
-          onCheckedChange={() => setChecked(toggleSection(tree, checked, s.id))}
+          onCheckedChange={() => select(toggleSection(tree, checked, s.id))}
           aria-label={label}
         />
         <span id={`tree-${s.id}`} className="tree-label" lang="fr" title={label}>
@@ -109,7 +129,7 @@ export function Facets({
   };
 
   return (
-    <section className="facets" aria-label="Selection">
+    <section className="facets" aria-label="Selection" aria-busy={loading}>
       <Panel id="volumes" title="Volumes" {...panel(0)}>
         <div className="volume-cards">
           {volumes.map((v) => {
@@ -137,7 +157,7 @@ export function Facets({
                   size="3"
                   className="volume-box"
                   checked={isVolumeSelected(tree, checked, v.id)}
-                  onCheckedChange={() => setChecked(toggleVolume(tree, checked, v.id))}
+                  onCheckedChange={() => select(toggleVolume(tree, checked, v.id))}
                   aria-label={`Select ${name}`}
                 />
               </div>
@@ -146,17 +166,25 @@ export function Facets({
         </div>
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
-        <div className="facet-actions">
-          <Button type="submit" form={QUERY_FORM} disabled={sameChecks(checked, initial)}>
-            Apply selection
-          </Button>
-          <form method="get">
-            {text !== undefined && <input type="hidden" name="text" value={text} />}
-            <Button type="submit" variant="soft" disabled={checked.size === 0}>
+        {/* tout le volume regardé, ou rien de lui ; inactifs quand ils ne changeraient rien */}
+        {focus !== undefined && (
+          <div className="facet-actions">
+            <Button
+              variant="soft"
+              disabled={isVolumeFull(tree, checked, focus)}
+              onClick={() => select(setVolume(tree, checked, focus, true))}
+            >
+              All
+            </Button>
+            <Button
+              variant="soft"
+              disabled={!isVolumeSelected(tree, checked, focus)}
+              onClick={() => select(setVolume(tree, checked, focus, false))}
+            >
               Clear
             </Button>
-          </form>
-        </div>
+          </div>
+        )}
         <ul className="tree tree-root">{(tree.children.get(focus ?? "") ?? []).map(row)}</ul>
         {/* rubriques cochées des autres volumes, que Contents ne montre pas : envoyées aussi */}
         {[...checked]

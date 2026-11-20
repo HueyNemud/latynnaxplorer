@@ -6,10 +6,11 @@ import type { FacetSection } from "../query/types.ts";
 import {
   checkedOf,
   isCovered,
+  isVolumeFull,
   isVolumeSelected,
   pathTo,
-  sameChecks,
   sectionTree,
+  setVolume,
   toggleSection,
   toggleVolume,
 } from "./selection.ts";
@@ -95,11 +96,18 @@ describe("volumes", () => {
   });
 });
 
-describe("sameChecks", () => {
-  it("compare les coches sans tenir compte de l'ordre", () => {
-    expect(sameChecks(set("A", "B"), set("B", "A"))).toBe(true);
-    expect(sameChecks(set("A"), set("A", "B"))).toBe(false);
-    expect(sameChecks(set("A", "C"), set("A", "B"))).toBe(false);
+describe("All et Clear (volume regardé)", () => {
+  it("All coche les rubriques de premier niveau du volume, sans toucher aux autres", () => {
+    expect(setVolume(tree, set("A2a", "C"), "V", true)).toEqual(set("C", "A", "B"));
+  });
+
+  it("Clear décoche tout le volume, sans toucher aux autres", () => {
+    expect(setVolume(tree, set("A", "A2a", "C"), "V", false)).toEqual(set("C"));
+  });
+
+  it("un volume est entier quand toutes ses rubriques de premier niveau sont cochées", () => {
+    expect(isVolumeFull(tree, set("A", "B"), "V")).toBe(true);
+    expect(isVolumeFull(tree, set("A", "A2a"), "V")).toBe(false);
   });
 });
 

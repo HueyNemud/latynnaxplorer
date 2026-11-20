@@ -64,21 +64,35 @@ export function isVolumeSelected(
   return false;
 }
 
-/** Tout le volume (ses rubriques de premier niveau), ou plus rien. */
+/** Tout le volume est sélectionné : toutes ses rubriques de premier niveau sont cochées. */
+export function isVolumeFull(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  volumeId: string,
+): boolean {
+  return (tree.children.get(volumeId) ?? []).every((s) => checked.has(s.id));
+}
+
+/** Tout le volume (ses rubriques de premier niveau), ou plus rien ; les autres volumes ne
+ * changent pas. */
+export function setVolume(
+  tree: SectionTree,
+  checked: ReadonlySet<string>,
+  volumeId: string,
+  all: boolean,
+): Set<string> {
+  const next = new Set([...checked].filter((id) => tree.byId.get(id)?.volumeId !== volumeId));
+  if (all) for (const s of tree.children.get(volumeId) ?? []) next.add(s.id);
+  return next;
+}
+
+/** La coche ronde d'un volume : tout le volume s'il n'est pas sélectionné, sinon plus rien. */
 export function toggleVolume(
   tree: SectionTree,
   checked: ReadonlySet<string>,
   volumeId: string,
 ): Set<string> {
-  const selected = isVolumeSelected(tree, checked, volumeId);
-  const next = new Set([...checked].filter((id) => tree.byId.get(id)?.volumeId !== volumeId));
-  if (!selected) for (const s of tree.children.get(volumeId) ?? []) next.add(s.id);
-  return next;
-}
-
-/** Mêmes coches : rien à appliquer. */
-export function sameChecks(a: ReadonlySet<string>, b: ReadonlySet<string>): boolean {
-  return a.size === b.size && [...a].every((id) => b.has(id));
+  return setVolume(tree, checked, volumeId, !isVolumeSelected(tree, checked, volumeId));
 }
 
 /** Rubriques à déplier pour montrer les coches : celles au-dessus de chacune. */

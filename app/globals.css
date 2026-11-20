@@ -554,9 +554,8 @@ details[open] > summary .chevron {
   gap: var(--space-2);
 }
 
-/* Apply et Clear (boutons de Radix Themes) : en haut de Contents, fixés au-dessus de l'arbre
-   qui défile, toujours là, chacun sur la moitié de la largeur. Clear est dans son propre
-   formulaire, transparent pour la grille. */
+/* All et Clear (boutons de Radix Themes) : en haut de Contents, fixés au-dessus de l'arbre qui
+   défile, toujours là, chacun sur la moitié de la largeur */
 .facet-actions {
   position: sticky;
   top: calc(-1 * var(--space-4));
@@ -569,6 +568,7 @@ details[open] > summary .chevron {
   background: var(--color-background);
 }
 
-.facet-actions > form {
-  display: contents;
+/* pendant qu'une nouvelle sélection se charge, la vue est estompée */
+.explorer:has(> .facets[aria-busy="true"]) > .view {
+  opacity: 0.5;
 }
