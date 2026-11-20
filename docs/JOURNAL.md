@@ -14,9 +14,6 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   quittées qui y sont admises (une page statique, pas `/`) ; tas et nœuds
   DOM se cumulent d'une mesure à l'autre. Mesurer avec
   `--disable-features=BackForwardCache`.
-- **postgres.js** : ses résultats sont un tableau dérivé (`count`,
-  `command`) ; `isDeepStrictEqual` les dit différents d'un tableau simple
-  (comparer des `structuredClone`), `toEqual` de Vitest non.
 - **Requêtes préparées** : après cinq appels, PostgreSQL peut passer à un
   plan générique bien plus lent ; mesurer `resolve` répété, pas une fois.
 - **Next** : une constante exportée d'un module `"use client"` devient une
@@ -43,9 +40,10 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 ## 2026-11-20 — Essai : données en local
 
 - Un fichier par volume, résolu dans le navigateur (`/essai`) : même
-  résultat que SQL sur tout 1807 ; interactions plus rapides et sans
-  réseau, arrivée plus lente ; le DOM reste le goulot des grosses
-  sélections. Mesures et bilan : `docs/essai-donnees-locales.md`.
+  résultat que SQL sur tout 1807, interactions plus rapides et sans
+  réseau. Retenu.
+- Le DOM reste le goulot des grosses sélections (2,1 s de style et de mise
+  en page pour 13 737 lignes).
 
 ## 2026-11-20 — Sprint 11 : passage à Radix Themes (PR #21)
 
