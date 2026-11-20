@@ -9,9 +9,9 @@
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
 import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
+import { detail, neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
 import { parseQuery, type Query, QueryError } from "../lib/query/query.ts";
-import { detail as detailOf, NodeNotFoundError } from "../lib/query/resolve.ts";
+import { NodeNotFoundError } from "../lib/query/resolve.ts";
 import {
   type IndexedVolume,
   indexVolume,
@@ -111,14 +111,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   }, [query, ready, list]);
   if (result !== undefined && result !== shown) setShown(result);
 
-  const detail = useCallback(
-    (id: string) => {
-      const volume = volumeOf(list, id);
-      if (volume === undefined) throw new NodeNotFoundError(id);
-      return detailOf(volume, id);
-    },
-    [list],
-  );
+  const detailOf = useCallback((id: string) => detail(list, id), [list]);
 
   if (query === "bad-request") return <Message>Invalid query.</Message>;
   if (failed) return <Message>A volume could not be loaded.</Message>;
@@ -151,7 +144,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
           <NodeList
             nodes={nodes}
             opened={selection.length === 1 ? selection[0]?.id : undefined}
-            detail={detail}
+            detail={detailOf}
           />
         ) : (
           // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond

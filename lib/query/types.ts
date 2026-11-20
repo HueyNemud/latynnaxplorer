@@ -56,6 +56,12 @@ export interface FacetVolume {
   temporalStart: string;
 }
 
+/** Fiche d'un nœud : le nœud, et ses rubriques de la racine à son parent (son fil d'Ariane). */
+export interface Detail {
+  node: SubgraphNode;
+  path: SubgraphNode[];
+}
+
 export interface FacetSection {
   id: string;
   /** rubrique parente ; null au premier niveau du volume */

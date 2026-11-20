@@ -6,10 +6,10 @@
 // sélection : seules les facettes le font.
 
 import type { CSSProperties, ReactNode } from "react";
-import type { SubgraphNode } from "../lib/query/types.ts";
+import type { Detail, SubgraphNode } from "../lib/query/types.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
-import { type Detail, NodeDetails } from "./NodeDetails.tsx";
+import { NodeDetails } from "./NodeDetails.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
 /**

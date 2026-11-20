@@ -30,7 +30,7 @@ export function NodeDetail({
 }: {
   node: SubgraphNode;
   /** rubriques au-dessus du nœud, de la racine à son parent */
-  context: Pick<SubgraphNode, "id" | "text">[];
+  context: SubgraphNode[];
 }) {
   return (
     <article className="node-detail">

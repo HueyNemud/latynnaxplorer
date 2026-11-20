@@ -1,12 +1,12 @@
 // Exploration de plusieurs volumes, chargés à la demande : quels volumes une requête demande,
-// et sa vue sur les volumes chargés (sélection, contexte et facettes de chacun, mis bout à
-// bout dans l'ordre de l'index). Fonctions pures.
+// sa vue sur les volumes chargés (sélection, contexte et facettes de chacun, mis bout à bout
+// dans l'ordre de l'index), et la fiche d'un nœud. Fonctions pures.
 
 import { sections } from "./facets.ts";
 import type { Query } from "./query.ts";
-import { context, NodeNotFoundError, resolve } from "./resolve.ts";
-import type { FacetSection, SubgraphNode } from "./types.ts";
-import type { LoadedVolume } from "./volume.ts";
+import { context, NodeNotFoundError, selection } from "./resolve.ts";
+import type { Detail, FacetSection, SubgraphNode } from "./types.ts";
+import { ancestors, type LoadedVolume } from "./volume.ts";
 
 /**
  * Volumes dont la requête a besoin : celui que l'on regarde ; tous si elle cherche un texte sans
@@ -52,14 +52,22 @@ export function view(loaded: readonly LoadedVolume[], query: Query): View {
   if (unknown !== undefined) throw new NodeNotFoundError(unknown);
   const result: View = { selection: [], shown: [], sections: [] };
   for (const volume of loaded) {
-    const { nodes } = resolve(volume, query);
-    result.selection.push(...nodes);
+    const selected = selection(volume, query);
+    result.selection.push(...selected);
     result.shown.push(
-      ...[...context(volume, query), ...nodes].sort(
+      ...[...context(volume, selected), ...selected].sort(
         (a, b) => a.documentReadingOrder - b.documentReadingOrder,
       ),
     );
     result.sections.push(...sections(volume, query));
   }
   return result;
+}
+
+/** Fiche d'un nœud des volumes chargés : le nœud seul (une rubrique, sans son sous-arbre). */
+export function detail(loaded: readonly LoadedVolume[], id: string): Detail {
+  const volume = volumeOf(loaded, id);
+  const node = volume?.byId.get(id);
+  if (volume === undefined || node === undefined) throw new NodeNotFoundError(id);
+  return { node, path: [...ancestors(volume, node)].reverse() };
 }

@@ -84,3 +84,13 @@ export function indexVolume(file: VolumeFile): LoadedVolume {
     nextEntry,
   };
 }
+
+/** Rubriques au-dessus du nœud, de son parent à la racine. */
+export function* ancestors(volume: LoadedVolume, node: SubgraphNode): Generator<SubgraphNode> {
+  for (let id = node.parentId; id !== null; ) {
+    const parent = volume.byId.get(id);
+    if (parent === undefined) return;
+    yield parent;
+    id = parent.parentId;
+  }
+}
