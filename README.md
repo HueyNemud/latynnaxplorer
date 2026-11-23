@@ -64,9 +64,23 @@ Format des fichiers exportés : `docs/MODELE_DONNEES.md`.
 
 ## Mise en ligne
 
-`out/` se sert tel quel par n'importe quel hébergement statique. Les
-volumes peuvent l'accompagner (`public/volumes/`, copié dans `out/`) ou être
-hébergés à part : l'adresse de l'index se fixe au build,
+Le site est publié sur GitHub Pages,
+<https://hueynemud.github.io/latynnaxplorer/>, à chaque arrivée sur `main`
+(`.github/workflows/deploy.yml`, relançable à la main depuis l'onglet
+Actions). Les volumes n'étant pas dans Git, le workflow les prend dans la
+release `volumes` du dépôt. Après un export, y envoyer les fichiers, puis
+relancer la publication :
+
+```bash
+pnpm volume:export data/1807
+gh release upload volumes public/volumes/* --clobber
+gh workflow run deploy.yml
+```
+
+Ailleurs, `out/` se sert tel quel par n'importe quel hébergement statique ;
+un sous-chemin se fixe au build (`NEXT_PUBLIC_BASE_PATH=/latynnaxplorer`).
+Les volumes peuvent accompagner le site (`public/volumes/`, copié dans
+`out/`) ou être hébergés à part : l'adresse de l'index se fixe au build,
 
 ```bash
 NEXT_PUBLIC_VOLUMES_INDEX=https://exemple.org/annuaires/index.json pnpm build

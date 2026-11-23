@@ -9,7 +9,7 @@ de revenir.
 
 - Un sprint = une branche ; `main` protégée (check `verification`, ni
   force-push ni suppression) ne reçoit que des PR fusionnées par
-  l'utilisateur, par merge commit (`CLAUDE.md`).
+  l'utilisateur, par merge commit (`CLAUDE.md`). Dépôt public.
 - CI GitHub Actions : lint, typecheck, tests, build ; Renovate le lundi,
   sans fusion automatique (`.github/`, `renovate.json`).
 - Node 26, pnpm 12, dépendances en versions exactes ; Next.js (App Router),
@@ -17,6 +17,9 @@ de revenir.
 - Site entièrement statique (`output: "export"`), tout résolu dans le
   navigateur ; volumes hébergés à part ou avec le site, index fixé au build
   (README, « Mise en ligne »). Un besoin de serveur serait un service à côté.
+- Publication sur GitHub Pages à chaque arrivée sur `main`, sous le
+  sous-chemin `/latynnaxplorer` ; les volumes, hors Git (7 Mo chacun,
+  réécrits à chaque export), sont pris dans la release `volumes`.
 - Requêtes et règles des cases en fonctions pures de `lib/`, testées sur la
   fixture (`scripts/fixture.ts`).
 - Interface en anglais ; le texte des annuaires n'est jamais traduit.
