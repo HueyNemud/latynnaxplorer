@@ -30,6 +30,10 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **Biome** : `noDescendingSpecificity` (une règle qui en surcharge une
   autre vient après elle), `useSemanticElements` (`<search>` plutôt que
   `role="search"`), `useImportExtensions`.
+- **Lefthook** : le `glob` de chaque commande doit couvrir toutes les
+  extensions qu'elle vérifie (TSX et CSS compris) ; sinon le fichier passe
+  sans contrôle (« no files for inspection »). Après un clone ou un
+  déplacement, `pnpm exec lefthook install` réécrit les hooks de `.git/`.
 - **Accessibilité** : une case dans un `<summary>` lui donne un nom à
   rallonge ; le nommer par `aria-labelledby` vers l'intitulé seul.
 - **Captures headless** : `Emulation.setDeviceMetricsOverride` (pas
