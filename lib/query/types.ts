@@ -47,13 +47,20 @@ export interface Subgraph {
   arcs: Arc[];
 }
 
-export interface FacetVolume {
+/** Métadonnées d'un volume. */
+export interface Volume {
   /** dc:identifier, ex. « 1807_AD75-PER292 » */
   id: string;
   /** dc:title ; null tant qu'il n'est pas renseigné */
   title: string | null;
   /** début de dcterms:temporal, AAAA-MM-JJ */
   temporalStart: string;
+}
+
+/** Fiche d'un nœud : le nœud, et ses rubriques de la racine à son parent (son fil d'Ariane). */
+export interface Detail {
+  node: SubgraphNode;
+  path: SubgraphNode[];
 }
 
 export interface FacetSection {

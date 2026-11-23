@@ -1,17 +1,17 @@
 "use client";
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous le champ de
-// recherche. Tout se résout dans le navigateur : l'index des volumes est lu à l'arrivée, chaque
-// volume est téléchargé quand on en a besoin (lib/query/explore.ts, neededVolumes), puis la
-// requête de l'URL est résolue sur les volumes chargés. Facettes et recherche changent l'URL sans
-// recharger la page ; Next garde useSearchParams à jour.
+// recherche. L'index des volumes est lu à l'arrivée, chaque volume téléchargé quand la requête
+// en a besoin (neededVolumes), puis la requête de l'URL est résolue sur les volumes chargés.
+// Facettes et recherche changent l'URL sans recharger la page ; Next garde useSearchParams à
+// jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
-import { type ReactNode, useCallback, useEffect, useMemo, useState } from "react";
-import { neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
+import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { detail, neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
 import { parseQuery, type Query, QueryError } from "../lib/query/query.ts";
-import { detail as detailOf, NodeNotFoundError } from "../lib/query/resolve.ts";
+import { NodeNotFoundError } from "../lib/query/resolve.ts";
 import {
   type IndexedVolume,
   indexVolume,
@@ -71,32 +71,22 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   const focus = chosen ?? volumeOf(list, subtree?.[0])?.meta.id ?? volumes[0]?.id;
 
   const needed = useMemo(
-    () =>
-      query === "bad-request"
-        ? []
-        : neededVolumes(
-            volumes.map((v) => v.id),
-            list,
-            query,
-            focus,
-          ),
+    () => (query === "bad-request" ? [] : neededVolumes(volumes, list, query, focus)),
     [volumes, list, query, focus],
   );
   // téléchargement des volumes demandés, une fois chacun
-  const [requested] = useState(() => new Set<string>());
+  const requested = useRef(new Set<string>());
   useEffect(() => {
-    for (const id of needed) {
-      if (requested.has(id)) continue;
-      requested.add(id);
-      const volume = volumes.find((v) => v.id === id);
-      if (volume === undefined) continue;
-      fetchJson<VolumeFile>(volume.url)
+    for (const { id, url } of needed) {
+      if (requested.current.has(id)) continue;
+      requested.current.add(id);
+      fetchJson<VolumeFile>(url)
         .then((file) => setLoaded((loaded) => new Map(loaded).set(id, indexVolume(file))))
         .catch(() => setFailed(true));
     }
-  }, [needed, volumes, requested]);
+  }, [needed]);
 
-  const ready = needed.every((id) => loaded.has(id));
+  const ready = needed.every((v) => loaded.has(v.id));
   // vue : seulement une fois les volumes demandés chargés ; la dernière prête reste affichée
   // pendant le chargement d'un volume regardé
   const [shown, setShown] = useState<{ query: Query; view: View } | "not-found">();
@@ -111,14 +101,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   }, [query, ready, list]);
   if (result !== undefined && result !== shown) setShown(result);
 
-  const detail = useCallback(
-    (id: string) => {
-      const volume = volumeOf(list, id);
-      if (volume === undefined) throw new NodeNotFoundError(id);
-      return detailOf(volume, id);
-    },
-    [list],
-  );
+  const detailOf = useCallback((id: string) => detail(list, id), [list]);
 
   if (query === "bad-request") return <Message>Invalid query.</Message>;
   if (failed) return <Message>A volume could not be loaded.</Message>;
@@ -139,19 +122,18 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
       <Facets
         volumes={volumes}
         sections={sections}
-        checked={shown.query.subtree ?? []}
-        text={text}
+        query={shown.query}
         focus={focus}
         onFocus={setChosen}
-        loaded={new Set(loaded.keys())}
+        loaded={loaded}
       />
       <div className="view">
-        <SearchForm text={text} subtree={shown.query.subtree} />
+        <SearchForm query={shown.query} />
         {selection.length > 0 ? (
           <NodeList
             nodes={nodes}
             opened={selection.length === 1 ? selection[0]?.id : undefined}
-            detail={detail}
+            detail={detailOf}
           />
         ) : (
           // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond

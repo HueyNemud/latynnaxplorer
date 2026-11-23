@@ -16,20 +16,20 @@ interface LineRef {
 }
 
 /** Champs de volume.json lus par l'export (le schéma garantit les autres). */
-export interface VolumeMeta {
+interface VolumeMeta {
   identifier: string;
   title: string | null;
   temporal: { start: string; end: string };
 }
 
 /** Champs de <volume>.document.json lus par l'export. */
-export interface NumrevDocument {
+interface NumrevDocument {
   volume: string;
   pages: { page: number; lines: { id: string; bbox_estimate: Bbox | null }[] }[];
 }
 
 /** Champs de <volume>.structure.json lus par l'export. */
-export interface NumrevStructure {
+interface NumrevStructure {
   volume: string;
   root: string;
   titles: { id: string; parent: string; heading: string; lines: LineRef[] }[];

@@ -3,7 +3,7 @@
 // décodé et indexé une fois (indexVolume), puis interrogé (lib/query/resolve.ts).
 
 import { fold } from "./fold.ts";
-import type { Anchor, FacetVolume, NodeKind, Span, SubgraphNode } from "./types.ts";
+import type { Anchor, NodeKind, Span, SubgraphNode, Volume } from "./types.ts";
 
 /** Index des volumes : leurs métadonnées, et l'adresse de leur fichier. */
 export interface VolumeIndex {
@@ -11,14 +11,14 @@ export interface VolumeIndex {
   volumes: IndexedVolume[];
 }
 
-export interface IndexedVolume extends FacetVolume {
+export interface IndexedVolume extends Volume {
   /** adresse du fichier du volume, absolue ou relative à celle de l'index */
   url: string;
 }
 
 /** Fichier d'un volume : JSON compact, sans ce qui se déduit. */
 export interface VolumeFile {
-  volume: FacetVolume;
+  volume: Volume;
   /** tous les nœuds du volume, dans l'ordre de lecture : leur rang est leur ordre de lecture */
   nodes: FileNode[];
 }
@@ -40,7 +40,7 @@ export interface FileSpan extends Omit<Span, "normalized"> {
 
 /** Un volume prêt à être interrogé : ses nœuds, et ce qui se calcule une fois au chargement. */
 export interface LoadedVolume {
-  meta: FacetVolume;
+  meta: Volume;
   /** dans l'ordre de lecture, complets (empans et ancres, vides s'il n'y en a pas) */
   nodes: SubgraphNode[];
   byId: Map<string, SubgraphNode>;
@@ -83,4 +83,14 @@ export function indexVolume(file: VolumeFile): LoadedVolume {
     folded: nodes.map((n) => fold(n.text)),
     nextEntry,
   };
+}
+
+/** Rubriques au-dessus du nœud, de son parent à la racine. */
+export function* ancestors(volume: LoadedVolume, node: SubgraphNode): Generator<SubgraphNode> {
+  for (let id = node.parentId; id !== null; ) {
+    const parent = volume.byId.get(id);
+    if (parent === undefined) return;
+    yield parent;
+    id = parent.parentId;
+  }
 }

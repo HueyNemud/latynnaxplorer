@@ -33,8 +33,8 @@ export function coveredBy(
   tree: SectionTree,
   checked: ReadonlySet<string>,
   id: string,
-): string | undefined {
-  for (const p of ancestors(tree, id)) if (checked.has(p)) return p;
+): FacetSection | undefined {
+  for (const p of ancestors(tree, id)) if (checked.has(p)) return tree.byId.get(p);
   return undefined;
 }
 

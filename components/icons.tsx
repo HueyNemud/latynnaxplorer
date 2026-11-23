@@ -31,9 +31,9 @@ export function ChevronIcon({
   );
 }
 
-export function SearchIcon({ className }: { className?: string }) {
+export function SearchIcon() {
   return (
-    <Icon className={className}>
+    <Icon>
       <circle cx="7" cy="7" r="4.5" />
       <path d="m10.5 10.5 3 3" />
     </Icon>

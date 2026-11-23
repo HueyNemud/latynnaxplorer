@@ -1,23 +1,12 @@
-// Scénarios 1 et 2 (docs/SCENARIOS.md) sur la fixture : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } }, dans
-// l'ordre de lecture T1, E3, T2, E1, E2, O1 (scripts/fixture.ts). E1 a deux empans, E2 est sur
-// deux pages, E3 n'a pas d'ancre.
+// Scénarios 1 et 2 (docs/SCENARIOS.md) sur la fixture.
 
 import { describe, expect, it } from "vitest";
-import { E1, E2, E3, fixture, O1, T1, T2 } from "../../scripts/fixture.ts";
-import { validateVolume } from "../../scripts/validate.ts";
-import { toVolumeFile } from "../../scripts/volume-file.ts";
+import { E1, E2, E3, fixtureVolume, O1, T1, T2 } from "../../scripts/fixture.ts";
 import type { Query } from "./query.ts";
-import {
-  context,
-  detail,
-  inducedArcs,
-  NodeNotFoundError,
-  resolve,
-  type SelectedNode,
-} from "./resolve.ts";
-import { indexVolume } from "./volume.ts";
+import { context as contextOf, inducedArcs, resolve, selection } from "./resolve.ts";
 
-const volume = indexVolume(toVolumeFile(validateVolume(fixture())));
+const volume = fixtureVolume();
+const context = (query: Query) => contextOf(volume, selection(volume, query));
 
 describe("resolve, sous-arbre", () => {
   it("rend le nœud, ses descendants et les arcs entre eux, dans l'ordre de lecture", () => {
@@ -168,29 +157,7 @@ describe("resolve, texte", () => {
 describe("resolve, sans critère", () => {
   it("ne rend rien", () => {
     expect(resolve(volume, {})).toEqual({ nodes: [], arcs: [] });
-    expect(context(volume, {})).toEqual([]);
-  });
-});
-
-describe("detail", () => {
-  it("rend le nœud seul, avec ses empans, et le texte de ses rubriques de la racine au parent", () => {
-    const { node, path } = detail(volume, E1);
-    expect(node.id).toBe(E1);
-    expect(node.spans).toHaveLength(2);
-    expect(path).toEqual([
-      { id: T1, text: "PARTIE." },
-      { id: T2, text: "RUBRIQUE." },
-    ]);
-  });
-
-  it("rend une rubrique sans son sous-arbre", () => {
-    const { node, path } = detail(volume, T2);
-    expect(node.id).toBe(T2);
-    expect(path.map((s) => s.id)).toEqual([T1]);
-  });
-
-  it("refuse un nœud inconnu", () => {
-    expect(() => detail(volume, "99999999-0000-0000-0000-000000000000")).toThrow(NodeNotFoundError);
+    expect(context({})).toEqual([]);
   });
 });
 
@@ -215,27 +182,27 @@ describe("context", () => {
   };
 
   it("rend les rubriques ancêtres, nœuds complets, de la racine au parent", () => {
-    expect(context(volume, { subtree: [E1] })).toEqual([t1, t2]);
+    expect(context({ subtree: [E1] })).toEqual([t1, t2]);
   });
 
   it("ne compte pas le nœud lui-même, même s'il a des enfants", () => {
-    expect(context(volume, { subtree: [T2] })).toEqual([t1]);
+    expect(context({ subtree: [T2] })).toEqual([t1]);
   });
 
   it("est vide pour un nœud racine", () => {
-    expect(context(volume, { subtree: [T1] })).toEqual([]);
+    expect(context({ subtree: [T1] })).toEqual([]);
   });
 
   it("rend une fois les rubriques au-dessus de plusieurs sous-arbres", () => {
-    expect(context(volume, { subtree: [T2, E3] })).toEqual([t1]);
-    expect(context(volume, { subtree: [E1, E2] })).toEqual([t1, t2]);
+    expect(context({ subtree: [T2, E3] })).toEqual([t1]);
+    expect(context({ subtree: [E1, E2] })).toEqual([t1, t2]);
   });
 
   describe("avec un texte", () => {
-    const ids = (query: Query) => context(volume, query).map((n) => n.id);
+    const ids = (query: Query) => context(query).map((n) => n.id);
 
     it("rend les rubriques au-dessus des résultats, chacune une fois", () => {
-      expect(context(volume, { text: "Dupont" })).toEqual([t1, t2]);
+      expect(context({ text: "Dupont" })).toEqual([t1, t2]);
       expect(ids({ text: "rue" })).toEqual([T1, T2]);
       expect(ids({ text: "u" })).toEqual([T1]); // Durand, Dupont, Martin, RUBRIQUE.
     });
@@ -256,17 +223,14 @@ describe("context", () => {
 });
 
 describe("inducedArcs", () => {
-  const entry = (id: string, order: number, nextEntryId: string | null): SelectedNode => ({
-    id,
-    kind: "entry",
-    parentId: null,
-    documentReadingOrder: order,
-    text: id,
-    nextEntryId,
-  });
+  const entry = (id: string) => ({ id, kind: "entry" as const, parentId: null });
 
   it("ne relie pas deux entrées sélectionnées séparées par une entrée qui ne l'est pas", () => {
     // volume A, B, C ; sélection A, C
-    expect(inducedArcs([entry("A", 0, "B"), entry("C", 2, null)])).toEqual([]);
+    const nextEntry = new Map([
+      ["A", "B"],
+      ["B", "C"],
+    ]);
+    expect(inducedArcs([entry("A"), entry("C")], nextEntry)).toEqual([]);
   });
 });

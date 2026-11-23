@@ -23,8 +23,9 @@ dépendances, choix discutables).
 | 10, facettes et Liste d'accord | #20 | sélection vide sans entrée par défaut |
 | 11, passage à Radix Themes | #21 | interface Radix, fiche au dépliage, filtre à la coche |
 | 12, données en local | #22, #23 | site statique, un fichier par volume, volumes à la demande |
+| 13, audit du code | #24 | code mort retiré, une sélection par volume, commentaires et CSS resserrés |
 
-## Sprint 13 : exporter
+## Sprint 14 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (ci-dessous). Contenu à proposer et valider au

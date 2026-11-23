@@ -118,17 +118,19 @@ alors environ 27 Mo de mémoire.
 
 `lib/query/`, fonctions pures sur un volume chargé :
 
-- `resolve` : les nœuds que désigne la requête (conjonction de ses
-  critères ; sous-arbre : le nœud et tous ses descendants, par ses
-  ancêtres), dans l'ordre de lecture, et les arcs dont les deux bouts en
-  font partie (`inducedArcs`) ;
-- `context` : les rubriques ancêtres de la sélection qui n'en font pas
+- `selection` : les nœuds que désigne la requête (conjonction de ses
+  critères ; sous-arbre : le nœud et tous ses descendants, reconnus par
+  leurs ancêtres, `ancestors`), dans l'ordre de lecture ;
+- `context` : les rubriques ancêtres d'une sélection qui n'en font pas
   partie ;
+- `resolve` : la sélection et les arcs dont les deux bouts en font partie
+  (`inducedArcs`) ; la vue n'a besoin que des nœuds ;
 - `sections` (`facets.ts`) : les rubriques et le nombre d'entrées de leur
   sous-arbre qui contiennent le texte cherché ;
-- `detail` : un nœud et le chemin de ses rubriques ;
-- `explore.ts` : quels volumes une requête demande, et sa vue sur les
-  volumes chargés, mis bout à bout dans l'ordre de l'index.
+- `explore.ts`, sur plusieurs volumes : quels volumes une requête demande,
+  sa vue sur les volumes chargés, mis bout à bout dans l'ordre de l'index,
+  et la fiche d'un nœud (`detail` : le nœud et le chemin de ses
+  rubriques).
 
 Une requête parcourt tout le volume : 13 ms au plus sur 1807 (toutes les
 rubriques, All, recherches). Le coût d'une grosse sélection est son rendu :

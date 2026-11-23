@@ -55,7 +55,7 @@ describe("checkedOf", () => {
 describe("coveredBy", () => {
   it("couvre tout le sous-arbre d'une rubrique cochée, pas la rubrique elle-même", () => {
     const checked = set("A");
-    expect(["A", "A1", "A2", "A2a", "B"].map((id) => coveredBy(tree, checked, id))).toEqual([
+    expect(["A", "A1", "A2", "A2a", "B"].map((id) => coveredBy(tree, checked, id)?.id)).toEqual([
       undefined,
       "A",
       "A",

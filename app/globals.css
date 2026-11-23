@@ -20,7 +20,7 @@
     sans-serif;
 
   /* champs : teintes transparentes de Radix, qui se fondent dans le fond d'une ligne survolée ou
-     ouverte (deux planches, sprint 11) */
+     ouverte */
   --tint-subj: var(--violet-a4);
   --tint-desc: var(--teal-a4);
   --tint-addr: var(--yellow-a4);
@@ -31,7 +31,7 @@
   --icon: 0.875rem;
 
   /* Liste : hauteur d'une ligne de titre (pas de la pile des titres fixés) ; guide : épaisseur
-     (en pixels entiers : 1,5 px rendait des traits inégaux), écart avec les lignes, boule */
+     (en pixels entiers, sinon les traits sont inégaux), écart avec les lignes, boule */
   --title-height: 1.75rem;
   --guide-width: 2px;
   --guide-gap: 0.25rem;
@@ -45,20 +45,13 @@ body {
   margin: 0;
 }
 
-/* Contenu de la page, et la vue à côté des facettes : 64 rem de large au plus, centrés */
-main,
+/* Vue (à côté des facettes, ou seule) : 64 rem de large au plus, centrée */
 .view {
   box-sizing: border-box;
   width: 100%;
   max-width: calc(64rem + 2 * var(--space-5));
   margin: 0 auto;
   padding: var(--space-4) var(--space-5);
-}
-
-/* page d'exploration : toute la fenêtre, panneaux collés à gauche (la vue garde la largeur) */
-main:has(> .explorer) {
-  max-width: none;
-  padding: 0;
 }
 
 /* listes : rien de la typographie par défaut (le site n'a pas de listes à puces) */
@@ -165,20 +158,25 @@ summary::-webkit-details-marker {
 }
 
 /* Une ligne, « … » si le texte est trop long (entier ailleurs : fiche, nœud seul) */
-.breadcrumb,
-.text-section,
-.text-out_of_scope,
-:is(.breadcrumb, .text-section, .text-out_of_scope) .printed,
-.tree-label {
-  white-space: nowrap;
-}
-
 .breadcrumb li,
 .text-section .label,
 .text-out_of_scope .label,
 .tree-label {
   overflow: hidden;
   text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+:is(.breadcrumb, .text-section, .text-out_of_scope) .printed {
+  white-space: nowrap;
+}
+
+/* intitulé d'un titre ou d'un hors champ (Liste), borné à sa colonne */
+.text-section .label,
+.text-out_of_scope .label {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
 }
 
 /* Ligne (vue Liste, arbre des facettes) : coins arrondis, fond au survol ; le chevron dans sa
@@ -223,7 +221,7 @@ details[open] > summary .chevron {
   margin-bottom: var(--space-2);
 }
 
-/* vue vide (app/page.tsx, mise en page par Flex de Radix) : un grand aplat */
+/* vue vide (components/Explorer.tsx, mise en page par Flex de Radix) : un grand aplat */
 .empty {
   border-radius: var(--radius-4);
   background: var(--gray-2);
@@ -370,14 +368,6 @@ details[open] > summary .chevron {
   color: var(--gray-11);
 }
 
-/* titre et hors champ : « … » sur l'intitulé */
-.text-section .label,
-.text-out_of_scope .label {
-  display: inline-block;
-  max-width: 100%;
-  vertical-align: top;
-}
-
 /* page : l'information la moins importante, en petit, tout à droite */
 .page {
   text-align: right;
@@ -431,10 +421,6 @@ details[open] > summary .chevron {
 
 .facets {
   display: contents;
-}
-
-.view {
-  min-width: 0;
 }
 
 /* Panneau (components/Panel.tsx) : son contenu (Volumes 9,5 rem, Contents 22 rem), puis à

@@ -1,12 +1,10 @@
-// Fixture : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } } (scripts/fixture.ts).
-
 import { describe, expect, it } from "vitest";
 import { indexVolume } from "../lib/query/volume.ts";
-import { E1, E2, E3, fixture, O1, T1, T2 } from "./fixture.ts";
+import { E1, E2, E3, fixture, fixtureFile, O1, T1, T2 } from "./fixture.ts";
 import { validateVolume } from "./validate.ts";
 import { anchorsOf, refuseLoops, toVolumeFile, withVolume } from "./volume-file.ts";
 
-const file = toVolumeFile(validateVolume(fixture()));
+const file = fixtureFile();
 const node = (id: string) => file.nodes.find((n) => n.id === id);
 
 describe("toVolumeFile", () => {

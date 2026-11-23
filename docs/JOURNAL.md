@@ -34,7 +34,19 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   rallonge ; le nommer par `aria-labelledby` vers l'intitulé seul.
 - **Captures headless** : `Emulation.setDeviceMetricsOverride` (pas
   `--window-size`) ; pour un focus clavier, `setFocusEmulationEnabled` ou
-  une touche, puis `focus()`.
+  une touche, puis `focus()`. Ouvrir un `<details>` et cliquer dedans dans
+  le même `Runtime.evaluate` donne un faux résultat : laisser un délai.
+- **commitlint** : le sujet ne commence pas par une majuscule, même un
+  nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
+
+## 2026-11-20 — Sprint 13 : audit et simplification du code (PR #24)
+
+- Comportement inchangé, 105 lignes de moins. Code mort retiré ; une seule
+  sélection par volume et un seul parcours des ancêtres (vue deux fois
+  plus rapide) ; URL de la requête écrite une fois, composants qui
+  reçoivent la requête ; commentaires sans historique ni redites ; CSS
+  regroupée, rendu identique au pixel ; fixture chargée en un appel.
+  108 tests.
 
 ## 2026-11-20 — Sprint 12 : données en local (PR #22, #23)
 

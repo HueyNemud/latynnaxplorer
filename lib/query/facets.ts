@@ -6,17 +6,16 @@
 import type { Query } from "./query.ts";
 import { matcher } from "./resolve.ts";
 import type { FacetSection } from "./types.ts";
-import type { LoadedVolume } from "./volume.ts";
+import { ancestors, type LoadedVolume } from "./volume.ts";
 
 /** Les rubriques du volume, dans l'ordre de lecture (un parent avant ses enfants), avec leurs
  * décomptes d'entrées. */
 export function sections(volume: LoadedVolume, { text }: Pick<Query, "text">): FacetSection[] {
-  const matches = matcher(text);
+  const matches = matcher(volume, text);
   const entries = new Map<string, number>();
   volume.nodes.forEach((n, i) => {
-    if (n.kind !== "entry" || !matches(volume, i)) return;
-    for (let a = n.parentId; a !== null; a = volume.byId.get(a)?.parentId ?? null)
-      entries.set(a, (entries.get(a) ?? 0) + 1);
+    if (n.kind !== "entry" || !matches(i)) return;
+    for (const a of ancestors(volume, n)) entries.set(a.id, (entries.get(a.id) ?? 0) + 1);
   });
   return volume.nodes
     .filter((n) => n.kind === "section")

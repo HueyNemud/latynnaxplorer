@@ -1,14 +1,8 @@
-// Facettes de structure sur la fixture : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } } (scripts/fixture.ts).
-// E1 « Dupont, rue de la Paix, 12. », E2 « Martin, rue Longue, 3. », E3 « Durand… ».
-
 import { describe, expect, it } from "vitest";
-import { fixture, T1, T2 } from "../../scripts/fixture.ts";
-import { validateVolume } from "../../scripts/validate.ts";
-import { toVolumeFile } from "../../scripts/volume-file.ts";
+import { fixtureVolume, T1, T2 } from "../../scripts/fixture.ts";
 import { sections } from "./facets.ts";
-import { indexVolume } from "./volume.ts";
 
-const volume = indexVolume(toVolumeFile(validateVolume(fixture())));
+const volume = fixtureVolume();
 
 const entries = (text?: string) =>
   sections(volume, text === undefined ? {} : { text }).map((s) => [s.id, s.entries]);

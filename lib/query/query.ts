@@ -1,5 +1,4 @@
 // Requête : ce que l'utilisateur demande, lisible depuis l'URL et réécrite à l'identique.
-// Les noms de paramètres sont en anglais (application internationale).
 // Filtres et scénarios : docs/SCENARIOS.md. Tous les critères sont facultatifs et se combinent
 // (conjonction) ; sans critère, la requête est vide et ne sélectionne rien.
 
@@ -20,11 +19,6 @@ export class QueryError extends Error {
 
 // Forme 8-4-4-4-12 seulement : les uuid de numrev ne sont pas tous d'une version RFC 4122.
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-
-/** Un identifiant de nœud bien formé. */
-export function isUuid(value: string): boolean {
-  return UUID.test(value);
-}
 
 /** Lit la requête dans les paramètres d'une URL ; les paramètres inconnus sont ignorés. */
 export function parseQuery(params: URLSearchParams): Query {
@@ -53,4 +47,10 @@ export function serializeQuery(query: Query): URLSearchParams {
   for (const subtree of query.subtree ?? []) params.append("subtree", subtree);
   if (query.text !== undefined) params.set("text", query.text);
   return params;
+}
+
+/** Adresse de la page pour la requête : `pathname`, et ses paramètres s'il y en a. */
+export function queryUrl(pathname: string, query: Query): string {
+  const params = serializeQuery(query);
+  return params.size > 0 ? `${pathname}?${params}` : pathname;
 }

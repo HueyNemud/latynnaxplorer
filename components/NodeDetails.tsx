@@ -7,16 +7,11 @@
 
 import { useEffect, useState } from "react";
 import { createPortal } from "react-dom";
-import type { SubgraphNode } from "../lib/query/types.ts";
+import type { Detail } from "../lib/query/types.ts";
 import { NodeDetail } from "./NodeDetail.tsx";
 
 /** Case d'une fiche à remplir, juste sous la ligne d'un nœud (`.item`). */
 const BOX = ".detail[data-node]";
-
-export interface Detail {
-  node: SubgraphNode;
-  path: Pick<SubgraphNode, "id" | "text">[];
-}
 
 export function NodeDetails({ detail }: { detail: (id: string) => Detail }) {
   const [boxes, setBoxes] = useState<ReadonlyMap<string, HTMLElement>>(new Map());

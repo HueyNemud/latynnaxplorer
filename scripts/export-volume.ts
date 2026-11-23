@@ -3,16 +3,32 @@
 // par défaut : public/volumes, servi en développement. Fichiers à héberger tels quels ; la
 // compression revient au serveur.
 
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 import type { VolumeIndex } from "../lib/query/volume.ts";
-import { readVolume } from "./read.ts";
+import { validateVolume } from "./validate.ts";
 import { toVolumeFile, withVolume } from "./volume-file.ts";
 
 const [dir, out = "public/volumes"] = process.argv.slice(2);
 if (!dir) throw new Error("usage : node scripts/export-volume.ts data/<volume> [dossier]");
 
-const file = toVolumeFile(readVolume(dir));
+const readJson = (path: string): unknown => JSON.parse(readFileSync(path, "utf8"));
+
+/** Le seul fichier du dossier du volume qui finit par `suffix` (livrable numrev). */
+const exportFile = (suffix: string): string => {
+  const names = readdirSync(dir).filter((name) => name.endsWith(suffix));
+  if (names.length !== 1 || !names[0])
+    throw new Error(`${dir} : un fichier *${suffix} attendu, ${names.length} trouvé(s)`);
+  return join(dir, names[0]);
+};
+
+const file = toVolumeFile(
+  validateVolume({
+    volume: readJson(join(dir, "volume.json")),
+    document: readJson(exportFile(".document.json")),
+    structure: readJson(exportFile(".structure.json")),
+  }),
+);
 const json = JSON.stringify(file);
 mkdirSync(out, { recursive: true });
 const name = `${file.volume.id}.json`;
