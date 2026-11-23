@@ -158,21 +158,21 @@ describe("resolve, texte dans des zones", () => {
   const ids = (query: Query) => selection(volume, query).map((n) => n.id);
 
   it("cherche dans les empans des zones demandées", () => {
-    expect(ids({ text: "rue", zones: ["loc"] })).toEqual([E1]);
+    expect(ids({ text: "rue", zones: ["addr"] })).toEqual([E1]);
     expect(ids({ text: "Dupont", zones: ["subj"] })).toEqual([E1]);
-    expect(ids({ text: "Dupont", zones: ["desc", "loc"] })).toEqual([]);
+    expect(ids({ text: "Dupont", zones: ["desc", "addr"] })).toEqual([]);
   });
 
   it("cherche hors empan dans « other » : rubriques, hors champ, entrées sans empan", () => {
     expect(ids({ text: "rubrique", zones: ["other"] })).toEqual([T2]);
     expect(ids({ text: "almanach", zones: ["other"] })).toEqual([O1]);
     expect(ids({ text: "rue", zones: ["other"] })).toEqual([E2]);
-    expect(ids({ text: "rubrique", zones: ["subj", "desc", "loc"] })).toEqual([]);
+    expect(ids({ text: "rubrique", zones: ["subj", "desc", "addr"] })).toEqual([]);
   });
 
   it("ne trouve pas une phrase à cheval sur deux morceaux", () => {
     expect(ids({ text: "Dupont, rue" })).toEqual([E1]);
-    expect(ids({ text: "Dupont, rue", zones: ["subj", "loc", "other"] })).toEqual([]);
+    expect(ids({ text: "Dupont, rue", zones: ["subj", "addr", "other"] })).toEqual([]);
   });
 });
 

@@ -89,21 +89,21 @@ export function indexVolume(file: VolumeFile): LoadedVolume {
   };
 }
 
-const ZONE: Record<SpanLabel, Zone> = { SUBJ: "subj", DESC: "desc", ADDR: "loc" };
-
 /** Texte plié d'un nœud dans chaque zone : ses empans de ce libellé et, pour « other », son texte
  * hors empan ; les morceaux séparés par un saut de ligne, que le texte cherché ne contient pas. */
 function zoned({ text, spans }: SubgraphNode): Record<Zone, string> {
   const chars = Array.from(text);
   const rest = [...chars];
-  const pieces: Record<Zone, string[]> = { subj: [], desc: [], loc: [], other: [] };
+  const pieces: Record<Zone, string[]> = { subj: [], desc: [], addr: [], other: [] };
   for (const s of spans) {
-    pieces[ZONE[s.label]].push(chars.slice(s.charStart, s.charEnd).join(""));
+    pieces[s.label.toLowerCase() as Lowercase<SpanLabel>].push(
+      chars.slice(s.charStart, s.charEnd).join(""),
+    );
     rest.fill("\n", s.charStart, s.charEnd);
   }
   pieces.other.push(rest.join(""));
   const join = (zone: Zone) => fold(pieces[zone].join("\n"));
-  return { subj: join("subj"), desc: join("desc"), loc: join("loc"), other: join("other") };
+  return { subj: join("subj"), desc: join("desc"), addr: join("addr"), other: join("other") };
 }
 
 /** Rubriques au-dessus du nœud, de son parent à la racine. */

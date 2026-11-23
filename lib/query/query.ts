@@ -2,9 +2,11 @@
 // Filtres et scénarios : docs/SCENARIOS.md. Tous les critères sont facultatifs et se combinent
 // (conjonction) ; sans critère, la requête est vide et ne sélectionne rien.
 
-/** Zones du texte où chercher : les empans sujet, description et adresse, et le texte hors empan. */
-export const ZONES = ["subj", "desc", "loc", "other"] as const;
-export type Zone = (typeof ZONES)[number];
+import type { SpanLabel } from "./types.ts";
+
+/** Zones du texte où chercher : les empans de chaque libellé, et le texte hors empan. */
+export type Zone = Lowercase<SpanLabel> | "other";
+export const ZONES: readonly Zone[] = ["subj", "desc", "addr", "other"];
 
 export interface Query {
   /**
@@ -43,14 +45,11 @@ export function parseQuery(params: URLSearchParams): Query {
   // Aucune zone ou toutes : tout le texte (un formulaire sans case cochée n'envoie rien).
   const zones = params.getAll("in");
   for (const zone of zones)
-    if (!isZone(zone)) throw new QueryError(`« in » n'est pas une zone : ${zone}`);
+    if (!(ZONES as readonly string[]).includes(zone))
+      throw new QueryError(`« in » n'est pas une zone : ${zone}`);
   const chosen = ZONES.filter((z) => zones.includes(z));
   if (text && chosen.length > 0 && chosen.length < ZONES.length) query.zones = chosen;
   return query;
-}
-
-function isZone(value: string): value is Zone {
-  return (ZONES as readonly string[]).includes(value);
 }
 
 /** Valeur d'un paramètre donné au plus une fois. */

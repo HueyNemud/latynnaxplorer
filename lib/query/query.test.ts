@@ -39,20 +39,20 @@ describe("parseQuery", () => {
   });
 
   it("lit les zones, dans l'ordre, sans doublon", () => {
-    expect(parseQuery(new URLSearchParams("text=paix&in=loc&in=subj&in=loc"))).toEqual({
+    expect(parseQuery(new URLSearchParams("text=paix&in=addr&in=subj&in=addr"))).toEqual({
       text: "paix",
-      zones: ["subj", "loc"],
+      zones: ["subj", "addr"],
     });
   });
 
   it("ignore les zones quand elles y sont toutes : tout le texte", () => {
-    expect(parseQuery(new URLSearchParams("text=paix&in=other&in=loc&in=desc&in=subj"))).toEqual({
+    expect(parseQuery(new URLSearchParams("text=paix&in=other&in=addr&in=desc&in=subj"))).toEqual({
       text: "paix",
     });
   });
 
   it("ignore les zones sans texte", () => {
-    expect(parseQuery(new URLSearchParams(`subtree=${ID}&text=&in=loc`))).toEqual({
+    expect(parseQuery(new URLSearchParams(`subtree=${ID}&text=&in=addr`))).toEqual({
       subtree: [ID],
     });
   });
@@ -77,7 +77,7 @@ describe("parseQuery", () => {
     ["mal formé", "subtree=10000000-0000-0000-0000"],
     ["avec des caractères en trop", `subtree=${ID}x`],
     ["texte répété", "text=a&text=b"],
-    ["zone inconnue", "text=a&in=addr"],
+    ["zone inconnue", "text=a&in=loc"],
   ])("refuse un paramètre %s", (_, search) => {
     expect(() => parseQuery(new URLSearchParams(search))).toThrow(QueryError);
   });
