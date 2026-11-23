@@ -13,7 +13,6 @@
 // - Rendues de nouveau seulement quand ce qu'elles montrent change, pas quand l'URL suit les cases.
 
 import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
-import { usePathname } from "next/navigation";
 import { memo, type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   checkedOf,
@@ -33,7 +32,7 @@ import type { FacetSection, Volume } from "../lib/query/types.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { Panel } from "./Panel.tsx";
-import { QUERY_FORM } from "./SearchForm.tsx";
+import { QUERY_FORM, usePagePath } from "./SearchForm.tsx";
 
 interface FacetsProps {
   /** tous les volumes de l'index */
@@ -82,7 +81,7 @@ export const Facets = memo(function Facets({
   const [open] = useState(() => pathTo(tree, checked));
 
   // appliquer : l'URL suit les cases, 300 ms après le dernier clic
-  const pathname = usePathname();
+  const pathname = usePagePath();
   const [loading, startTransition] = useTransition();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);

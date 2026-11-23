@@ -54,6 +54,13 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-24 — Mise en ligne
+
+- Dépôt public ; site publié sur GitHub Pages à chaque arrivée sur `main`,
+  sous `/latynnaxplorer` (`basePath`, que `usePathname` omet : ajouté aux
+  adresses écrites dans l'historique). Volumes pris dans la release
+  `volumes`.
+
 ## 2026-11-23 — Vocabulaire et docs
 
 - Un terme par objet (table en tête de `docs/DESIGN.md`) dans les docs,

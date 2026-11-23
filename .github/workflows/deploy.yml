@@ -1,0 +1,58 @@
+# Publication du site sur GitHub Pages à chaque arrivée sur main, ou à la main : les volumes
+# sont pris dans la release « volumes » (README, « Mise en ligne »), le site construit sous le
+# sous-chemin de Pages (/latynnaxplorer).
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Une publication à la fois ; celle en cours va à son terme.
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: pnpm/setup@v3
+        with:
+          runtime: node@26
+          cache: true
+          require-lockfile: true
+
+      - id: pages
+        uses: actions/configure-pages@v6
+
+      - run: gh release download volumes --dir public/volumes
+        env:
+          GH_TOKEN: ${{ github.token }}
+
+      - run: pnpm build
+        env:
+          NEXT_PUBLIC_BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v5
