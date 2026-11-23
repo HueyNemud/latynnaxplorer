@@ -1,5 +1,5 @@
 // Texte imprimé d'un nœud, tel que numrev le donne : emphase en italique, chaque empan dans un
-// élément `span-<libellé>` (fond teinté dans une ligne de la vue Liste,
+// élément `span-<libellé>` (fond coloré dans une ligne de la vue Liste,
 // docs/composants/noeud-liste.md).
 
 import { Fragment, type ReactNode } from "react";

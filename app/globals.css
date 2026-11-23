@@ -7,7 +7,7 @@
 
 /* Couleurs, espacements, rayons, ombres, tailles de texte : ceux du thème Radix :
    - --gray-12 texte, --gray-11 texte atténué (≥ 4,5:1 sur blanc, sur --gray-2 et sur les
-     teintes des empans) ; --gray-2 survol et nœud ouvert, --gray-3 survol d'une surface déjà
+     fonds des empans) ; --gray-2 survol et nœud ouvert, --gray-3 survol d'une surface déjà
      sur --gray-2 ; --gray-11 guides de la Liste ;
    - --radius-4 lignes et cartes, --radius-2 coude du guide ; --shadow-4 relief ;
      --font-size-2 texte petit ; --focus-8 anneau du focus clavier.
@@ -19,7 +19,7 @@
     var(--font-fira), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
 
-  /* empans : teintes transparentes de Radix, qui se fondent dans le fond d'une ligne survolée ou
+  /* empans : couleurs transparentes de Radix, qui se fondent dans le fond d'une ligne survolée ou
      ouverte ; les boutons des zones (components/SearchForm.tsx) en reprennent les couleurs */
   --tint-subj: var(--violet-a4);
   --tint-desc: var(--teal-a4);
@@ -109,7 +109,7 @@ summary::-webkit-details-marker {
   white-space: pre-line;
 }
 
-/* Empan : fond teinté aux coins arrondis. Le fond déborde un peu de chaque côté (marge
+/* Empan : fond coloré aux coins arrondis. Le fond déborde un peu de chaque côté (marge
    négative) sans décaler le texte ; un filet blanc sépare deux empans voisins. */
 .span {
   padding: 0.08em;
@@ -538,7 +538,7 @@ details[open] > summary .chevron {
   border-left-color: var(--gray-12);
 }
 
-/* sélection : une grosse coche ronde sur la vignette ; la case de Radix, ronde */
+/* sélection : une grande case ronde sur la vignette (la case de Radix, arrondie) */
 .volume-box {
   position: absolute;
   top: var(--space-2);

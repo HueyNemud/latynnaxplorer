@@ -1,4 +1,4 @@
-// Coches des facettes sur un petit arbre : volume V, A ⊃ { A1, A2 ⊃ { A2a } } et B ;
+// Cases des facettes sur un petit arbre : volume V, A ⊃ { A1, A2 ⊃ { A2a } } et B ;
 // volume W, C.
 
 import { describe, expect, it } from "vitest";
@@ -83,7 +83,7 @@ describe("toggleSection", () => {
     expect(coveredBy(tree, checked, "A1")).toBeUndefined();
   });
 
-  it("ne modifie pas les coches reçues", () => {
+  it("ne modifie pas l'ensemble reçu", () => {
     const checked = set("B");
     toggleSection(tree, checked, "A");
     expect(checked).toEqual(set("B"));
@@ -105,7 +105,7 @@ describe("volumes", () => {
     expect(toggleVolume(tree, set("A", "B", "C"), "V")).toEqual(set("C"));
   });
 
-  it("état de la coche d'un volume : entier, en partie ou rien", () => {
+  it("état de la case d'un volume : entier, en partie ou rien", () => {
     expect(volumeState(tree, set("A", "B"), "V")).toBe(true);
     expect(volumeState(tree, set("A2a"), "V")).toBe("indeterminate");
     expect(volumeState(tree, set("C"), "V")).toBe(false);
@@ -128,7 +128,7 @@ describe("All et Clear (volume au focus)", () => {
 });
 
 describe("pathTo", () => {
-  it("déplie les rubriques au-dessus de chaque coche", () => {
+  it("déplie les rubriques au-dessus de chaque rubrique cochée", () => {
     expect(pathTo(tree, set("A2a", "B"))).toEqual(set("A2", "A"));
   });
 });

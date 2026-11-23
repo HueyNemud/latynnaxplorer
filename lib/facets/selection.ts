@@ -1,6 +1,6 @@
-// Coches des facettes de structure (docs/composants/facettes.md), en fonctions pures, sans état
-// ni rendu : components/Facets.tsx les appelle. Une coche est l'identifiant d'une rubrique ;
-// seules les plus hautes sont gardées, leurs descendants sont couverts.
+// Cases des facettes de structure (docs/composants/facettes.md), en fonctions pures, sans état
+// ni rendu : components/Facets.tsx les appelle. Les cases cochées sont un ensemble d'identifiants
+// de rubriques ; seules les plus hautes sont gardées, leurs descendantes sont couvertes.
 
 import type { FacetSection } from "../query/types.ts";
 
@@ -23,7 +23,7 @@ function* ancestors(tree: SectionTree, id: string): Generator<string> {
   for (let p = tree.byId.get(id)?.parentId; p; p = tree.byId.get(p)?.parentId) yield p;
 }
 
-/** Les coches de l'URL : seulement des rubriques (un `subtree` d'un autre nœud ne coche rien). */
+/** Les rubriques cochées de l'URL (un `subtree` d'un autre nœud ne coche rien). */
 export function checkedOf(tree: SectionTree, subtree: readonly string[]): Set<string> {
   return new Set(subtree.filter((id) => tree.byId.has(id)));
 }
@@ -39,7 +39,7 @@ export function coveredBy(
 }
 
 /** Ne garder que cette rubrique couverte : la rubrique qui la couvre est décochée, elle seule est
- * cochée à sa place ; les autres coches ne changent pas. */
+ * cochée à sa place ; les autres cases ne changent pas. */
 export function keepOnly(tree: SectionTree, checked: ReadonlySet<string>, id: string): Set<string> {
   const next = new Set(checked);
   for (const p of ancestors(tree, id)) next.delete(p);
@@ -99,7 +99,7 @@ export function setVolume(
   return next;
 }
 
-/** État de la coche d'un volume : entier, en partie (une partie de ses rubriques), ou rien. */
+/** État de la case d'un volume : entier, en partie (une partie de ses rubriques), ou rien. */
 export function volumeState(
   tree: SectionTree,
   checked: ReadonlySet<string>,
@@ -109,7 +109,7 @@ export function volumeState(
   return isVolumeSelected(tree, checked, volumeId) && "indeterminate";
 }
 
-/** La coche ronde d'un volume : tout le volume s'il ne l'est pas entier (rien ou en partie),
+/** La case ronde d'un volume : tout le volume s'il ne l'est pas entier (rien ou en partie),
  * sinon plus rien. */
 export function toggleVolume(
   tree: SectionTree,
@@ -119,8 +119,8 @@ export function toggleVolume(
   return setVolume(tree, checked, volumeId, !isVolumeFull(tree, checked, volumeId));
 }
 
-/** Rubriques au-dessus des coches : à déplier à l'arrivée pour les montrer ; cochées en partie
- * (une rubrique en dessous d'elles est cochée). */
+/** Rubriques au-dessus des rubriques cochées : à déplier à l'arrivée pour les montrer ; cochées
+ * en partie (une rubrique en dessous d'elles est cochée). */
 export function pathTo(tree: SectionTree, checked: ReadonlySet<string>): Set<string> {
   const path = new Set<string>();
   for (const id of checked) for (const p of ancestors(tree, id)) path.add(p);
