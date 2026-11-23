@@ -274,11 +274,14 @@ details[open] > summary .chevron {
 }
 
 /* Groupe : une section, contexte compris, à plat ; marqué par son guide (à --guide-x), qui part
-   du titre et finit par une boule */
+   du titre et finit par une boule. Hors de l'écran, le navigateur ne le calcule ni ne le dessine
+   (hauteur estimée tant qu'il n'a jamais été montré, puis retenue). */
 .group {
   --guide-x: 0rem;
   position: relative;
   padding: 0 0 var(--space-1) calc(var(--guide-width) + var(--guide-gap));
+  content-visibility: auto;
+  contain-intrinsic-size: auto 20rem;
 }
 
 .group::before,
