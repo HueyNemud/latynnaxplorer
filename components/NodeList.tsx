@@ -4,27 +4,32 @@
 // rendue qu'au premier dépliage (components/NodeDetails.tsx), sauf pour une sélection d'un seul
 // nœud, dépliée d'emblée.
 
-import type { CSSProperties, ReactNode } from "react";
-import type { Detail, SubgraphNode } from "../lib/query/types.ts";
+import { type CSSProperties, type ReactNode, useCallback, useMemo } from "react";
+import { detail, withContext } from "../lib/query/explore.ts";
+import type { SubgraphNode } from "../lib/query/types.ts";
+import type { LoadedVolume } from "../lib/query/volume.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
 import { NodeDetails } from "./NodeDetails.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
 /**
- * `nodes` : la sélection et son contexte (rubriques ancêtres), volume après volume, chacun dans
- * l'ordre de lecture ; `opened` : le nœud montré déplié (une sélection d'un seul nœud) ;
- * `detail` : la fiche d'un nœud.
+ * `selection` : les nœuds sélectionnés, volume après volume, chacun dans l'ordre de lecture ;
+ * `volumes` : les volumes chargés, d'où la Liste tire le contexte et les fiches.
  */
 export function NodeList({
-  nodes: shown,
-  opened,
-  detail,
+  selection,
+  volumes,
 }: {
-  nodes: SubgraphNode[];
-  opened: string | undefined;
-  detail: (id: string) => Detail;
+  selection: SubgraphNode[];
+  volumes: readonly LoadedVolume[];
 }) {
+  // la sélection et son contexte (rubriques ancêtres)
+  const shown = useMemo(() => withContext(volumes, selection), [volumes, selection]);
+  // une sélection d'un seul nœud : montré déplié
+  const opened = selection.length === 1 ? selection[0]?.id : undefined;
+  const detailOf = useCallback((id: string) => detail(volumes, id), [volumes]);
+
   const ids = new Set(shown.map((n) => n.id));
   // enfants de chaque nœud montré, dans l'ordre de lecture ; null : les nœuds sans parent montré
   const children = Map.groupBy(shown, (n) =>
@@ -56,7 +61,7 @@ export function NodeList({
         <span className="page">Page</span>
       </div>
       {children.get(null)?.map((n) => render(n, []))}
-      <NodeDetails detail={detail} />
+      <NodeDetails detail={detailOf} />
     </>
   );
 }

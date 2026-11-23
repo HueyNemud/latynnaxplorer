@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { E1, E2, fixtureFile, O1, T1, T2 } from "../../scripts/fixture.ts";
-import { detail, neededVolumes, view, volumeOf } from "./explore.ts";
+import { detail, neededVolumes, view, volumeOf, withContext } from "./explore.ts";
 import { NodeNotFoundError } from "./resolve.ts";
 import { indexVolume, type VolumeFile } from "./volume.ts";
 
@@ -37,17 +37,9 @@ describe("neededVolumes", () => {
 });
 
 describe("view", () => {
-  it("met bout à bout les volumes, chacun dans l'ordre de lecture, contexte compris", () => {
-    const { selection, shown } = view([first, second], { subtree: [T2, other(E1)] });
+  it("met bout à bout les volumes, chacun dans l'ordre de lecture", () => {
+    const { selection } = view([first, second], { subtree: [T2, other(E1)] });
     expect(selection.map((n) => n.id)).toEqual([T2, E1, E2, O1, other(E1)]);
-    // contexte : T1 au-dessus de T2 ; dans AUTRE, T1 et T2 au-dessus de E1
-    expect(shown.map((n) => n.id)).toEqual([
-      T1,
-      ...selection.slice(0, 4).map((n) => n.id),
-      other(T1),
-      other(T2),
-      other(E1),
-    ]);
   });
 
   it("cherche le texte dans tous les volumes chargés, facettes comprises", () => {
@@ -66,6 +58,34 @@ describe("view", () => {
     expect(() => view([first, second], { subtree: ["inconnu"], text: "rue" })).toThrow(
       "nœud inconnu : inconnu",
     );
+  });
+});
+
+describe("withContext", () => {
+  const { selection } = view([first, second], { subtree: [T2, other(E1)] });
+
+  it("ajoute à chaque volume le contexte de ses nœuds, dans l'ordre de lecture", () => {
+    // T1 au-dessus de T2 ; dans AUTRE, T1 et T2 au-dessus de E1
+    expect(withContext([first, second], selection).map((n) => n.id)).toEqual([
+      T1,
+      ...selection.slice(0, 4).map((n) => n.id),
+      other(T1),
+      other(T2),
+      other(E1),
+    ]);
+  });
+
+  it("ne donne le contexte que des nœuds montrés : une part de la sélection", () => {
+    // dans TEST, E2 sans T2 : T2 n'y est plus que du contexte, comme T1
+    const part = selection.filter((n) => n.id === E2 || n.id === other(E1));
+    expect(withContext([first, second], part).map((n) => n.id)).toEqual([
+      T1,
+      T2,
+      E2,
+      other(T1),
+      other(T2),
+      other(E1),
+    ]);
   });
 });
 
