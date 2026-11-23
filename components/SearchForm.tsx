@@ -1,73 +1,134 @@
 "use client";
 
-// Formulaire de la requête (docs/SCENARIOS.md) : le champ de recherche, et les cases des
-// facettes qui s'y rattachent par l'attribut `form` (components/Facets.tsx). Entrée envoie le
-// texte et les rubriques cochées ; sans rubrique cochée, la recherche porte sur tout l'annuaire.
+// Formulaire de la requête (docs/SCENARIOS.md) : les boutons des zones où chercher, le champ de
+// recherche soudé à son bouton Search, et les cases des facettes qui s'y rattachent par l'attribut
+// `form` (components/Facets.tsx). Entrée ou Search envoie le texte, les zones enfoncées et les
+// rubriques cochées ; sans rubrique cochée, la recherche porte sur tout l'annuaire ; sans zone
+// enfoncée, ou toutes, sur tout le texte.
 // L'envoi, comme le lien qui efface la recherche, ajoute une entrée à l'historique sans recharger
 // la page, comme un envoi natif.
 
-import { IconButton, TextField } from "@radix-ui/themes";
+import { Box, Button, Flex, IconButton, TextField } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
-import { parseQuery, type Query, queryUrl } from "../lib/query/query.ts";
+import { useState } from "react";
+import { parseQuery, type Query, queryUrl, ZONES, type Zone } from "../lib/query/query.ts";
 import { ClearIcon, SearchIcon } from "./icons.tsx";
 
 /** Identifiant du formulaire de la requête, auquel les cases des facettes se rattachent. */
 export const QUERY_FORM = "query";
 
-/** `query` : la requête de la sélection affichée ; effacer la recherche garde ses rubriques. */
+/** `query` : la requête de la sélection affichée ; effacer la recherche garde ses rubriques et
+ * oublie ses zones. */
 export function SearchForm({ query }: { query: Query }) {
-  const { text, ...cleared } = query;
+  const { text, zones, ...cleared } = query;
   const pathname = usePathname();
   const go = (query: Query) => window.history.pushState(null, "", queryUrl(pathname, query));
   return (
     <search className="search-form">
-      <form
-        id={QUERY_FORM}
-        method="get"
-        onSubmit={(event) => {
-          event.preventDefault();
-          const params = new URLSearchParams();
-          for (const [name, value] of new FormData(event.currentTarget))
-            if (typeof value === "string") params.append(name, value);
-          go(parseQuery(params));
-        }}
-      >
-        <label htmlFor="search-text" className="visually-hidden">
-          Search text
-        </label>
-        {/* clé : un champ neuf à chaque texte, même quand une navigation garde la page */}
-        <TextField.Root
-          key={text}
-          id="search-text"
-          type="search"
-          name="text"
-          defaultValue={text}
-          placeholder="Search"
-          autoComplete="off"
-          spellCheck={false}
+      <Flex asChild align="center" gap="3">
+        <form
+          id={QUERY_FORM}
+          method="get"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const params = new URLSearchParams();
+            for (const [name, value] of new FormData(event.currentTarget))
+              if (typeof value === "string") params.append(name, value);
+            go(parseQuery(params));
+          }}
         >
-          <TextField.Slot>
-            <SearchIcon />
-          </TextField.Slot>
-          {text !== undefined && (
-            <TextField.Slot>
-              <IconButton asChild size="1" variant="ghost" color="gray">
-                <a
-                  href={queryUrl(pathname, cleared)}
-                  title="Clear search"
-                  onClick={(event) => {
-                    event.preventDefault();
-                    go(cleared);
-                  }}
-                >
-                  <ClearIcon />
-                  <span className="visually-hidden">Clear search</span>
-                </a>
-              </IconButton>
-            </TextField.Slot>
-          )}
-        </TextField.Root>
-      </form>
+          {/* clé : des boutons neufs à chaque requête, comme le champ */}
+          <ZoneToggles key={zones?.join()} zones={zones} />
+          <Flex flexGrow="1">
+            <label htmlFor="search-text" className="visually-hidden">
+              Search text
+            </label>
+            <Box flexGrow="1">
+              {/* clé : un champ neuf à chaque texte, même quand une navigation garde la page */}
+              <TextField.Root
+                key={text}
+                size="3"
+                className="search-input"
+                id="search-text"
+                type="search"
+                name="text"
+                defaultValue={text}
+                placeholder="Search"
+                autoComplete="off"
+                spellCheck={false}
+              >
+                {text !== undefined && (
+                  <TextField.Slot side="right">
+                    <IconButton asChild size="1" variant="ghost" color="gray">
+                      <a
+                        href={queryUrl(pathname, cleared)}
+                        title="Clear search"
+                        onClick={(event) => {
+                          event.preventDefault();
+                          go(cleared);
+                        }}
+                      >
+                        <ClearIcon />
+                        <span className="visually-hidden">Clear search</span>
+                      </a>
+                    </IconButton>
+                  </TextField.Slot>
+                )}
+              </TextField.Root>
+            </Box>
+            <Button type="submit" size="3" variant="surface" className="search-submit">
+              <SearchIcon />
+              Search
+            </Button>
+          </Flex>
+        </form>
+      </Flex>
     </search>
+  );
+}
+
+/** Bouton de chaque zone : libellé, infobulle, et couleur de ses champs dans la Liste
+ * (--tint-* dans app/globals.css). */
+const ZONE_BUTTONS = {
+  subj: {
+    label: "Subj",
+    color: "violet",
+    title: "Search in subjects: names of people and businesses",
+  },
+  desc: { label: "Desc", color: "teal", title: "Search in descriptions: trades, titles, details" },
+  addr: { label: "Addr", color: "yellow", title: "Search in addresses" },
+  other: {
+    label: "Other",
+    color: "gray",
+    title: "Search in the rest: section headings, page headers",
+  },
+} as const satisfies Record<Zone, object>;
+
+/** Boutons des zones où chercher, enfoncés pour celles de la requête (toutes sans zone) ; un clic
+ * n'envoie rien, le formulaire envoie les zones enfoncées avec le texte. */
+function ZoneToggles({ zones = ZONES }: { zones: readonly Zone[] | undefined }) {
+  const [pressed, setPressed] = useState(zones);
+  return (
+    <Flex gap="1" align="center" role="group" aria-label="Search in">
+      {ZONES.map((z) => {
+        const on = pressed.includes(z);
+        return (
+          <Button
+            key={z}
+            type="button"
+            variant={on ? "soft" : "outline"}
+            color={ZONE_BUTTONS[z].color}
+            aria-pressed={on}
+            title={ZONE_BUTTONS[z].title}
+            onClick={() => setPressed(on ? pressed.filter((p) => p !== z) : [...pressed, z])}
+          >
+            {ZONE_BUTTONS[z].label}
+          </Button>
+        );
+      })}
+      {pressed.map((z) => (
+        <input key={z} type="hidden" name="in" value={z} />
+      ))}
+    </Flex>
   );
 }
