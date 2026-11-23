@@ -1,10 +1,11 @@
 "use client";
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous la barre de la
-// vue (le champ de recherche ; plus tard, les filtres). L'index des volumes est lu à l'arrivée, chaque volume téléchargé quand la requête
-// en a besoin (neededVolumes), puis la requête de l'URL est résolue sur les volumes chargés.
-// Facettes et recherche changent l'URL sans recharger la page ; Next garde useSearchParams à
-// jour.
+// vue (le champ de recherche ; plus tard, les filtres). L'index des volumes est lu à l'arrivée,
+// chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis la requête de l'URL
+// est résolue sur les volumes chargés : sélection et décomptes, communs à toutes les vues ; la vue
+// n'en montre qu'une part. Facettes et recherche changent l'URL sans recharger la page ; Next
+// garde useSearchParams à jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
@@ -109,7 +110,8 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   const { selection, sections } = shown.view;
   const { text } = shown.query;
   const designated = shown.query.subtree?.length === 1 ? shown.query.subtree[0] : undefined;
-  const root = designated && volumeOf(list, designated)?.byId.get(designated);
+  const root =
+    designated === undefined ? undefined : volumeOf(list, designated)?.byId.get(designated);
   return (
     <div className="explorer">
       {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché,
