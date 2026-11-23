@@ -27,6 +27,7 @@ dépendances, choix discutables).
 | Barre de la vue fixée | #25 | recherche toujours visible, la liste défile dessous |
 | Recherche par zone | #28 | `in` (sujet, description, adresse, reste), boutons des zones, bouton Search |
 | 14, sélection et vues | #29 | sélection commune aux vues, Liste par tranches, facettes rendues seulement si elles changent, guides d'un seul gris |
+| Vocabulaire et docs | #30 | un terme par objet, une ligne par décision, fiches resserrées |
 
 ## Sprint 15 : exporter
 
