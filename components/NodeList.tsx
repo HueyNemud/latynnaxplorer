@@ -25,7 +25,7 @@ import { NodeDetails } from "./NodeDetails.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
 /** Nœuds sélectionnés par tranche : la première est montrée en moins de 100 ms. */
-const STEP = 300;
+const STEP = 200;
 
 /**
  * `selection` : les nœuds sélectionnés, volume après volume, chacun dans l'ordre de lecture ;
