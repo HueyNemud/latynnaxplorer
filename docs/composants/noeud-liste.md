@@ -73,13 +73,8 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
   dans l'ordre du document, ses lignes et ses sous-groupes. Pas de fond, pas
   de cadre, pas d'écart entre deux lignes ni entre deux groupes.
 - **Guide** : filet de 2 px à gauche du groupe, de sous sa ligne de titre
-  jusqu'à la fin du groupe, terminé par une **boule** (6 px). Une seule
-  teinte pour tous les niveaux, en deux intensités : à hauteur de chaque
-  ligne, seul le guide de sa section est gris foncé (`--gray-11`) ; ceux
-  des sections englobantes sont estompés (`--gray-7`) le long de
-  leurs sous-groupes. Coude et boule suivent la même règle : estompés s'ils ne
-  touchent qu'un sous-groupe (section qui ne contient que des sections, fin
-  de groupe sur un sous-groupe).
+  jusqu'à la fin du groupe, terminé par une **boule** (6 px). Guides, coudes
+  et boules : gris foncé (`--gray-11`), à tous les niveaux.
 - **Coude** : le guide part de la mi-hauteur de la ligne de titre et se coude
   (rayon 0,25 rem) vers son chevron.
 - **Retrait** : un sous-groupe est en retrait à gauche seulement, son guide
@@ -164,9 +159,6 @@ changent ni au survol ni au dépliage. Pas de transition.
 - **Coude porté par le titre** : le guide est dessiné par le groupe, le coude
   par la ligne de titre, pour suivre le titre une fois fixé. Un cache, sur la
   ligne de titre, masque le guide qui continue à monter derrière elle.
-- **Guide estompé par le sous-groupe** : un sous-groupe commence au guide de
-  son parent (marge négative, contenu inchangé) et le recouvre de sa bordure
-  gauche, estompée ; coude et boule estompés par `:has()`.
 - **Profondeur** : chaque groupe porte `--depth` (contexte compris), pour la
   pile des titres. Le titre d'un groupe est son premier élément : aucune
   classe à part.
@@ -187,8 +179,7 @@ des champs.
 | Jeton (Radix) | Usage |
 |---|---|
 | `--gray-12` | texte |
-| `--gray-11` | hors champ, page, en-tête, chevron, clés de la fiche ; guide de la section la plus proche, coude, boule |
-| `--gray-7` | guides des sections englobantes, le long de leurs sous-groupes |
+| `--gray-11` | hors champ, page, en-tête, chevron, clés de la fiche ; guides, coudes, boules |
 | `--color-background` | page, lignes, cache du coude |
 | `--gray-2` | survol, élément ouvert |
 | `--shadow-4` | élément ouvert |
