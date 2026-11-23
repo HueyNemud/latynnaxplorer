@@ -214,8 +214,11 @@ Une rubrique qui a des sous-rubriques est un `<details>` dont la ligne est le
   script, les facettes ne servent pas.
 - **Case dans un `<summary>`** : cliquer la case ne déplie pas la rubrique
   (vérifié sous Chromium).
-- **Décomptes** : calculés avec la vue, pour chaque rubrique ancêtre des
-  entrées qui contiennent le texte cherché (`lib/query/facets.ts`).
+- **Décomptes** : calculés avec la sélection, pour chaque rubrique ancêtre
+  des entrées qui contiennent le texte cherché (`lib/query/facets.ts`).
+- **Rendu seulement quand il change** : les coches n'étant lues dans la
+  requête qu'une fois, les facettes (`memo`) ignorent ses rubriques ; quand
+  l'URL suit les coches, Contents ne refait pas ses rangées.
 
 ## Jetons
 

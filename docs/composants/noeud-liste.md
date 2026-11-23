@@ -24,6 +24,9 @@ La Liste ne change pas la sélection : seules les facettes le font.
 - Les types ne se distinguent **que par leur texte** (titre, champs, gris).
 - **Natif d'abord** : dépliage par `<details>` / `<summary>` ; la fiche
   n'est rendue qu'au premier dépliage.
+- **Par tranches** : la sélection se montre 200 nœuds à la fois, avec leur
+  contexte ; la tranche suivante s'ajoute quand la fin de la Liste
+  approche.
 
 ## Ce que les données imposent
 
@@ -164,6 +167,15 @@ changent ni au survol ni au dépliage. Pas de transition.
   classe à part.
 - **Épaisseurs en pixels entiers** : 1,5 px s'affiche tantôt sur 1, tantôt
   sur 2 pixels selon la position ; guides et coudes à 2 px.
+- **Tranches** : la Liste reçoit toute la sélection et n'en rend que le
+  début, avec son contexte (`withContext`) ; une fin vide, observée à un
+  écran près (`IntersectionObserver` sur la zone qui défile), ajoute la
+  tranche suivante. Une ligne déjà rendue ne l'est plus (`memo`) ; les
+  guides ne dépendent d'aucun `:has()`, qui ferait recalculer le style de
+  toute la Liste à chaque tranche.
+- **Groupes hors de l'écran** : `content-visibility: auto`, hauteur estimée
+  (20 rem) tant qu'un groupe n'a pas été montré ; la barre de défilement
+  est donc approchée.
 - **Fiches au dépliage** : un seul composant client pour toute la Liste
   (`components/NodeDetails.tsx`) écoute les dépliages (l'événement `toggle`
   ne remonte pas : écouté à la capture) et rend chaque fiche demandée dans sa
@@ -260,7 +272,4 @@ fiche à la même taille ; page, en-tête et clés de la fiche plus petits.
 
 ## Questions ouvertes
 
-- **Poids de la page** : 25,8 Mo (1,9 Mo compressés) pour 13 737 nœuds,
-  en production ; restent les lignes, la pagination est la vraie réponse
-  (`docs/IDEES.md`).
 - **Lecteur d'écran réel** : titres en capitales.

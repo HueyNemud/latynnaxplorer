@@ -95,12 +95,18 @@ n'est notée que si elle risque de revenir sur la table.
   taper, lancer), toujours visibles avec leur état ; le champ, plus grand
   qu'elles, soudé à un bouton Search.
 - Script assumé : sans lui, rien ne s'affiche.
+- Vues et facettes : la sélection et les décomptes des facettes sont
+  calculés une fois, communs à toutes les vues (`lib/query/explore.ts`) ;
+  chaque vue n'en montre qu'une part (tranche, agrégats), avec son propre
+  état, hors de l'URL. Aucune vue ne crée un élément par nœud de la
+  sélection. Les facettes ne se rendent de nouveau que si ce qu'elles
+  montrent change, pas quand l'URL suit les coches.
 
 ## Vue Liste (`docs/composants/noeud-liste.md`)
 
-- Liste à plat : la hiérarchie se lit par des guides de niveau (seul celui
-  de la section la plus proche est foncé) et des titres de section fixés et
-  empilés ; le contexte est rendu comme la sélection.
+- Liste à plat : la hiérarchie se lit par des guides de niveau (tous gris
+  foncé) et des titres de section fixés et empilés ; le contexte est rendu
+  comme la sélection.
 - Un seul élément pour tout nœud : une ligne (chevron, texte | page) qui
   déplie sa fiche par `<details>` natif ; deux états, survol et ouvert (en
   relief) ; les types ne se distinguent que par leur texte.
@@ -109,9 +115,13 @@ n'est notée que si elle risque de revenir sur la table.
 - Fiche en DataList (texte, champs, métadonnées, fil d'Ariane en texte),
   rendue au premier dépliage ; une sélection d'un seul nœud la montre
   dépliée d'emblée.
-- Tout est rendu, sans pagination pour l'instant (« Listes particulières »,
-  13 737 lignes : environ 3 s, dont 2,1 s de style et de mise en page ;
-  `docs/IDEES.md`).
+- Sélection montrée par tranches de 200 nœuds, avec leur contexte : la
+  suivante s'ajoute quand la fin de la Liste approche ; une autre sélection
+  repart de la première. Ni décompte, ni URL changée ; Ctrl+F ne trouve que
+  les lignes montrées (la recherche couvre le reste). Groupes hors de
+  l'écran ni calculés ni dessinés (`content-visibility: auto`).
+  Écartées : la pagination (lecture coupée), la virtualisation (dépendance,
+  mal accordée aux groupes emboîtés et aux titres fixés).
 - Vue vide : un grand aplat, « Nothing to show » sans critère, « No match »
   sinon.
 
