@@ -17,11 +17,16 @@ import { ClearIcon, SearchIcon } from "./icons.tsx";
 /** Identifiant du formulaire de la requête, auquel les cases des facettes se rattachent. */
 export const QUERY_FORM = "query";
 
+/** Chemin de la page, sous-chemin du site compris (next.config.ts), que usePathname omet. */
+export function usePagePath(): string {
+  return `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${usePathname()}`;
+}
+
 /** `query` : la requête de la sélection affichée ; effacer la recherche garde ses rubriques et
  * oublie ses zones. */
 export function SearchForm({ query }: { query: Query }) {
   const { text, zones, ...cleared } = query;
-  const pathname = usePathname();
+  const pathname = usePagePath();
   const go = (query: Query) => window.history.pushState(null, "", queryUrl(pathname, query));
   return (
     <search className="search-form">
