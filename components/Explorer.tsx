@@ -1,7 +1,7 @@
 "use client";
 
-// Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous le champ de
-// recherche. L'index des volumes est lu à l'arrivée, chaque volume téléchargé quand la requête
+// Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous la barre de la
+// vue (le champ de recherche ; plus tard, les filtres). L'index des volumes est lu à l'arrivée, chaque volume téléchargé quand la requête
 // en a besoin (neededVolumes), puis la requête de l'URL est résolue sur les volumes chargés.
 // Facettes et recherche changent l'URL sans recharger la page ; Next garde useSearchParams à
 // jour.
@@ -128,31 +128,35 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
         loaded={loaded}
       />
       <div className="view">
-        <SearchForm query={shown.query} />
-        {selection.length > 0 ? (
-          <NodeList
-            nodes={nodes}
-            opened={selection.length === 1 ? selection[0]?.id : undefined}
-            detail={detailOf}
-          />
-        ) : (
-          // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond
-          <Flex
-            className="empty"
-            direction="column"
-            align="center"
-            justify="center"
-            gap="2"
-            minHeight="60vh"
-          >
-            <Text size="6" color="gray" aria-hidden="true">
-              ∅
-            </Text>
-            <Text size="2" color="gray">
-              {shown.query.subtree || text ? "No match" : "Nothing to show"}
-            </Text>
-          </Flex>
-        )}
+        <div className="view-bar">
+          <SearchForm query={shown.query} />
+        </div>
+        <div className="view-scroll">
+          {selection.length > 0 ? (
+            <NodeList
+              nodes={nodes}
+              opened={selection.length === 1 ? selection[0]?.id : undefined}
+              detail={detailOf}
+            />
+          ) : (
+            // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond
+            <Flex
+              className="empty"
+              direction="column"
+              align="center"
+              justify="center"
+              gap="2"
+              minHeight="60vh"
+            >
+              <Text size="6" color="gray" aria-hidden="true">
+                ∅
+              </Text>
+              <Text size="2" color="gray">
+                {shown.query.subtree || text ? "No match" : "Nothing to show"}
+              </Text>
+            </Flex>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -20,10 +20,9 @@ export function SearchForm({ query }: { query: Query }) {
   const pathname = usePathname();
   const go = (query: Query) => window.history.pushState(null, "", queryUrl(pathname, query));
   return (
-    <search>
+    <search className="search-form">
       <form
         id={QUERY_FORM}
-        className="search-form"
         method="get"
         onSubmit={(event) => {
           event.preventDefault();
