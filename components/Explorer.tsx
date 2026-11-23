@@ -1,16 +1,15 @@
 "use client";
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous la barre de la
-// vue (le champ de recherche ; plus tard, les filtres). L'index des volumes est lu à l'arrivée,
+// vue (la recherche ; plus tard, d'autres critères). L'index des volumes est lu à l'arrivée,
 // chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis la requête de l'URL
-// est résolue sur les volumes chargés : sélection et décomptes, communs à toutes les vues ; la vue
-// n'en montre qu'une part. Facettes et recherche changent l'URL sans recharger la page ; Next
-// garde useSearchParams à jour.
+// est résolue sur les volumes chargés (explore). Facettes et recherche changent l'URL sans
+// recharger la page ; Next garde useSearchParams à jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
-import { neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
+import { type Exploration, explore, neededVolumes, volumeOf } from "../lib/query/explore.ts";
 import { parseQuery, type Query, QueryError } from "../lib/query/query.ts";
 import { NodeNotFoundError } from "../lib/query/resolve.ts";
 import {
@@ -65,7 +64,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   const [loaded, setLoaded] = useState<ReadonlyMap<string, LoadedVolume>>(new Map());
   const [failed, setFailed] = useState(false);
   const list = useMemo(() => volumes.flatMap((v) => loaded.get(v.id) ?? []), [volumes, loaded]);
-  // volume regardé : choisi dans Volumes ; sinon celui de la première rubrique cochée, sinon le
+  // volume au focus : choisi dans Volumes ; sinon celui de la première rubrique cochée, sinon le
   // premier
   const [chosen, setChosen] = useState<string>();
   const subtree = query === "bad-request" ? undefined : query.subtree;
@@ -88,13 +87,13 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   }, [needed]);
 
   const ready = needed.every((v) => loaded.has(v.id));
-  // vue : seulement une fois les volumes demandés chargés ; la dernière prête reste affichée
-  // pendant le chargement d'un volume regardé
-  const [shown, setShown] = useState<{ query: Query; view: View } | "not-found">();
+  // résultat montré : seulement une fois les volumes demandés chargés ; le dernier prêt reste
+  // affiché pendant le chargement d'un volume mis au focus
+  const [shown, setShown] = useState<{ query: Query; exploration: Exploration } | "not-found">();
   const result = useMemo(() => {
     if (query === "bad-request" || !ready) return undefined;
     try {
-      return { query, view: view(list, query) };
+      return { query, exploration: explore(list, query) };
     } catch (error) {
       if (error instanceof NodeNotFoundError) return "not-found" as const;
       throw error;
@@ -107,7 +106,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   if (shown === undefined) return <Waiting />;
   if (shown === "not-found") return <Message>No node has this identifier.</Message>;
 
-  const { selection, sections } = shown.view;
+  const { selection, sections } = shown.exploration;
   const { text } = shown.query;
   const designated = shown.query.subtree?.length === 1 ? shown.query.subtree[0] : undefined;
   const root =

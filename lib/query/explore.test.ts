@@ -3,7 +3,7 @@
 
 import { describe, expect, it } from "vitest";
 import { E1, E2, fixtureFile, O1, T1, T2 } from "../../scripts/fixture.ts";
-import { detail, neededVolumes, view, volumeOf, withContext } from "./explore.ts";
+import { detail, explore, neededVolumes, volumeOf, withContext } from "./explore.ts";
 import { NodeNotFoundError } from "./resolve.ts";
 import { indexVolume, type VolumeFile } from "./volume.ts";
 
@@ -24,7 +24,7 @@ const needed = (...args: Parameters<typeof neededVolumes>) =>
   neededVolumes(...args).map((v) => v.id);
 
 describe("neededVolumes", () => {
-  it("demande le volume regardé, rien d'autre sans texte ni sous-arbre inconnu", () => {
+  it("demande le volume au focus, rien d'autre sans texte ni sous-arbre inconnu", () => {
     expect(needed(ALL, [], {}, "AUTRE")).toEqual(["AUTRE"]);
     expect(needed(ALL, [first], { subtree: [T2] }, "TEST")).toEqual(["TEST"]);
     expect(needed(ALL, [first], { subtree: [T2], text: "paix" }, "TEST")).toEqual(["TEST"]);
@@ -36,14 +36,14 @@ describe("neededVolumes", () => {
   });
 });
 
-describe("view", () => {
+describe("explore", () => {
   it("met bout à bout les volumes, chacun dans l'ordre de lecture", () => {
-    const { selection } = view([first, second], { subtree: [T2, other(E1)] });
+    const { selection } = explore([first, second], { subtree: [T2, other(E1)] });
     expect(selection.map((n) => n.id)).toEqual([T2, E1, E2, O1, other(E1)]);
   });
 
   it("cherche le texte dans tous les volumes chargés, facettes comprises", () => {
-    const { selection, sections } = view([first, second], { text: "paix" });
+    const { selection, sections } = explore([first, second], { text: "paix" });
     expect(selection.map((n) => n.id)).toEqual([E1, other(E1)]);
     expect(sections.map((s) => [s.volumeId, s.id, s.entries])).toEqual([
       ["TEST", T1, 1],
@@ -54,15 +54,15 @@ describe("view", () => {
   });
 
   it("refuse un sous-arbre qui n'est dans aucun volume chargé, même avec un texte", () => {
-    expect(() => view([first], { subtree: [T2, other(T2)] })).toThrow(NodeNotFoundError);
-    expect(() => view([first, second], { subtree: ["inconnu"], text: "rue" })).toThrow(
+    expect(() => explore([first], { subtree: [T2, other(T2)] })).toThrow(NodeNotFoundError);
+    expect(() => explore([first, second], { subtree: ["inconnu"], text: "rue" })).toThrow(
       "nœud inconnu : inconnu",
     );
   });
 });
 
 describe("withContext", () => {
-  const { selection } = view([first, second], { subtree: [T2, other(E1)] });
+  const { selection } = explore([first, second], { subtree: [T2, other(E1)] });
 
   it("ajoute à chaque volume le contexte de ses nœuds, dans l'ordre de lecture", () => {
     // T1 au-dessus de T2 ; dans AUTRE, T1 et T2 au-dessus de E1
