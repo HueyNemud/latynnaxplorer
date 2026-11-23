@@ -1,10 +1,9 @@
 // Vue Liste (docs/composants/noeud-liste.md) : la sélection dans ses rubriques, à plat. Toute
-// section, contexte compris, est un groupe marqué par son guide de niveau ; tout nœud est le
-// même élément, une ligne qui déplie sa fiche juste dessous (<details> natif). La fiche n'est
-// rendue qu'au premier dépliage (components/NodeDetails.tsx), sauf pour une sélection d'un seul
-// nœud, dépliée d'emblée.
-// La sélection est montrée par tranches : la première, puis la suivante chaque fois que le bas de
-// la Liste approche (à un écran près) ; une autre sélection repart de la première.
+// rubrique, contexte compris, est marquée par son guide de niveau ; tout nœud est une ligne qui
+// déplie sa fiche juste dessous (<details> natif), rendue au premier dépliage
+// (components/NodeDetails.tsx), sauf pour une sélection d'un seul nœud, dépliée d'emblée.
+// Montrée par tranches : la suivante quand le bas de la Liste approche ; une autre sélection
+// repart de la première.
 
 import {
   type CSSProperties,
@@ -60,19 +59,19 @@ export function NodeList({
     n.parentId !== null && ids.has(n.parentId) ? n.parentId : null,
   );
 
-  // un nœud et, pour une section, son groupe ; `path` : ses rubriques montrées, de la racine au
-  // parent (chemin de sa fiche, profondeur de son groupe)
+  // un nœud et, pour une rubrique, son contenu ; `path` : son chemin (rubriques montrées, de la
+  // racine au parent), qui donne aussi sa profondeur
   const render = (n: SubgraphNode, path: SubgraphNode[]): ReactNode => {
-    const item = <Item key={n.id} node={n} path={path} open={n.id === opened} />;
-    if (n.kind !== "section") return item;
+    const node = <ListNode key={n.id} node={n} path={path} open={n.id === opened} />;
+    if (n.kind !== "section") return node;
     return (
       <section
         key={n.id}
-        className="group"
+        className="section"
         aria-labelledby={`text-${n.id}`}
         style={{ "--depth": path.length } as CSSProperties}
       >
-        {item}
+        {node}
         {children.get(n.id)?.map((c) => render(c, [...path, n]))}
       </section>
     );
@@ -93,12 +92,20 @@ export function NodeList({
 
 /**
  * Un nœud, quel que soit son type : seul son texte change. Rendu une fois : une tranche de plus
- * ne rend que ses nœuds (son chemin, toutes ses rubriques, ne dépend que du nœud).
+ * ne rend que ses nœuds (son chemin ne dépend que du nœud).
  */
-const Item = memo(
-  function Item({ node, path, open }: { node: SubgraphNode; path: SubgraphNode[]; open: boolean }) {
+const ListNode = memo(
+  function ListNode({
+    node,
+    path,
+    open,
+  }: {
+    node: SubgraphNode;
+    path: SubgraphNode[];
+    open: boolean;
+  }) {
     return (
-      <details className="item" open={open}>
+      <details className="node" open={open}>
         <summary className="row line" aria-labelledby={`text-${node.id}`}>
           <span className={`text text-${node.kind}`}>
             <ChevronIcon className="chevron" />
@@ -114,7 +121,7 @@ const Item = memo(
         {/* dépliée d'emblée : la fiche ; sinon une case vide, remplie au premier dépliage */}
         {open ? (
           <div className="detail">
-            <NodeDetail node={node} context={path} />
+            <NodeDetail node={node} path={path} />
           </div>
         ) : (
           <div className="detail" data-node={node.id} />
