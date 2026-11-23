@@ -36,10 +36,10 @@ export function matcher(
 export function selection(volume: LoadedVolume, query: Query): SubgraphNode[] {
   const { subtree, text } = query;
   if (subtree === undefined && text === undefined) return [];
-  const roots = new Set(subtree);
+  const designated = new Set(subtree);
   const inSubtree = (n: SubgraphNode) => {
-    if (roots.has(n.id)) return true;
-    for (const a of ancestors(volume, n)) if (roots.has(a.id)) return true;
+    if (designated.has(n.id)) return true;
+    for (const a of ancestors(volume, n)) if (designated.has(a.id)) return true;
     return false;
   };
   const matches = matcher(volume, query);

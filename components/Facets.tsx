@@ -1,15 +1,16 @@
 "use client";
 
 // Facettes de structure (docs/composants/facettes.md) : panneaux Volumes et Contents, en
-// colonnes de Miller ; règles des coches dans lib/facets/selection.ts.
-// - Les coches sont l'état de ce composant, lu une fois depuis l'URL : l'URL les suit après un
-//   court délai (entrée de l'historique remplacée) ; la vue est estompée pendant son calcul.
-// - Le volume regardé est l'état de la page (components/Explorer.tsx), qui le charge : Contents
-//   attend le sien, et la coche ronde d'un volume pas encore chargé est inactive.
+// colonnes de Miller ; règles des cases dans lib/facets/selection.ts.
+// - Les cases cochées sont l'état de ce composant, lu une fois depuis l'URL : l'URL les suit
+//   après un court délai (entrée de l'historique remplacée) ; la vue est estompée pendant son
+//   calcul.
+// - Le volume au focus est l'état de la page (components/Explorer.tsx), qui le charge : Contents
+//   attend le sien, et la case ronde d'un volume pas encore chargé est inactive.
 // - Les cases font partie du formulaire de la requête (components/SearchForm.tsx) par
 //   l'attribut `form` : seules partent les rubriques cochées les plus hautes (une case couverte
 //   n'a pas de nom).
-// - Re-rendues seulement quand ce qu'elles montrent change : pas quand l'URL suit les coches.
+// - Rendues de nouveau seulement quand ce qu'elles montrent change, pas quand l'URL suit les cases.
 
 import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
@@ -40,9 +41,9 @@ interface FacetsProps {
   /** les rubriques des volumes chargés */
   sections: FacetSection[];
   /** la requête de la sélection affichée : ses `subtree` sont les rubriques cochées les plus
-   * hautes ; son texte est gardé quand les coches changent */
+   * hautes ; son texte est gardé quand les cases changent */
   query: Query;
-  /** le volume regardé, dont Contents montre l'arbre */
+  /** le volume au focus, dont Contents montre l'arbre */
   focus: string | undefined;
   onFocus: (volumeId: string) => void;
   /** les volumes chargés, par identifiant */
@@ -50,8 +51,8 @@ interface FacetsProps {
 }
 
 /**
- * Les coches ne sont lues dans la requête qu'une fois : une requête qui n'en diffère que par ses
- * rubriques (l'URL qui suit les coches), aux mêmes décomptes, ne change rien aux facettes.
+ * Les cases cochées ne sont lues dans la requête qu'une fois : une requête qui n'en diffère que
+ * par ses rubriques (l'URL qui suit les cases), aux mêmes décomptes, ne change rien aux facettes.
  */
 function sameFacets(a: FacetsProps, b: FacetsProps): boolean {
   return (
@@ -75,12 +76,12 @@ export const Facets = memo(function Facets({
   loaded,
 }: FacetsProps) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
-  // les coches, lues une fois depuis l'URL
+  // les rubriques cochées, lues une fois depuis l'URL
   const [checked, setChecked] = useState(() => checkedOf(tree, query.subtree ?? []));
   // à l'arrivée, le chemin des rubriques cochées est déplié
   const [open] = useState(() => pathTo(tree, checked));
 
-  // appliquer : l'URL suit les coches, après 300 ms sans nouvelle coche
+  // appliquer : l'URL suit les cases, 300 ms après le dernier clic
   const pathname = usePathname();
   const [loading, startTransition] = useTransition();
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -101,7 +102,7 @@ export const Facets = memo(function Facets({
     onToggle: () => setPanels(level < panels ? level : level + 1),
   });
 
-  // rubriques semi-sélectionnées : une rubrique en dessous d'elles est cochée
+  // rubriques cochées en partie : une rubrique en dessous d'elles est cochée
   const partial = useMemo(() => pathTo(tree, checked), [tree, checked]);
 
   const row = (s: FacetSection): ReactNode => {
@@ -189,7 +190,7 @@ export const Facets = memo(function Facets({
         </div>
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
-        {/* tout le volume regardé, ou rien de lui ; inactifs quand ils ne changeraient rien */}
+        {/* tout le volume au focus, ou rien de lui ; inactifs quand ils ne changeraient rien */}
         {focus !== undefined && !loaded.has(focus) && (
           <Flex justify="center" p="4">
             <Spinner />

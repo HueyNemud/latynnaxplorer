@@ -1,5 +1,5 @@
 // Texte imprimé d'un nœud, tel que numrev le donne : emphase en italique, chaque empan dans un
-// élément `field-<libellé>` (fond pastel dans une ligne de la vue Liste,
+// élément `span-<libellé>` (fond coloré dans une ligne de la vue Liste,
 // docs/composants/noeud-liste.md).
 
 import { Fragment, type ReactNode } from "react";
@@ -14,7 +14,7 @@ export function PrintedText({ text, spans = [] }: { text: string; spans?: readon
         if (segment.emphasis) content = <em>{content}</em>;
         if (segment.span)
           content = (
-            <span className={`field field-${segment.span.label.toLowerCase()}`}>{content}</span>
+            <span className={`span span-${segment.span.label.toLowerCase()}`}>{content}</span>
           );
         // segments sans identité propre, recalculés à chaque rendu : l'index suffit
         // biome-ignore lint/suspicious/noArrayIndexKey: liste statique

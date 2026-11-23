@@ -15,7 +15,7 @@ describe("sections", () => {
     ]);
   });
 
-  it("compte les entrées de tout le sous-arbre, pas les titres ni les hors champ", () => {
+  it("compte les entrées de tout le sous-arbre, pas les rubriques ni les hors champ", () => {
     expect(entries()).toEqual([
       [T1, 3],
       [T2, 2],

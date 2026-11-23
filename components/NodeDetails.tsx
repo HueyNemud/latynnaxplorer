@@ -10,7 +10,7 @@ import { createPortal } from "react-dom";
 import type { Detail } from "../lib/query/types.ts";
 import { NodeDetail } from "./NodeDetail.tsx";
 
-/** Case d'une fiche à remplir, juste sous la ligne d'un nœud (`.item`). */
+/** Case d'une fiche à remplir, juste sous la ligne d'un nœud (`.node`). */
 const BOX = ".detail[data-node]";
 
 export function NodeDetails({ detail }: { detail: (id: string) => Detail }) {
@@ -23,11 +23,11 @@ export function NodeDetails({ detail }: { detail: (id: string) => Detail }) {
         setBoxes((boxes) => (boxes.get(id) === box ? boxes : new Map(boxes).set(id, box)));
     };
     // dépliées avant que l'écoute commence
-    for (const box of document.querySelectorAll(`.item[open] > ${BOX}`)) add(box);
+    for (const box of document.querySelectorAll(`.node[open] > ${BOX}`)) add(box);
     const onToggle = (event: Event) => {
-      const item = event.target;
-      if (item instanceof HTMLDetailsElement && item.open)
-        add(item.querySelector(`:scope > ${BOX}`));
+      const node = event.target;
+      if (node instanceof HTMLDetailsElement && node.open)
+        add(node.querySelector(`:scope > ${BOX}`));
     };
     document.addEventListener("toggle", onToggle, true);
     return () => document.removeEventListener("toggle", onToggle, true);
@@ -36,6 +36,6 @@ export function NodeDetails({ detail }: { detail: (id: string) => Detail }) {
     .filter(([, box]) => box.isConnected) // une case retirée de la Liste n'a plus de fiche
     .map(([id, box]) => {
       const { node, path } = detail(id);
-      return createPortal(<NodeDetail node={node} context={path} />, box, id);
+      return createPortal(<NodeDetail node={node} path={path} />, box, id);
     });
 }

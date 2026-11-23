@@ -3,7 +3,7 @@
 // Formulaire de la requête (docs/SCENARIOS.md) : les boutons des zones où chercher, le champ de
 // recherche soudé à son bouton Search, et les cases des facettes qui s'y rattachent par l'attribut
 // `form` (components/Facets.tsx). Entrée ou Search envoie le texte, les zones enfoncées et les
-// rubriques cochées ; sans rubrique cochée, la recherche porte sur tout l'annuaire ; sans zone
+// rubriques cochées ; sans rubrique cochée, la recherche porte sur tous les volumes ; sans zone
 // enfoncée, ou toutes, sur tout le texte.
 // L'envoi, comme le lien qui efface la recherche, ajoute une entrée à l'historique sans recharger
 // la page, comme un envoi natif.
@@ -87,7 +87,7 @@ export function SearchForm({ query }: { query: Query }) {
   );
 }
 
-/** Bouton de chaque zone : libellé, infobulle, et couleur de ses champs dans la Liste
+/** Bouton de chaque zone : libellé, infobulle, et couleur de ses empans dans la Liste
  * (--tint-* dans app/globals.css). */
 const ZONE_BUTTONS = {
   subj: {

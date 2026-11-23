@@ -1,27 +1,20 @@
 # Scénarios de requête
 
-Chaque scénario décrit ce qu'un utilisateur demande et ce qu'il obtient.
-Il donne un filtre de `lib/query/` et au moins un test. Les filtres doivent
-pouvoir se combiner : un scénario n'est pas une fonction à part.
+Chaque scénario décrit ce qu'un utilisateur demande et ce qu'il obtient ;
+il donne un critère de la requête (`lib/query/`) et au moins un test.
 
-Tous les critères sont facultatifs ; ceux qui sont présents se combinent
-(conjonction), sans cas particulier. Sans aucun critère, rien n'est
-sélectionné : la vue le dit (« Nothing to show »). Chaque point d'entrée de l'interface (lien
-d'un nœud, champ de recherche) commence une nouvelle sélection.
-
-Principe : sans filtre explicite, le résultat contient tout ce que la
-requête désigne, quel que soit le type de nœud. `lib/query/` fait
-confiance aux données et ne décide pas de ce qui est pertinent.
+Tous les critères sont facultatifs et se combinent (conjonction), sans cas
+particulier ; sans aucun critère, rien n'est sélectionné. Le résultat
+contient tout ce que la requête désigne, quel que soit le type de nœud :
+`lib/query/` fait confiance aux données et ne juge pas de la pertinence.
 
 ## 1. Un nœud et tout son sous-arbre
 
 **Demande** : le contenu complet d'une rubrique, dans l'ordre de lecture ;
-ou de plusieurs rubriques à la fois (facettes de structure,
-`docs/DESIGN.md`).
+ou de plusieurs rubriques à la fois (les cases des facettes).
 
 **URL** : `?subtree=<uuid>`, répétable : `?subtree=<a>&subtree=<b>` donne
-l'union des deux sous-arbres (union dans une facette, conjonction avec les
-autres critères).
+l'union des deux sous-arbres (en conjonction avec les autres critères).
 
 **Résultat** : le sous-graphe induit par le nœud désigné et tous ses
 descendants, récursivement (sous-rubriques, entrées, éléments hors champ) ;
@@ -29,13 +22,10 @@ avec plusieurs nœuds, l'union de leurs sous-arbres, chaque nœud une fois
 même si deux nœuds désignés sont l'un sous l'autre.
 
 - Le nœud désigné fait partie du résultat.
-- Nœuds triés par ordre de lecture (`document_reading_order`).
+- Nœuds dans l'ordre de lecture.
 - Arcs `member_of`, `child_of` et `follows` dont les deux bouts sont dans
   le résultat ; `follows` relie une entrée à l'entrée suivante du volume,
   seulement si celle-ci est aussi dans le résultat.
-- Un nœud porte `id`, `kind`, `parentId`, `documentReadingOrder`, `text`,
-  ses empans (`spans`, dans l'ordre du texte) et ses ancres (`anchors`,
-  dans l'ordre des pages).
 - À part du résultat, le **contexte** (`context`) : les rubriques ancêtres
   du nœud désigné, de la racine à son parent (avec plusieurs nœuds :
   celles de chacun, une fois chacune). Il entoure la sélection sans en
@@ -52,7 +42,7 @@ répétée est lue une fois.
 
 ## 2. Les nœuds qui contiennent un texte
 
-**Demande** : tous les passages de l'annuaire qui mentionnent un nom, une
+**Demande** : tous les passages des annuaires qui mentionnent un nom, une
 activité, une rue.
 
 **URL** : `?text=<texte>`, et `in=<zone>` (répétable) pour ne chercher
@@ -65,10 +55,8 @@ les facettes, il envoie aussi les rubriques cochées.
 cherché, comme une phrase entière, sans tenir compte des accents ni de la
 casse.
 
-- Pas de tolérance aux fautes : « Lefevre » ne trouve pas « Lefebvre ».
-  La recherche floue par trigrammes, essayée sur 1807, ramenait trop de
-  bruit (« paix » trouvait « Paille ») ; voir `docs/IDEES.md`.
-- `%`, `_` et `\` sont pris à la lettre.
+- Pas de tolérance aux fautes : « Lefevre » ne trouve pas « Lefebvre »
+  (`docs/IDEES.md`, « Recherche tolérante »).
 - Zones : `subj`, `desc`, `addr` (les empans de ce libellé) et `other`
   (le texte hors empan : rubriques, éléments hors champ, quelques signes
   des entrées). Avec des zones, la phrase doit tenir dans un empan d'une

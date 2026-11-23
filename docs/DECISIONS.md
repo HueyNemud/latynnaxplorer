@@ -1,150 +1,89 @@
 # Décisions structurantes
 
-Les décisions en vigueur, par thème. Une décision remplacée est réécrite, pas
-empilée : l'historique est dans `git log` et les PR. Une alternative écartée
-n'est notée que si elle risque de revenir sur la table.
+Les décisions en vigueur, une ligne chacune, avec un renvoi vers le détail.
+Une décision remplacée est réécrite, pas empilée : l'historique est dans
+`git log` et les PR. Une alternative écartée n'est notée que si elle risque
+de revenir.
 
 ## Projet et outillage
 
-- Un sprint = une branche ; `main` ne reçoit que des PR relues et fusionnées
-  par l'utilisateur, par merge commit (les hashes cités restent valides).
-  Dépôt GitHub privé `hueynemud/latynnaxplorer` ; `main` protégée (check
-  `verification` exigé, ni force-push ni suppression).
-- CI GitHub Actions (job `verification`) : lint, typecheck, tests, build. Renovate le lundi matin : mineures groupées,
-  majeures à part, aucune fusion automatique.
-- Node 26, pnpm 12, dépendances en versions exactes. Next.js (App Router),
-  `module: esnext` et `moduleResolution: bundler` ; la règle Biome
-  `useImportExtensions` garde les extensions `.ts` dont Node a besoin.
-- Site entièrement statique (`output: "export"`) : `next build` écrit dans
-  `out/` des fichiers à héberger tels quels, sans serveur d'application ;
-  tout se résout dans le navigateur. Les volumes sont hébergés en ligne, à
-  part ou avec le site ; l'adresse de leur index est fixée au build
-  (`NEXT_PUBLIC_VOLUMES_INDEX`). Un besoin de serveur (comptes, index de
-  recherche trop gros pour le navigateur) serait un service à côté.
-- Requêtes et règles d'état (coches des facettes) en fonctions pures de
-  `lib/`, testées sans navigateur sur la fixture (`scripts/fixture.ts`).
+- Un sprint = une branche ; `main` protégée (check `verification`, ni
+  force-push ni suppression) ne reçoit que des PR fusionnées par
+  l'utilisateur, par merge commit (`CLAUDE.md`).
+- CI GitHub Actions : lint, typecheck, tests, build ; Renovate le lundi,
+  sans fusion automatique (`.github/`, `renovate.json`).
+- Node 26, pnpm 12, dépendances en versions exactes ; Next.js (App Router),
+  imports avec extension `.ts` (`tsconfig.json`, `biome.json`).
+- Site entièrement statique (`output: "export"`), tout résolu dans le
+  navigateur ; volumes hébergés à part ou avec le site, index fixé au build
+  (README, « Mise en ligne »). Un besoin de serveur serait un service à côté.
+- Requêtes et règles des cases en fonctions pures de `lib/`, testées sur la
+  fixture (`scripts/fixture.ts`).
 - Interface en anglais ; le texte des annuaires n'est jamais traduit.
 
 ## Données et modèle (`docs/MODELE_DONNEES.md`)
 
-- numrev fait foi : exporté tel quel, validé contre ses JSON Schema (ajv),
-  aucun rattrapage ; un défaut se demande à numrev (`docs/demandes/`).
-  `data/` hors Git ; un volume par dossier `data/<volume>/`, ses
-  métadonnées Dublin Core dans `volume.json`.
-- Un fichier JSON par volume, et un index des volumes (métadonnées, adresse
-  de chaque fichier, relative ou absolue). JSON plutôt que Parquet ou YAML :
-  lu nativement par le navigateur, sans dépendance. Le fichier omet ce qui
-  se déduit (ordre de lecture, `normalized` égal au texte de l'empan, listes
-  vides) ; les empans n'ont pas d'identifiant (nœud et rang suffisent).
-- Tous les nœuds sont du même type, `section`, `entry` ou `out_of_scope` ;
-  un groupe à accolade est un seul nœud. Ordre de lecture commun à tous.
-- Arcs déduits au chargement, jamais stockés : `member_of` et `child_of`
-  du parent, `follows` de l'ordre de lecture (entrée suivante du volume, à
-  travers les sections).
-- Rien ne suppose des « rubriques d'un seul tenant » tant que numrev ne le
-  garantit pas.
+- numrev fait foi : export tel quel, validé contre ses JSON Schema, sans
+  rattrapage ; un défaut se demande à numrev (`docs/demandes/`).
+- Un fichier JSON par volume et un index des volumes ; JSON plutôt que
+  Parquet ou YAML (lu nativement, sans dépendance) ; le fichier omet ce qui
+  se déduit.
+- Un seul type de nœud (rubrique, entrée, élément hors champ), un seul
+  ordre de lecture ; un groupe à accolade est un seul nœud.
+- Arcs déduits au chargement, jamais stockés : `member_of`, `child_of`,
+  `follows`.
+- Rien ne suppose qu'une rubrique soit d'un seul tenant tant que numrev ne
+  le garantit pas.
 
 ## Requête (`docs/SCENARIOS.md`, `lib/query/`)
 
-- La requête se lit dans l'URL et s'y réécrit à l'identique ; paramètres en
-  anglais : `subtree` (répétable : union des sous-arbres), `text` et `in`
-  (répétable : zones où chercher le texte). Tous facultatifs, combinés en
-  conjonction ; sans critère, rien n'est sélectionné. Sous-graphe toujours
-  induit strict ; `lib/query/` ne juge pas de la pertinence.
+- La requête vit dans l'URL et s'y réécrit à l'identique ; critères
+  `subtree`, `text`, `in`, combinés en conjonction ; sans critère, rien
+  n'est sélectionné ; sous-graphe toujours induit strict.
 - Requête mal formée ou uuid inconnu : un message à la place de la vue.
-- Recherche par texte : phrase entière, exacte, sans accents ni casse, sur
-  tous les nœuds ; dans les rubriques cochées, sinon tout l'annuaire. Texte
-  plié par décomposition NFKD et une table des ligatures, tirets et
-  guillemets de l'imprimé (`lib/query/fold.ts`). Écartée après mesure : la
-  similarité par trigrammes (trop de bruit ; `docs/IDEES.md`, « Recherche
+- Recherche exacte, sans accents ni casse (`lib/query/fold.ts`) ; écartée
+  après mesure : la similarité par trigrammes (`docs/IDEES.md`, « Recherche
   tolérante »).
-- Zones de la recherche : les libellés des empans en minuscules (`subj`,
-  `desc`, `addr`) et `other` (hors empan). Aucune zone ou toutes = tout le
-  texte, comme sans `in` : un formulaire sans bouton enfoncé n'envoie
-  rien, et la règle est celle des facettes (sans rubrique cochée, tout
-  l'annuaire). Le texte plié de chaque zone est préparé au chargement.
-- Volumes chargés à la demande : celui que l'on regarde ; tous si la
-  requête cherche un texte sans rubrique, ou désigne un nœud d'aucun volume
-  chargé (l'URL ne nomme pas les volumes). Les volumes chargés sont mis
-  bout à bout dans l'ordre de l'index.
-- Une requête parcourt tout le volume, sans index : 13 ms au plus sur 1807.
-- Contexte (`context`) : les rubriques ancêtres de la sélection qui n'en font
-  pas partie, nœuds complets, jamais comptés dedans.
-- API publique : les fichiers des volumes ; le format d'une API d'export
-  suivra une pratique standard (OpenAPI ou plus récent), à trancher avec
-  l'export.
+- Zones de la recherche : aucune ou toutes = tout le texte, comme sans
+  rubrique cochée = tous les volumes.
+- Volumes chargés à la demande : celui au focus, ou tous si la requête ne
+  dit pas où chercher ; une requête parcourt tout le volume, sans index.
+- Le contexte n'est jamais compté dans la sélection.
+- API publique : les fichiers des volumes ; une API d'export suivra une
+  pratique standard (OpenAPI ou plus récent), à trancher avec l'export.
 
 ## Interface (`docs/DESIGN.md`)
 
-- Objectif : explorer, sélectionner et exporter le contenu des annuaires ;
-  cinq domaines (Contenu, Structure, Document, Espace, Temps) servent
-  indépendamment à sélectionner et à afficher. Mesurer et relier reviennent
-  aux historiens, à partir de l'export.
-- Sélection (ce que l'on retient, dans l'URL) et focus (ce que l'on regarde,
-  hors de l'URL) distingués partout.
-- Radix Themes pour toute l'interface, thème iris sur gris mauve : ses
-  composants et ses jetons ; `app/globals.css` ne garde que ce que Radix n'a
-  pas, et écrit sur place ce qui ne sert qu'une fois. Feuille de Radix
-  importée entière (la découper ne gagnerait qu'environ 23 Ko compressés).
-  Écartés sur maquette : Primer React (états mal distingués, identité de
-  GitHub), shadcn/ui (Tailwind obligatoire). Police Fira Sans (vraies
-  petites capitales), servie par `next/font`.
+- Explorer, sélectionner, exporter ; mesurer et relier reviennent aux
+  historiens, à partir de l'export (`docs/IDEES.md`).
+- Sélection (dans l'URL) et focus (hors de l'URL) distingués partout.
+- Radix Themes pour toute l'interface (iris sur gris mauve), feuille
+  importée entière ; `app/globals.css` ne garde que ce que Radix n'a pas.
+  Écartés sur maquette : Primer React, shadcn/ui (Tailwind obligatoire).
+- Police Fira Sans (vraies petites capitales), servie par `next/font`.
 - Une seule navigation : seules les facettes et la recherche changent la
-  sélection, aucun lien de la Liste. Pas de `nuqs`.
-- Barre de recherche : les zones à gauche du champ (choisir la portée,
-  taper, lancer), toujours visibles avec leur état ; le champ, plus grand
-  qu'elles, soudé à un bouton Search.
+  sélection. Pas de `nuqs`.
 - Script assumé : sans lui, rien ne s'affiche.
-- Vues et facettes : la sélection et les décomptes des facettes sont
-  calculés une fois, communs à toutes les vues (`lib/query/explore.ts`) ;
-  chaque vue n'en montre qu'une part (tranche, agrégats), avec son propre
-  état, hors de l'URL. Aucune vue ne crée un élément par nœud de la
-  sélection. Les facettes ne se rendent de nouveau que si ce qu'elles
-  montrent change, pas quand l'URL suit les coches.
+- Sélection et décomptes calculés une fois, communs à toutes les vues
+  (`lib/query/explore.ts`) ; chaque vue n'en montre qu'une part, et aucune
+  ne crée un élément par nœud sélectionné.
 
 ## Vue Liste (`docs/composants/noeud-liste.md`)
 
-- Liste à plat : la hiérarchie se lit par des guides de niveau (tous gris
-  foncé) et des titres de section fixés et empilés ; le contexte est rendu
-  comme la sélection.
-- Un seul élément pour tout nœud : une ligne (chevron, texte | page) qui
-  déplie sa fiche par `<details>` natif ; deux états, survol et ouvert (en
-  relief) ; les types ne se distinguent que par leur texte.
-- Champs sur fond teinté transparent : sujet (violet, petites capitales),
-  description (sarcelle), adresse (jaune).
-- Fiche en DataList (texte, champs, métadonnées, fil d'Ariane en texte),
-  rendue au premier dépliage ; une sélection d'un seul nœud la montre
-  dépliée d'emblée.
-- Sélection montrée par tranches de 200 nœuds, avec leur contexte : la
-  suivante s'ajoute quand la fin de la Liste approche ; une autre sélection
-  repart de la première. Ni décompte, ni URL changée ; Ctrl+F ne trouve que
-  les lignes montrées (la recherche couvre le reste). Groupes hors de
-  l'écran ni calculés ni dessinés (`content-visibility: auto`).
-  Écartées : la pagination (lecture coupée), la virtualisation (dépendance,
-  mal accordée aux groupes emboîtés et aux titres fixés).
-- Vue vide : un grand aplat, « Nothing to show » sans critère, « No match »
-  sinon.
+- Liste à plat : guides de niveau et intitulés fixés, plutôt que des
+  cartes emboîtées.
+- Un seul élément pour tout nœud, deux états (survol, ouvert) ; les types
+  ne se distinguent que par leur texte.
+- Fiche rendue au premier dépliage.
+- Sélection montrée par tranches de 200 nœuds ; écartées : la pagination
+  (lecture coupée) et la virtualisation (dépendance, mal accordée aux
+  rubriques emboîtées et aux intitulés fixés).
 
 ## Facettes (`docs/composants/facettes.md`)
 
-- Colonnes de Miller collées à gauche (Volumes | Contents | vue), chacune
-  repliable par une bande à droite, liées par niveau.
-- Volume : coche ronde, pleine si tout le volume est coché, tiret s'il l'est
-  en partie ; un clic le coche entier, ou le vide s'il l'était. Clic sur la
-  vignette = focus, Contents montre son arbre. Rubrique cochée = tout son
-  sous-arbre, descendants couverts (cochés en pâle) ; cliquer une case
-  couverte ne garde qu'elle (la rubrique qui la couvre est décochée) : « A
-  sauf B » ne s'exprime pas en union de sous-arbres. Une rubrique dont une
-  descendante est cochée a un tiret (visible même branche repliée) ; un
-  clic la coche entière. Les nœuds hors de toute rubrique ne se sélectionnent que par la
-  recherche (racine demandée à numrev).
-- Filtrer à la coche : chaque coche s'applique aussitôt, l'URL étant
-  remplacée dans l'historique après 300 ms sans nouvelle coche ; la vue est
-  estompée pendant son calcul. Les cases sont l'état
-  du composant, lu une fois depuis l'URL, que l'URL suit : aucune
-  synchronisation.
-- Contents est local au volume regardé (facettes hiérarchiques) : All et
-  Clear ne touchent que lui. Il attend que son volume soit chargé ; la coche
-  ronde d'un volume pas encore chargé est inactive.
-- Intitulés dans la casse imprimée, décompte des entrées filtré par le texte
-  cherché ; à l'arrivée, l'arbre est déplié jusqu'aux coches.
+- Colonnes de Miller repliables, liées par niveau.
+- Une rubrique cochée prend tout son sous-arbre ; « A sauf B » ne
+  s'exprime pas en union de sous-arbres.
+- Chaque case s'applique aussitôt ; l'URL suit les cases sans les
+  synchroniser.
+- Contents est local au volume au focus : All et Clear ne touchent que lui.

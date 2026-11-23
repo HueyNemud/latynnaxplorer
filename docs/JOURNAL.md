@@ -54,6 +54,15 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-23 — Vocabulaire et docs
+
+- Un terme par objet (table en tête de `docs/DESIGN.md`) dans les docs,
+  les commentaires, les tests et les noms de classes CSS (`View` devient
+  `Exploration`) ; français sans calques de l'anglais (case à cocher, fond
+  coloré). Rendu identique au pixel.
+- Chaque fait à un seul endroit : `DECISIONS.md` à une ligne par décision,
+  fiches resserrées ; docs : 300 lignes de moins.
+
 ## 2026-11-23 — Sprint 14 : sélection et vues (PR #29)
 
 - Sélection et décomptes communs à toutes les vues ; la Liste en ajoute

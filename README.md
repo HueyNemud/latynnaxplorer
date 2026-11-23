@@ -4,7 +4,7 @@ Exploration visuelle des annuaires commerciaux parisiens traités par la
 chaîne numrev (`../adresses_revolutionnaires`). Un site statique : chaque
 annuaire est un fichier, téléchargé quand on en a besoin, et interrogé dans
 le navigateur (`lib/query/`). La sélection s'affiche dans la vue Liste, sous
-un champ de recherche, avec à gauche les facettes de structure (volumes et
+la barre de recherche, avec à gauche les facettes de structure (volumes et
 rubriques à cocher) ; interface en composants et jetons de
 [Radix Themes](https://www.radix-ui.com/themes).
 
@@ -35,8 +35,9 @@ La requête est dans l'URL (`docs/SCENARIOS.md`) :
 - `?subtree=<uuid>` sélectionne un nœud et tout son sous-arbre ; répété,
   l'union des sous-arbres (les rubriques cochées dans les facettes) ;
 - `?text=<texte>` garde les nœuds qui contiennent le texte, sans tenir
-  compte des accents ni de la casse ;
-- les deux se combinent ; sans critère, rien n'est sélectionné.
+  compte des accents ni de la casse ; `&in=subj` (répétable : `subj`,
+  `desc`, `addr`, `other`) le cherche seulement dans ces zones ;
+- les critères se combinent ; sans critère, rien n'est sélectionné.
 
 ## Commandes
 
@@ -77,10 +78,10 @@ au lieu de 7,2 pour 1807).
 
 ## Documentation
 
-- [`docs/DESIGN.md`](docs/DESIGN.md) : concept de design (domaines, sélection et vues)
+- [`docs/DESIGN.md`](docs/DESIGN.md) : vocabulaire et concept de design (domaines, sélection et vues)
 - [`docs/composants/`](docs/composants/) : fiches de composant
 - [`docs/MODELE_DONNEES.md`](docs/MODELE_DONNEES.md) : sources, modèle, fichiers, requête
-- [`docs/SCENARIOS.md`](docs/SCENARIOS.md) : scénarios de requête et leurs filtres
+- [`docs/SCENARIOS.md`](docs/SCENARIOS.md) : scénarios de requête et leurs critères
 - [`docs/SPRINTS.md`](docs/SPRINTS.md) : sprint en cours et suivants
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) : décisions structurantes
 - [`docs/JOURNAL.md`](docs/JOURNAL.md) : journal de développement

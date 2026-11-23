@@ -1,6 +1,6 @@
 // Fiche d'un nœud, dépliée sous sa ligne dans la vue Liste (docs/composants/noeud-liste.md) :
-// texte, champs et métadonnées en clé / valeur (DataList de Radix), puis le fil d'Ariane, en
-// texte (seules les facettes changent la sélection).
+// texte, empans et métadonnées en clé / valeur (DataList de Radix), puis son chemin, en texte
+// (seules les facettes changent la sélection).
 
 import { DataList } from "@radix-ui/themes";
 import type { NodeKind, SpanLabel, SubgraphNode } from "../lib/query/types.ts";
@@ -13,22 +13,22 @@ const KIND_LABELS: Record<NodeKind, string> = {
   out_of_scope: "Out of scope",
 };
 
-const FIELD_LABELS: Record<SpanLabel, string> = {
+const SPAN_LABELS: Record<SpanLabel, string> = {
   SUBJ: "Subject",
   DESC: "Description",
   ADDR: "Address",
 };
 
-/** Largeur de la colonne des clés, la même pour tous les groupes. */
+/** Largeur de la colonne des clés, la même pour les trois listes. */
 const LABEL_WIDTH = "7rem";
 
 export function NodeDetail({
   node,
-  context,
+  path,
 }: {
   node: SubgraphNode;
-  /** rubriques au-dessus du nœud, de la racine à son parent */
-  context: SubgraphNode[];
+  /** son chemin : les rubriques au-dessus de lui, de la racine à son parent */
+  path: SubgraphNode[];
 }) {
   return (
     <article className="node-detail">
@@ -42,11 +42,11 @@ export function NodeDetail({
       </DataList.Root>
       {node.spans.length > 0 && (
         <DataList.Root size="3" className="detail-group">
-          {/* un champ par empan (répétés pour un groupe à accolade) */}
+          {/* un par empan (libellés répétés pour un groupe à accolade) */}
           {node.spans.map((span, i) => (
             // biome-ignore lint/suspicious/noArrayIndexKey: liste statique
             <DataList.Item key={i}>
-              <DataList.Label minWidth={LABEL_WIDTH}>{FIELD_LABELS[span.label]}</DataList.Label>
+              <DataList.Label minWidth={LABEL_WIDTH}>{SPAN_LABELS[span.label]}</DataList.Label>
               <DataList.Value lang="fr">{span.normalized}</DataList.Value>
             </DataList.Item>
           ))}
@@ -68,10 +68,10 @@ export function NodeDetail({
           </DataList.Value>
         </DataList.Item>
       </DataList.Root>
-      {context.length > 0 && (
+      {path.length > 0 && (
         <nav aria-label="Sections">
-          <ol className="breadcrumb">
-            {context.map((section) => (
+          <ol className="path">
+            {path.map((section) => (
               <li key={section.id}>
                 <PrintedText text={section.text} />
               </li>
