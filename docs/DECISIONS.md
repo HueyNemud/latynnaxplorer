@@ -47,10 +47,10 @@ n'est notée que si elle risque de revenir sur la table.
 ## Requête (`docs/SCENARIOS.md`, `lib/query/`)
 
 - La requête se lit dans l'URL et s'y réécrit à l'identique ; paramètres en
-  anglais : `subtree` (répétable : union des sous-arbres) et `text`. Tous
-  facultatifs, combinés en conjonction ; sans critère, rien n'est
-  sélectionné. Sous-graphe toujours induit strict ; `lib/query/` ne juge
-  pas de la pertinence.
+  anglais : `subtree` (répétable : union des sous-arbres), `text` et `in`
+  (répétable : zones où chercher le texte). Tous facultatifs, combinés en
+  conjonction ; sans critère, rien n'est sélectionné. Sous-graphe toujours
+  induit strict ; `lib/query/` ne juge pas de la pertinence.
 - Requête mal formée ou uuid inconnu : un message à la place de la vue.
 - Recherche par texte : phrase entière, exacte, sans accents ni casse, sur
   tous les nœuds ; dans les rubriques cochées, sinon tout l'annuaire. Texte
@@ -58,6 +58,11 @@ n'est notée que si elle risque de revenir sur la table.
   guillemets de l'imprimé (`lib/query/fold.ts`). Écartée après mesure : la
   similarité par trigrammes (trop de bruit ; `docs/IDEES.md`, « Recherche
   tolérante »).
+- Zones de la recherche : les libellés des empans en minuscules (`subj`,
+  `desc`, `addr`) et `other` (hors empan). Aucune zone ou toutes = tout le
+  texte, comme sans `in` : un formulaire sans bouton enfoncé n'envoie
+  rien, et la règle est celle des facettes (sans rubrique cochée, tout
+  l'annuaire). Le texte plié de chaque zone est préparé au chargement.
 - Volumes chargés à la demande : celui que l'on regarde ; tous si la
   requête cherche un texte sans rubrique, ou désigne un nœud d'aucun volume
   chargé (l'URL ne nomme pas les volumes). Les volumes chargés sont mis
@@ -86,6 +91,9 @@ n'est notée que si elle risque de revenir sur la table.
   petites capitales), servie par `next/font`.
 - Une seule navigation : seules les facettes et la recherche changent la
   sélection, aucun lien de la Liste. Pas de `nuqs`.
+- Barre de recherche : les zones à gauche du champ (choisir la portée,
+  taper, lancer), toujours visibles avec leur état ; le champ, plus grand
+  qu'elles, soudé à un bouton Search.
 - Script assumé : sans lui, rien ne s'affiche.
 
 ## Vue Liste (`docs/composants/noeud-liste.md`)
