@@ -1,8 +1,8 @@
 pre-commit:
   commands:
-    # tous les fichiers que Biome traite (biome.json), dont le TSX et le CSS
+    # tous les fichiers indexés, sans glob : Biome écarte lui-même ce qu'il ne
+    # traite pas (biome.json), comme `pnpm lint` et la CI
     lint:
-      glob: "*.{ts,tsx,css,json,jsonc}"
       run: pnpm exec biome check --no-errors-on-unmatched {staged_files}
     # tsc ne vérifie pas un fichier isolé avec la configuration du projet :
     # tout le projet est vérifié dès qu'un fichier TypeScript (ou TSX) est indexé.
