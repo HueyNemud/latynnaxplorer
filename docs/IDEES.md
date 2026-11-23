@@ -8,13 +8,13 @@ d'ici.
 
 - Une tranche ajoutée coûte un peu plus à mesure que la Liste s'allonge
   (le style de la page entière, dont les `:has()` de Radix). Si cela gêne :
-  la virtualisation, malgré ses défauts (dépendance, groupes emboîtés,
-  titres fixés).
-- Une coche re-rend toutes les rangées de Contents, et chaque case Radix
-  pèse plusieurs composants. Si cela gêne : ne re-rendre que les cases qui
-  changent.
-- Après une coche, l'URL attend 300 ms : c'est le plus long du trajet
-  jusqu'à la Liste. À raccourcir si l'attente se sent.
+  la virtualisation, malgré ses défauts (dépendance, rubriques emboîtées,
+  intitulés fixés).
+- Un clic sur une case rend de nouveau toutes les lignes de Contents, et
+  chaque case de Radix pèse plusieurs composants. Si cela gêne : ne rendre
+  que les cases qui changent.
+- Après un clic sur une case, l'URL attend 300 ms : c'est le plus long du
+  trajet jusqu'à la Liste. À raccourcir si l'attente se sent.
 
 ## Plusieurs volumes
 
@@ -27,7 +27,7 @@ d'ici.
 
 ## Poids de l'arbre des rubriques
 
-- Contents rend l'arbre entier du volume regardé (603 rubriques, branches
+- Contents rend l'arbre entier du volume au focus (603 rubriques, branches
   repliées comprises). Si un volume en a beaucoup plus : ne rendre que les
   branches dépliées.
 
@@ -54,10 +54,11 @@ d'ici.
 ## Affichage
 
 - Surligner les correspondances d'une recherche dans les lignes, distinct
-  du fond des champs.
-- Choix de densité (serré, normal, aéré) et réglage des fonds de champs
-  (par exemple ne surligner que les sujets), mémorisés.
-- En-tête de colonnes fixé au défilement, en tête de la pile des titres.
+  du fond des empans.
+- Choix de densité (serré, normal, aéré) et réglage des fonds des empans
+  (par exemple ne colorer que les sujets), mémorisés.
+- En-tête des colonnes fixé au défilement, en tête de la pile des
+  intitulés.
 - Sélection multiple de quelques entrées et actions groupées : à discuter
   avec l'export.
 
@@ -75,12 +76,12 @@ d'ici.
 
 ## Liens temporels
 
-- Arcs entre entrées d'éditions successives, tirés de la jointure numrev
+- Arcs entre entrées de volumes successifs, tirés de la jointure numrev
   `<A>__<B>.<méthode>.join.csv` (colonnes `methode`, `certitude`,
-  `niveau_incertitude`, `score`), dans un fichier par paire d'éditions ;
+  `niveau_incertitude`, `score`), dans un fichier par paire de volumes ;
   seules les paires appariées ?
-- numrev apparie aussi les rubriques entre éditions (cas 1-N) : arcs
-  temporels entre sections, à part.
+- numrev apparie aussi les rubriques entre volumes (cas 1-N) : arcs
+  temporels entre rubriques, à part.
 - « Voisins temporels » et « composante » (lignée) par parcours de ces arcs
   jusqu'au point fixe (`docs/MODELE_DONNEES.md`, « Plus tard »).
 
@@ -92,9 +93,3 @@ historiens, à partir de l'export.
 - **Mesurer** : effectifs par rubrique, rue ou période.
 - **Relier** des individus : associés, renvois « *Voyez* », occupants d'une
   même adresse.
-
-## Fiches de composant
-
-- `docs/composants/noeud-liste.md` et `facettes.md` (près de 300 lignes
-  chacune) n'ont pas été relues lors de l'audit du code : les resserrer de
-  la même façon, sur un état présent sans redites avec le code.

@@ -7,7 +7,7 @@ le navigateur (`lib/query/`). Décisions : `docs/DECISIONS.md` ; requêtes :
 Principes :
 - **numrev fait foi** : l'export reprend ses fichiers tels quels, sans
   rattrapage. Les défauts de données se corrigent dans numrev.
-- **Un seul type de nœud** : sections, entrées et éléments hors champ sont
+- **Un seul type de nœud** : rubriques, entrées et éléments hors champ sont
   des nœuds, traités de la même manière.
 - **Le fichier ne porte que l'information** : ce qui se déduit est
   recalculé au chargement.
@@ -22,7 +22,7 @@ la main. Fichiers de 1807 : 10,8 + 18,1 Mo.
 
 | Fichier | Objet | 1807 | Repris |
 |---|---|---|---|
-| `structure.json` | titre (section) | 603 | `id`, `parent`, `heading` ; position |
+| `structure.json` | titre (rubrique) | 603 | `id`, `parent`, `heading` ; position |
 | | entrée | 20 709 | `id`, `parent`, `text`, `spans` ; position |
 | | élément hors champ (titre courant, numéro de page, note, texte libre) | 846 | `id`, `parent`, `text` ; position |
 | | empan | 45 673 (SUBJ 20 863, ADDR 19 980, DESC 4 830) | `label`, `start`, `end`, `normalized` |
@@ -35,7 +35,7 @@ Non repris : plages, blocs, mots et confiances OCR, `level` des titres,
 `pieces` des empans, provenance.
 
 Observations remontées à numrev (l'application ne les corrige pas) : 51
-entrées, 3 sections et 89 éléments hors champ sans ligne boîtée (pas
+entrées, 3 rubriques et 89 éléments hors champ sans ligne boîtée (pas
 d'ancre) ; 19 entrées simples à plusieurs SUBJ ; 197 renvois « voyez » non
 structurés ; nature des éléments hors champ non exportée.
 
@@ -44,12 +44,12 @@ structurés ; nature des éléments hors champ non exportée.
 Un volume est une liste de **nœuds** dans l'ordre de lecture. Un nœud
 (`SubgraphNode`, `lib/query/types.ts`) porte :
 
-- `id` (uuid numrev), `kind` (`section`, `entry`, `out_of_scope`),
-  `parentId` (sa section, `null` sous la racine numrev), `text` (le
-  `heading` d'une section) ;
+- `id` (uuid numrev), `kind` (`section` pour une rubrique, `entry`,
+  `out_of_scope`), `parentId` (sa rubrique, `null` sous la racine numrev),
+  `text` (l'intitulé d'une rubrique) ;
 - `documentReadingOrder` : son rang dans le volume, tous types confondus,
   celui de sa première ligne dans `document.json` ;
-- `spans` : les champs d'une entrée (SUBJ, DESC, ADDR), positions en points
+- `spans` : les empans d'une entrée (SUBJ, DESC, ADDR), positions en points
   de code du texte brut, dans l'ordre du texte ;
 - `anchors` : par page touchée, l'union des boîtes de ses lignes (repère
   numrev 0–1000) ; aucune ligne boîtée sur la page, pas d'ancre.
@@ -58,11 +58,11 @@ Un volume est une liste de **nœuds** dans l'ordre de lecture. Un nœud
 
 | Arc | Entre | Déduit de |
 |---|---|---|
-| `member_of` | entrée ou élément hors champ → section | `parentId` |
-| `child_of` | section → section | `parentId` |
-| `follows` | entrée → entrée suivante dans l'ordre de lecture, à travers les sections | l'ordre de lecture, au chargement |
+| `member_of` | entrée ou élément hors champ → rubrique | `parentId` |
+| `child_of` | rubrique → rubrique | `parentId` |
+| `follows` | entrée → entrée suivante dans l'ordre de lecture, à travers les rubriques | l'ordre de lecture, au chargement |
 
-numrev donne un seul arbre : tout objet a pour parent un titre (ou la
+numrev donne un seul arbre : tout objet a pour parent une rubrique (ou la
 racine). Un élément hors champ est rangé sous la rubrique ouverte à cet
 endroit, au sens de l'ordre de lecture. **Ordre de lecture et succession
 sont distincts** : l'ordre est un attribut de tous les nœuds, `follows` une
@@ -127,23 +127,18 @@ alors environ 27 Mo de mémoire.
   (`inducedArcs`) ; la vue n'a besoin que des nœuds ;
 - `sections` (`facets.ts`) : les rubriques et le nombre d'entrées de leur
   sous-arbre qui contiennent le texte cherché ;
-- `explore.ts`, sur plusieurs volumes : quels volumes une requête demande,
-  sa vue sur les volumes chargés, mis bout à bout dans l'ordre de l'index,
-  et la fiche d'un nœud (`detail` : le nœud et le chemin de ses
-  rubriques).
+- `explore.ts`, sur plusieurs volumes : quels volumes une requête demande
+  (`neededVolumes`), ce qu'elle donne sur les volumes chargés, mis bout à
+  bout dans l'ordre de l'index (`explore`), et la fiche d'un nœud
+  (`detail` : le nœud et son chemin).
 
-Une requête parcourt tout le volume : 13 ms au plus sur 1807 (toutes les
-rubriques, All, recherches). Le coût d'une grosse sélection est son rendu :
-13 737 lignes demandent environ 3 s, dont 2,1 s de style et de mise en
-page (`docs/IDEES.md`, « Pagination »).
+Une requête parcourt tout le volume : 13 ms au plus sur 1807. Le coût d'une
+grosse sélection est son rendu : la Liste la montre par tranches
+(`docs/composants/noeud-liste.md`).
 
 ## Plus tard
 
 - **Géocodage** : un résultat par empan ADDR (nœud et rang), géométrie,
-  score, méthode ; filtre par zone. À trancher : point seul ou géométrie de
-  voie pour les adresses sans numéro (1 130 en 1807).
-- **Liens temporels** : arcs entre entrées d'éditions successives, tirés de
-  la jointure numrev `<A>__<B>.<méthode>.join.csv` (`methode`,
-  `certitude`, `niveau_incertitude`, `score`) ; appariement des rubriques
-  entre éditions (cas 1-N) ; lignée d'une entrée par parcours de ces arcs
-  jusqu'au point fixe.
+  score, méthode ; critère par secteur de la carte. À trancher : point
+  seul ou géométrie de voie pour les adresses sans numéro (1 130 en 1807).
+- **Liens temporels** : `docs/IDEES.md`.

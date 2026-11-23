@@ -16,12 +16,12 @@ dépendances, choix discutables).
 | Entretien | #7, #8, #11, #26, #27 | `postgres` v4, TypeScript 7, hooks sur tout ce que Biome vérifie |
 | 3, concept de design | #12, #13 | `docs/DESIGN.md`, dépendances de Next.js |
 | 4, fiche d'un nœud | #14 | Next.js, fiche en clés / valeurs |
-| 5 et 6, vue Liste | #15, #16 | liste à plat, guides de niveau, titres fixés |
+| 5 et 6, vue Liste | #15, #16 | liste à plat, guides de niveau, intitulés fixés |
 | 7, sélectionner par le contenu | #17 | recherche par texte, champ de recherche |
 | 8, facettes de structure | #18 | panneaux Volumes et Contents, `subtree` répétable |
 | 9, nettoyage du code | #19 | code et feuille de style remis au propre |
 | 10, facettes et Liste d'accord | #20 | sélection vide sans entrée par défaut |
-| 11, passage à Radix Themes | #21 | interface Radix, fiche au dépliage, filtre à la coche |
+| 11, passage à Radix Themes | #21 | interface Radix, fiche au dépliage, application à chaque case |
 | 12, données en local | #22, #23 | site statique, un fichier par volume, volumes à la demande |
 | 13, audit du code | #24 | code mort retiré, une sélection par volume, commentaires et CSS resserrés |
 | Barre de la vue fixée | #25 | recherche toujours visible, la liste défile dessous |
