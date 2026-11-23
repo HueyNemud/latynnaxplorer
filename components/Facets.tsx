@@ -9,10 +9,11 @@
 // - Les cases font partie du formulaire de la requête (components/SearchForm.tsx) par
 //   l'attribut `form` : seules partent les rubriques cochées les plus hautes (une case couverte
 //   n'a pas de nom).
+// - Re-rendues seulement quand ce qu'elles montrent change : pas quand l'URL suit les coches.
 
 import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
-import { type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
+import { memo, type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
   checkedOf,
   coveredBy,
@@ -33,14 +34,7 @@ import { ChevronIcon } from "./icons.tsx";
 import { Panel } from "./Panel.tsx";
 import { QUERY_FORM } from "./SearchForm.tsx";
 
-export function Facets({
-  volumes,
-  sections,
-  query,
-  focus,
-  onFocus,
-  loaded,
-}: {
+interface FacetsProps {
   /** tous les volumes de l'index */
   volumes: Volume[];
   /** les rubriques des volumes chargés */
@@ -53,7 +47,33 @@ export function Facets({
   onFocus: (volumeId: string) => void;
   /** les volumes chargés, par identifiant */
   loaded: ReadonlyMap<string, unknown>;
-}) {
+}
+
+/**
+ * Les coches ne sont lues dans la requête qu'une fois : une requête qui n'en diffère que par ses
+ * rubriques (l'URL qui suit les coches), aux mêmes décomptes, ne change rien aux facettes.
+ */
+function sameFacets(a: FacetsProps, b: FacetsProps): boolean {
+  return (
+    a.volumes === b.volumes &&
+    a.focus === b.focus &&
+    a.onFocus === b.onFocus &&
+    a.loaded === b.loaded &&
+    a.query.text === b.query.text &&
+    String(a.query.zones) === String(b.query.zones) &&
+    a.sections.length === b.sections.length &&
+    a.sections.every((s, i) => s.id === b.sections[i]?.id && s.entries === b.sections[i]?.entries)
+  );
+}
+
+export const Facets = memo(function Facets({
+  volumes,
+  sections,
+  query,
+  focus,
+  onFocus,
+  loaded,
+}: FacetsProps) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
   // les coches, lues une fois depuis l'URL
   const [checked, setChecked] = useState(() => checkedOf(tree, query.subtree ?? []));
@@ -203,4 +223,4 @@ export function Facets({
       </Panel>
     </section>
   );
-}
+}, sameFacets);
