@@ -13,7 +13,7 @@ dépendances, choix discutables).
 | Modèle de données | #1 | schéma, validation et import d'un volume numrev |
 | 1, intégration continue | #2 | CI, `main` protégée, Renovate |
 | 2, requête → sous-graphe | #10 | `?subtree=`, sous-graphe induit, base de test |
-| Entretien | #7, #8, #11 | `postgres` v4, TypeScript 7 |
+| Entretien | #7, #8, #11, #26 | `postgres` v4, TypeScript 7, hooks sur le TSX et le CSS |
 | 3, concept de design | #12, #13 | `docs/DESIGN.md`, dépendances de Next.js |
 | 4, fiche d'un nœud | #14 | Next.js, fiche en clés / valeurs |
 | 5 et 6, vue Liste | #15, #16 | liste à plat, guides de niveau, titres fixés |
