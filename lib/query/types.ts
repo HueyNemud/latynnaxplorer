@@ -57,7 +57,7 @@ export interface Volume {
   temporalStart: string;
 }
 
-/** Fiche d'un nœud : le nœud, et ses rubriques de la racine à son parent (son fil d'Ariane). */
+/** Fiche d'un nœud : le nœud, et ses rubriques de la racine à son parent (son chemin). */
 export interface Detail {
   node: SubgraphNode;
   path: SubgraphNode[];

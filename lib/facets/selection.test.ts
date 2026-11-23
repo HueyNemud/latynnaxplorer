@@ -112,7 +112,7 @@ describe("volumes", () => {
   });
 });
 
-describe("All et Clear (volume regardé)", () => {
+describe("All et Clear (volume au focus)", () => {
   it("All coche les rubriques de premier niveau du volume, sans toucher aux autres", () => {
     expect(setVolume(tree, set("A2a", "C"), "V", true)).toEqual(set("C", "A", "B"));
   });

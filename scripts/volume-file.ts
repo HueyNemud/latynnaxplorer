@@ -78,7 +78,8 @@ export function toVolumeFile({ volume: meta, document, structure }: VolumeFiles)
     return order;
   };
 
-  // Un nœud par titre, entrée et élément hors champ ; le texte d'un titre est son « heading ».
+  // Un nœud par titre numrev (une rubrique), entrée et élément hors champ ; le texte d'une
+  // rubrique est son intitulé (« heading »).
   const items = [
     ...structure.titles.map((t) => ({
       ...t,

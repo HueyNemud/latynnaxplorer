@@ -40,7 +40,7 @@ describe("toVolumeFile", () => {
     expect(parents).toEqual({ [T1]: null, [T2]: T1, [E1]: T2, [E2]: T2, [E3]: T1, [O1]: T2 });
   });
 
-  it("prend le titre lisible d'une section et le texte des autres nœuds", () => {
+  it("prend l'intitulé d'une rubrique et le texte des autres nœuds", () => {
     expect(node(T2)?.text).toBe("RUBRIQUE.");
     expect(node(E1)?.text).toBe("Dupont, rue de la Paix, 12.");
     expect(node(O1)?.text).toBe("ALMANACH");

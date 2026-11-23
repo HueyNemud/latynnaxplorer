@@ -119,7 +119,7 @@ export function toggleVolume(
   return setVolume(tree, checked, volumeId, !isVolumeFull(tree, checked, volumeId));
 }
 
-/** Rubriques au-dessus des coches : à déplier à l'arrivée pour les montrer ; semi-sélectionnées
+/** Rubriques au-dessus des coches : à déplier à l'arrivée pour les montrer ; cochées en partie
  * (une rubrique en dessous d'elles est cochée). */
 export function pathTo(tree: SectionTree, checked: ReadonlySet<string>): Set<string> {
   const path = new Set<string>();

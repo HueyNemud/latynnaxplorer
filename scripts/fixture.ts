@@ -1,6 +1,6 @@
 // Petit volume conforme aux schémas numrev, pour les tests : T1 ⊃ { E3, T2 ⊃ { E1, E2, O1 } },
 // dans l'ordre de lecture T1, E3, T2, E1, E2, O1.
-//   p. 1 : titre T1, entrée E3 (ligne sans boîte), titre T2, entrée E1, début de E2
+//   p. 1 : rubrique T1, entrée E3 (ligne sans boîte), rubrique T2, entrée E1, début de E2
 //   p. 2 : élément hors champ O1 (titre courant), fin de E2
 // E1 « Dupont, rue de la Paix, 12. » a deux empans ; E2 « Martin, rue Longue, 3. », E3 « Durand. ».
 
