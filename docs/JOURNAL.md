@@ -39,6 +39,13 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-23 — Barre de la vue fixée
+
+- La recherche reste accessible : en haut de la vue, une barre toujours
+  visible (prête à recevoir les filtres) ; dessous, la liste défile seule,
+  ses titres fixés sous la barre quelle que soit sa hauteur. La page ne
+  défile plus ; seule la liste est estompée pendant un chargement.
+
 ## 2026-11-20 — Sprint 13 : audit et simplification du code (PR #24)
 
 - Comportement inchangé, 105 lignes de moins. Code mort retiré ; une seule

@@ -1,6 +1,6 @@
 /* Feuille de style unique, par-dessus celle de Radix Themes (app/layout.tsx) : seulement ce que
    Radix n'a pas. Ordre : jetons, base, texte imprimé, styles partagés (ce qui se répète d'un
-   composant à l'autre, écrit une fois), puis chaque composant : recherche, vue Liste, fiche,
+   composant à l'autre, écrit une fois), puis chaque composant : barre de la vue, vue Liste, fiche,
    facettes. Fiches de composant : docs/composants/. */
 
 /* ── Jetons ── */
@@ -45,13 +45,16 @@ body {
   margin: 0;
 }
 
-/* Vue (à côté des facettes, ou seule) : 64 rem de large au plus, centrée */
+/* Vue (à côté des facettes, ou seule) : la hauteur de la fenêtre, en étages de toute sa largeur
+   (Explorer : la barre, puis la liste) ; le contenu de chacun centré, 64 rem de large au plus */
 .view {
-  box-sizing: border-box;
-  width: 100%;
-  max-width: calc(64rem + 2 * var(--space-5));
-  margin: 0 auto;
-  padding: var(--space-4) var(--space-5);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.view > * {
+  padding-inline: max(var(--space-5), (100% - 64rem) / 2);
 }
 
 /* listes : rien de la typographie par défaut (le site n'a pas de listes à puces) */
@@ -213,12 +216,28 @@ details[open] > summary .chevron {
   box-shadow: var(--shadow-4);
 }
 
-/* ── Champ de recherche (components/SearchForm.tsx), au-dessus de la vue ── */
+/* ── Barre de la vue (components/Explorer.tsx) : recherche, plus tard filtres ── */
 
-/* le champ de Radix, à une largeur raisonnable */
+/* Barre : toujours en haut de la vue, ses contrôles en rangée ; la liste dessous défile seule,
+   ses titres fixés juste sous la barre, quelle que soit sa hauteur */
+.view-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  padding-block: var(--space-4) var(--space-2);
+}
+
+.view-scroll {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: var(--space-4);
+}
+
+/* champ de recherche (components/SearchForm.tsx), le champ de Radix à une largeur raisonnable */
 .search-form {
-  max-width: 24rem;
-  margin-bottom: var(--space-2);
+  flex: 0 1 24rem;
+  min-width: 0;
 }
 
 /* vue vide (components/Explorer.tsx, mise en page par Flex de Radix) : un grand aplat */
@@ -411,8 +430,8 @@ details[open] > summary .chevron {
 /* ── Facettes de structure (components/Facets.tsx, docs/composants/facettes.md) ── */
 
 /* Colonnes de Miller : Volumes | Contents | vue. Les panneaux sont des colonnes de la grille (leur
-   conteneur sans boîte) ; chacun tient la hauteur de la fenêtre et défile à part, la vue défile
-   avec la page et reste centrée dans la place qu'ils laissent. */
+   conteneur sans boîte) ; chacun tient la hauteur de la fenêtre et défile à part, comme la liste de
+   la vue, qui reste centrée dans la place qu'ils laissent. */
 .explorer {
   display: grid;
   grid-template-columns: auto auto minmax(0, 1fr);
@@ -554,7 +573,7 @@ details[open] > summary .chevron {
   background: var(--color-background);
 }
 
-/* pendant qu'une nouvelle sélection se charge, la vue est estompée */
-.explorer:has(> .facets[aria-busy="true"]) > .view {
+/* pendant qu'une nouvelle sélection se charge, la liste est estompée (la barre reste nette) */
+.explorer:has(> .facets[aria-busy="true"]) > .view > .view-scroll {
   opacity: 0.5;
 }

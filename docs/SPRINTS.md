@@ -24,6 +24,7 @@ dépendances, choix discutables).
 | 11, passage à Radix Themes | #21 | interface Radix, fiche au dépliage, filtre à la coche |
 | 12, données en local | #22, #23 | site statique, un fichier par volume, volumes à la demande |
 | 13, audit du code | #24 | code mort retiré, une sélection par volume, commentaires et CSS resserrés |
+| Barre de la vue fixée | #25 | recherche toujours visible, la liste défile dessous |
 
 ## Sprint 14 : exporter
 

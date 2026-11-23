@@ -91,7 +91,7 @@ traduction plus tard (`docs/IDEES.md`). Le texte des annuaires reste tel quel
   chacun sous toutes ses rubriques, chaque rubrique une fois ; nœuds de
   même parent dans l'ordre de lecture.
 - **Titre** : la ligne de son propre nœud, avec une seule règle en plus :
-  **fixé** en haut de l'écran tant que le groupe est visible, **empilé** sous
+  **fixé** en haut de la liste (sous la barre de la vue) tant que le groupe est visible, **empilé** sous
   les titres de ses parents (`top: profondeur × --title-height`). Les titres
   fixés forment un escalier, chaque coude rattaché à son guide. Sa vue
   détaillée, si elle est ouverte, n'est pas fixée : elle défile avec le
