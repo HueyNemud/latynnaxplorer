@@ -65,15 +65,19 @@ export function NodeList({
   const render = (n: SubgraphNode, path: SubgraphNode[]): ReactNode => {
     const item = <Item key={n.id} node={n} path={path} open={n.id === opened} />;
     if (n.kind !== "section") return item;
+    const kids = children.get(n.id) ?? [];
     return (
       <section
         key={n.id}
         className="group"
         aria-labelledby={`text-${n.id}`}
         style={{ "--depth": path.length } as CSSProperties}
+        // le groupe commence ou finit par un sous-groupe (guides estompés, app/globals.css)
+        data-first={kids[0]?.kind === "section" ? "group" : undefined}
+        data-last={kids.at(-1)?.kind === "section" ? "group" : undefined}
       >
         {item}
-        {children.get(n.id)?.map((c) => render(c, [...path, n]))}
+        {kids.map((c) => render(c, [...path, n]))}
       </section>
     );
   };

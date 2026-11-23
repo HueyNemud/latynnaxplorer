@@ -313,8 +313,9 @@ details[open] > summary .chevron {
   border-left: var(--guide-width) solid var(--gray-7);
 }
 
-/* boule estompée si le groupe finit par un sous-groupe */
-.group:has(> .group:last-child)::after {
+/* boule estompée si le groupe finit par un sous-groupe (attribut posé par
+   components/NodeList.tsx : :has() recalculait le style de toute la Liste à chaque tranche) */
+.group[data-last="group"]::after {
   background: var(--gray-7);
 }
 
@@ -386,7 +387,7 @@ details[open] > summary .chevron {
 }
 
 /* coude estompé s'il ne touche qu'un sous-groupe */
-.group:has(> .item:first-child + .group) > .item:first-child > .line::after {
+.group[data-first="group"] > .item:first-child > .line::after {
   border-color: var(--gray-7);
 }
 
