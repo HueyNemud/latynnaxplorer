@@ -78,10 +78,11 @@ grisée) ; ▶ encoche du volume au focus.
 
 - **Mise en page** : grille de trois colonnes, Volumes | Contents | vue,
   collée au bord gauche de la fenêtre. Chaque panneau tient la hauteur de la
-  fenêtre (fixé en haut) et défile à part ; la vue défile avec la page.
-- **Vue** : centrée dans la place qui reste, à la largeur habituelle du site
-  (64 rem), pleine largeur si la place manque. Le champ de recherche reste
-  au-dessus d'elle.
+  fenêtre (fixé en haut) et défile à part ; la page elle-même ne défile pas.
+- **Vue** : la hauteur de la fenêtre, centrée dans la place qui reste, à la
+  largeur habituelle du site (64 rem), pleine largeur si la place manque.
+  En haut, une **barre** toujours visible : le champ de recherche, et plus
+  tard les filtres à côté de lui ; dessous, la liste défile seule.
 
 ## Panneau
 
