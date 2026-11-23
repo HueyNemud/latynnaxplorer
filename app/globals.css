@@ -8,7 +8,7 @@
 /* Couleurs, espacements, rayons, ombres, tailles de texte : ceux du thème Radix :
    - --gray-12 texte, --gray-11 texte atténué (≥ 4,5:1 sur blanc, sur --gray-2 et sur les
      teintes des champs) ; --gray-2 survol et élément ouvert, --gray-3 survol d'une surface déjà
-     sur --gray-2 ; --gray-11 guide de la section la plus proche, --gray-7 guides estompés ;
+     sur --gray-2 ; --gray-11 guides de la Liste ;
    - --radius-4 lignes et cartes, --radius-2 coude du guide ; --shadow-4 relief ;
      --font-size-2 texte petit ; --focus-8 anneau du focus clavier.
    Ici, seulement nos jetons, ceux qui servent plusieurs fois ; définis sur le thème, où les
@@ -274,11 +274,14 @@ details[open] > summary .chevron {
 }
 
 /* Groupe : une section, contexte compris, à plat ; marqué par son guide (à --guide-x), qui part
-   du titre et finit par une boule */
+   du titre et finit par une boule. Hors de l'écran, le navigateur ne le calcule ni ne le dessine
+   (hauteur estimée tant qu'il n'a jamais été montré, puis retenue). */
 .group {
   --guide-x: 0rem;
   position: relative;
   padding: 0 0 var(--space-1) calc(var(--guide-width) + var(--guide-gap));
+  content-visibility: auto;
+  contain-intrinsic-size: auto 20rem;
 }
 
 .group::before,
@@ -303,19 +306,10 @@ details[open] > summary .chevron {
   border-radius: 50%;
 }
 
-/* Sous-groupe : son guide tombe sous le chevron du titre parent. Le long du sous-groupe, seul
-   son guide reste foncé : sa bordure gauche recouvre le guide parent en gris ; le sous-groupe
-   commence donc au guide parent (marge négative), et son contenu ne bouge pas. */
+/* Sous-groupe : son guide tombe sous le chevron du titre parent */
 .group .group {
-  --guide-x: calc(var(--line-pad) + var(--guide-gap));
-  margin-left: calc(-1 * (var(--guide-width) + var(--guide-gap)));
-  padding-left: calc(var(--line-pad) + 2 * var(--guide-gap) + var(--guide-width));
-  border-left: var(--guide-width) solid var(--gray-7);
-}
-
-/* boule estompée si le groupe finit par un sous-groupe */
-.group:has(> .group:last-child)::after {
-  background: var(--gray-7);
+  --guide-x: var(--line-pad);
+  padding-left: calc(var(--line-pad) + var(--guide-gap) + var(--guide-width));
 }
 
 /* Élément : le même pour tout nœud. Le <details> ne forme pas de boîte : sa ligne peut ainsi
@@ -383,11 +377,6 @@ details[open] > summary .chevron {
   border: solid var(--gray-11);
   border-width: var(--guide-width) 0 0 var(--guide-width);
   border-top-left-radius: var(--radius-2);
-}
-
-/* coude estompé s'il ne touche qu'un sous-groupe */
-.group:has(> .item:first-child + .group) > .item:first-child > .line::after {
-  border-color: var(--gray-7);
 }
 
 /* Texte. Ce qui distingue les types : seulement le texte (titres : voir

@@ -26,8 +26,9 @@ dépendances, choix discutables).
 | 13, audit du code | #24 | code mort retiré, une sélection par volume, commentaires et CSS resserrés |
 | Barre de la vue fixée | #25 | recherche toujours visible, la liste défile dessous |
 | Recherche par zone | #28 | `in` (sujet, description, adresse, reste), boutons des zones, bouton Search |
+| 14, sélection et vues | #29 | sélection commune aux vues, Liste par tranches, facettes rendues seulement si elles changent, guides d'un seul gris |
 
-## Sprint 14 : exporter
+## Sprint 15 : exporter
 
 But : récupérer la sélection dans un format de données ; trancher en même
 temps le format de l'API JSON (ci-dessous). Contenu à proposer et valider au
@@ -51,7 +52,7 @@ récent, à comparer alors).
 
 ## Plus tard (non planifié)
 
-Surlignage des correspondances ; pagination de la Liste. Vues Page (IIIF),
+Surlignage des correspondances. Vues Page (IIIF),
 Carte et Frise, avec leurs critères (page, zone, période) ; géocodage ;
 liens temporels, autres annuaires et « suivre » ; deux vues côte à côte.
 Pistes détaillées dans `docs/IDEES.md`. Chacun aura son sprint, proposé le

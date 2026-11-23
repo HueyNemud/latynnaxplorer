@@ -1,15 +1,16 @@
 "use client";
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous la barre de la
-// vue (le champ de recherche ; plus tard, les filtres). L'index des volumes est lu à l'arrivée, chaque volume téléchargé quand la requête
-// en a besoin (neededVolumes), puis la requête de l'URL est résolue sur les volumes chargés.
-// Facettes et recherche changent l'URL sans recharger la page ; Next garde useSearchParams à
-// jour.
+// vue (le champ de recherche ; plus tard, les filtres). L'index des volumes est lu à l'arrivée,
+// chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis la requête de l'URL
+// est résolue sur les volumes chargés : sélection et décomptes, communs à toutes les vues ; la vue
+// n'en montre qu'une part. Facettes et recherche changent l'URL sans recharger la page ; Next
+// garde useSearchParams à jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
-import { type ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { detail, neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
+import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
+import { neededVolumes, type View, view, volumeOf } from "../lib/query/explore.ts";
 import { parseQuery, type Query, QueryError } from "../lib/query/query.ts";
 import { NodeNotFoundError } from "../lib/query/resolve.ts";
 import {
@@ -101,17 +102,16 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   }, [query, ready, list]);
   if (result !== undefined && result !== shown) setShown(result);
 
-  const detailOf = useCallback((id: string) => detail(list, id), [list]);
-
   if (query === "bad-request") return <Message>Invalid query.</Message>;
   if (failed) return <Message>A volume could not be loaded.</Message>;
   if (shown === undefined) return <Waiting />;
   if (shown === "not-found") return <Message>No node has this identifier.</Message>;
 
-  const { selection, shown: nodes, sections } = shown.view;
+  const { selection, sections } = shown.view;
   const { text } = shown.query;
   const designated = shown.query.subtree?.length === 1 ? shown.query.subtree[0] : undefined;
-  const root = nodes.find((n) => n.id === designated);
+  const root =
+    designated === undefined ? undefined : volumeOf(list, designated)?.byId.get(designated);
   return (
     <div className="explorer">
       {/* titre pour les lecteurs d'écran : le texte du nœud désigné, sinon le texte cherché,
@@ -133,11 +133,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
         </div>
         <div className="view-scroll">
           {selection.length > 0 ? (
-            <NodeList
-              nodes={nodes}
-              opened={selection.length === 1 ? selection[0]?.id : undefined}
-              detail={detailOf}
-            />
+            <NodeList selection={selection} volumes={list} />
           ) : (
             // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond
             <Flex

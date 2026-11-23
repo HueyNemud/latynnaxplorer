@@ -4,15 +4,17 @@ Pistes notées, **non retenues pour l'instant** : rien ici n'est à faire sans
 décision explicite. Une idée adoptée passe dans `docs/DECISIONS.md` et sort
 d'ici.
 
-## Pagination de la vue Liste
+## Vitesse de la Liste et des facettes
 
-- Tout est rendu aujourd'hui. « Listes particulières » (13 737 lignes) :
-  environ 3 s, dont 2,1 s de style et de mise en page (23 éléments du DOM
-  par ligne) ; la requête, elle, prend 13 ms. Seules 3 rubriques sur 603
-  dépassent 1 000 nœuds, mais All coche tout le volume (22 068 lignes).
-- Pistes : paginer, ou `content-visibility: auto` en CSS. Virtualisation
-  déconseillée (dépendance, mal accordée aux groupes emboîtés, Ctrl+F
-  cassé).
+- Une tranche ajoutée coûte un peu plus à mesure que la Liste s'allonge
+  (le style de la page entière, dont les `:has()` de Radix). Si cela gêne :
+  la virtualisation, malgré ses défauts (dépendance, groupes emboîtés,
+  titres fixés).
+- Une coche re-rend toutes les rangées de Contents, et chaque case Radix
+  pèse plusieurs composants. Si cela gêne : ne re-rendre que les cases qui
+  changent.
+- Après une coche, l'URL attend 300 ms : c'est le plus long du trajet
+  jusqu'à la Liste. À raccourcir si l'attente se sent.
 
 ## Plusieurs volumes
 

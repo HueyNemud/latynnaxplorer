@@ -44,8 +44,23 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   `--window-size`) ; pour un focus clavier, `setFocusEmulationEnabled` ou
   une touche, puis `focus()`. Ouvrir un `<details>` et cliquer dedans dans
   le même `Runtime.evaluate` donne un faux résultat : laisser un délai.
+- **Profiler en production** : `pnpm next build --no-mangling --profile`
+  garde les noms des fonctions dans un profil CPU et active `<Profiler>`.
+  Une navigation de Next est une transition : `useDeferredValue` y rend
+  aussitôt la nouvelle valeur.
+- **`:has()`** : quand la page grandit (tranches), Chromium recalcule le
+  style de tout ce qu'un `:has()` peut toucher ; préférer un attribut ou
+  une règle sans `:has()`.
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
+
+## 2026-11-23 — Sprint 14 : sélection et vues (PR #29)
+
+- Sélection et décomptes communs à toutes les vues ; la Liste en ajoute
+  le contexte de ce qu'elle montre, par tranches de 200 nœuds ajoutées au
+  défilement. Groupes hors de l'écran ni calculés ni dessinés ; facettes
+  rendues seulement si elles changent ; guides d'un seul gris foncé.
+- « Listes particulières » s'affiche en moins de 0,1 s au lieu de 2,5 s.
 
 ## 2026-11-23 — Recherche par zone
 

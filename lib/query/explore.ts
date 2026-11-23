@@ -1,6 +1,7 @@
 // Exploration de plusieurs volumes, chargés à la demande : quels volumes une requête demande,
-// sa vue sur les volumes chargés (sélection, contexte et facettes de chacun, mis bout à bout
-// dans l'ordre de l'index), et la fiche d'un nœud. Fonctions pures.
+// sa vue sur les volumes chargés (sélection et facettes de chacun, mises bout à bout dans l'ordre
+// de l'index), commune à toutes les vues ; le contexte de ce qu'une vue montre ; la fiche d'un
+// nœud. Fonctions pures.
 
 import { sections } from "./facets.ts";
 import type { Query } from "./query.ts";
@@ -33,11 +34,10 @@ export function volumeOf(
   return id === undefined ? undefined : loaded.find((v) => v.byId.has(id));
 }
 
+/** Ce que la requête donne, commun à toutes les vues ; chacune n'en montre qu'une part. */
 export interface View {
   /** les nœuds sélectionnés, volume après volume, chacun dans l'ordre de lecture */
   selection: SubgraphNode[];
-  /** la sélection et son contexte (rubriques ancêtres), à montrer ensemble, dans le même ordre */
-  shown: SubgraphNode[];
   /** les rubriques des volumes chargés, avec leurs décomptes pour le texte cherché */
   sections: FacetSection[];
 }
@@ -50,18 +50,26 @@ export interface View {
 export function view(loaded: readonly LoadedVolume[], query: Query): View {
   const unknown = query.subtree?.find((id) => volumeOf(loaded, id) === undefined);
   if (unknown !== undefined) throw new NodeNotFoundError(unknown);
-  const result: View = { selection: [], shown: [], sections: [] };
-  for (const volume of loaded) {
-    const selected = selection(volume, query);
-    result.selection.push(...selected);
-    result.shown.push(
-      ...[...context(volume, selected), ...selected].sort(
-        (a, b) => a.documentReadingOrder - b.documentReadingOrder,
-      ),
+  return {
+    selection: loaded.flatMap((volume) => selection(volume, query)),
+    sections: loaded.flatMap((volume) => sections(volume, query)),
+  };
+}
+
+/**
+ * Des nœuds des volumes chargés (une part de la sélection) et leur contexte (rubriques ancêtres
+ * qui n'en sont pas), à montrer ensemble : volume après volume, chacun dans l'ordre de lecture.
+ */
+export function withContext(
+  loaded: readonly LoadedVolume[],
+  nodes: readonly SubgraphNode[],
+): SubgraphNode[] {
+  return loaded.flatMap((volume) => {
+    const own = nodes.filter((n) => volume.byId.get(n.id) === n);
+    return [...context(volume, own), ...own].sort(
+      (a, b) => a.documentReadingOrder - b.documentReadingOrder,
     );
-    result.sections.push(...sections(volume, query));
-  }
-  return result;
+  });
 }
 
 /** Fiche d'un nœud des volumes chargés : le nœud seul (une rubrique, sans son sous-arbre). */
