@@ -25,6 +25,7 @@ dépendances, choix discutables).
 | 12, données en local | #22, #23 | site statique, un fichier par volume, volumes à la demande |
 | 13, audit du code | #24 | code mort retiré, une sélection par volume, commentaires et CSS resserrés |
 | Barre de la vue fixée | #25 | recherche toujours visible, la liste défile dessous |
+| Recherche par zone | #28 | `in` (sujet, description, adresse, reste), boutons des zones, bouton Search |
 
 ## Sprint 14 : exporter
 
@@ -50,8 +51,8 @@ récent, à comparer alors).
 
 ## Plus tard (non planifié)
 
-Recherche par champ (sujet, activité, adresse) ; surlignage des
-correspondances ; pagination de la Liste. Vues Page (IIIF), Carte et Frise,
-avec leurs critères (page, zone, période) ; géocodage ; liens temporels,
-autres annuaires et « suivre » ; deux vues côte à côte. Pistes détaillées
-dans `docs/IDEES.md`. Chacun aura son sprint, proposé le moment venu.
+Surlignage des correspondances ; pagination de la Liste. Vues Page (IIIF),
+Carte et Frise, avec leurs critères (page, zone, période) ; géocodage ;
+liens temporels, autres annuaires et « suivre » ; deux vues côte à côte.
+Pistes détaillées dans `docs/IDEES.md`. Chacun aura son sprint, proposé le
+moment venu.

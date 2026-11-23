@@ -2,6 +2,12 @@
 // Filtres et scénarios : docs/SCENARIOS.md. Tous les critères sont facultatifs et se combinent
 // (conjonction) ; sans critère, la requête est vide et ne sélectionne rien.
 
+import type { SpanLabel } from "./types.ts";
+
+/** Zones du texte où chercher : les empans de chaque libellé, et le texte hors empan. */
+export type Zone = Lowercase<SpanLabel> | "other";
+export const ZONES: readonly Zone[] = ["subj", "desc", "addr", "other"];
+
 export interface Query {
   /**
    * Scénario 1 : uuid des nœuds dont on veut tout le sous-arbre, eux compris ; plusieurs : l'union
@@ -10,6 +16,11 @@ export interface Query {
   subtree?: readonly string[];
   /** Scénario 2 : texte que le nœud doit contenir, sans tenir compte des accents ni de la casse. */
   text?: string;
+  /**
+   * Zones où chercher le texte (paramètre `in`, répétable) ; absent : tout le texte. Seulement
+   * avec un texte ; jamais vide ni complet, sans doublon, dans l'ordre de ZONES.
+   */
+  zones?: readonly Zone[];
 }
 
 /** Requête invalide : paramètre répété ou mal formé. */
@@ -31,6 +42,13 @@ export function parseQuery(params: URLSearchParams): Query {
   // Blancs réduits à une espace ; vide, le texte ne filtre rien (un formulaire envoie « text= »).
   const text = single(params, "text")?.trim().replace(/\s+/g, " ");
   if (text) query.text = text;
+  // Aucune zone ou toutes : tout le texte (un formulaire sans case cochée n'envoie rien).
+  const zones = params.getAll("in");
+  for (const zone of zones)
+    if (!(ZONES as readonly string[]).includes(zone))
+      throw new QueryError(`« in » n'est pas une zone : ${zone}`);
+  const chosen = ZONES.filter((z) => zones.includes(z));
+  if (text && chosen.length > 0 && chosen.length < ZONES.length) query.zones = chosen;
   return query;
 }
 
@@ -46,6 +64,7 @@ export function serializeQuery(query: Query): URLSearchParams {
   const params = new URLSearchParams();
   for (const subtree of query.subtree ?? []) params.append("subtree", subtree);
   if (query.text !== undefined) params.set("text", query.text);
+  for (const zone of query.zones ?? []) params.append("in", zone);
   return params;
 }
 

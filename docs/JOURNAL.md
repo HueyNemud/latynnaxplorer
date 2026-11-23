@@ -21,7 +21,10 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   statique demande un `<Suspense>` autour.
 - **Radix** : il définit `--space-*` et `--color-background` sur
   `.radix-themes` (nos jetons ne doivent pas reprendre ces noms) ; ses
-  composants portent `.rt-reset` et ont leur propre anneau de focus.
+  composants portent `.rt-reset` et ont leur propre anneau de focus. Un
+  `TextField.Slot` sans `side` se place selon son rang (le premier à
+  gauche) ; un bouton `ghost` a des marges négatives : deux voisins se
+  chevauchent.
 - **CSS** : `calc()` refuse un `0` sans unité dans une somme ; épaisseurs en
   pixels entiers (1,5 px s'affiche tantôt sur 1, tantôt sur 2) ; Firefox
   fond la marge haute d'un premier enfant dans celle de son parent, et
@@ -43,6 +46,12 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   le même `Runtime.evaluate` donne un faux résultat : laisser un délai.
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
+
+## 2026-11-23 — Recherche par zone
+
+- Le texte se cherche dans des zones : sujet, description, adresse, ou
+  le reste (`in`). Boutons des zones à gauche du champ, aux couleurs des
+  champs ; champ agrandi et soudé à un bouton Search. 116 tests.
 
 ## 2026-11-23 — Barre de la vue fixée
 

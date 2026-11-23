@@ -16,12 +16,16 @@ export class NodeNotFoundError extends Error {
   }
 }
 
-/** Le texte plié du nœud de rang `i` contient-il le texte cherché, plié (phrase entière, à la
- * lettre) ? Sans texte, tout nœud convient. */
-export function matcher(volume: LoadedVolume, text: string | undefined): (i: number) => boolean {
+/** Le texte plié du nœud de rang `i`, dans les zones demandées, contient-il le texte cherché,
+ * plié (phrase entière, à la lettre) ? Sans texte, tout nœud convient. */
+export function matcher(
+  volume: LoadedVolume,
+  { text, zones }: Pick<Query, "text" | "zones">,
+): (i: number) => boolean {
   if (text === undefined) return () => true;
   const needle = fold(text);
-  return (i) => volume.folded[i]?.includes(needle) ?? false;
+  if (zones === undefined) return (i) => volume.folded[i]?.includes(needle) ?? false;
+  return (i) => zones.some((z) => volume.zoned[i]?.[z].includes(needle));
 }
 
 /**
@@ -29,7 +33,8 @@ export function matcher(volume: LoadedVolume, text: string | undefined): (i: num
  * critère, rien. Sous-arbre : les nœuds désignés et tous leurs descendants (un nœud désigné qui
  * n'est pas de ce volume n'y désigne rien).
  */
-export function selection(volume: LoadedVolume, { subtree, text }: Query): SubgraphNode[] {
+export function selection(volume: LoadedVolume, query: Query): SubgraphNode[] {
+  const { subtree, text } = query;
   if (subtree === undefined && text === undefined) return [];
   const roots = new Set(subtree);
   const inSubtree = (n: SubgraphNode) => {
@@ -37,7 +42,7 @@ export function selection(volume: LoadedVolume, { subtree, text }: Query): Subgr
     for (const a of ancestors(volume, n)) if (roots.has(a.id)) return true;
     return false;
   };
-  const matches = matcher(volume, text);
+  const matches = matcher(volume, query);
   return volume.nodes.filter((n, i) => matches(i) && (subtree === undefined || inSubtree(n)));
 }
 

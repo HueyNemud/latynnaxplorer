@@ -20,7 +20,7 @@
     sans-serif;
 
   /* champs : teintes transparentes de Radix, qui se fondent dans le fond d'une ligne survolée ou
-     ouverte */
+     ouverte ; les boutons des zones (components/SearchForm.tsx) en reprennent les couleurs */
   --tint-subj: var(--violet-a4);
   --tint-desc: var(--teal-a4);
   --tint-addr: var(--yellow-a4);
@@ -234,10 +234,23 @@ details[open] > summary .chevron {
   padding-bottom: var(--space-4);
 }
 
-/* champ de recherche (components/SearchForm.tsx), le champ de Radix à une largeur raisonnable */
+/* recherche (components/SearchForm.tsx) : les boutons des zones, puis le champ soudé à son
+   bouton Search, à une largeur raisonnable */
 .search-form {
-  flex: 0 1 24rem;
+  flex: 0 1 46rem;
   min-width: 0;
+}
+
+/* le champ et le bouton Search soudés */
+.search-form .search-input {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.search-form .search-submit {
+  margin-left: -1px;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
 /* vue vide (components/Explorer.tsx, mise en page par Flex de Radix) : un grand aplat */

@@ -109,7 +109,12 @@ domaine couvert : la Structure, volumes et rubriques.
 - **Place** : colonnes de Miller, collées au bord gauche de la fenêtre :
   Volumes, puis Contents, puis la vue, centrée dans la place qui reste.
   En haut de la vue, une barre toujours visible porte la recherche par
-  texte (et plus tard les filtres) ; la vue défile dessous.
+  texte (et plus tard les filtres) ; la vue défile dessous. À gauche, un
+  bouton par zone (Subj, Desc, Addr, Other), aux couleurs de ses champs
+  dans la Liste : enfoncé (fond), la zone est fouillée ; relâché
+  (contour) elle ne l'est pas ; un clic ne lance rien. Puis le champ,
+  plus grand, soudé à son bouton Search ; Entrée ou Search lance la
+  recherche.
 - **Panneaux** : chacun se replie par une bande verticale sur son côté
   droit, qui porte son titre ; replié, il ne reste que la bande. Les
   panneaux ouverts sont toujours les premiers : déplier un panneau
