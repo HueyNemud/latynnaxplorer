@@ -1,16 +1,9 @@
 "use client";
 
-// Facettes de structure (docs/composants/facettes.md) : panneaux Volumes et Contents, en
-// colonnes de Miller ; règles des cases dans lib/facets/selection.ts.
-// - Les cases cochées sont l'état de ce composant, lu une fois depuis l'URL : l'URL les suit
-//   après un court délai (entrée de l'historique remplacée) ; la vue est estompée pendant son
-//   calcul.
-// - Le volume au focus est l'état de la page (components/Explorer.tsx), qui le charge : Contents
-//   attend le sien, et la case ronde d'un volume pas encore chargé est inactive.
-// - Les cases font partie du formulaire de la requête (components/SearchForm.tsx) par
-//   l'attribut `form` : seules partent les rubriques cochées les plus hautes (une case couverte
-//   n'a pas de nom).
-// - Rendues de nouveau seulement quand ce qu'elles montrent change, pas quand l'URL suit les cases.
+// Facettes de structure (docs/composants/facettes.md) : panneaux Volumes et Contents ; règles des
+// cases dans lib/facets/selection.ts. Les cases cochées sont l'état de ce composant, lu une fois
+// depuis l'URL, que l'URL suit ; elles appartiennent au formulaire de la recherche (attribut
+// `form`). Le volume au focus est l'état de la page (components/Explorer.tsx), qui le charge.
 
 import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
 import { memo, type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
@@ -59,7 +52,7 @@ function sameFacets(a: FacetsProps, b: FacetsProps): boolean {
     a.onFocus === b.onFocus &&
     a.loaded === b.loaded &&
     a.query.text === b.query.text &&
-    String(a.query.zones) === String(b.query.zones) &&
+    a.query.zones?.join() === b.query.zones?.join() &&
     a.sections.length === b.sections.length &&
     a.sections.every((s, i) => s.id === b.sections[i]?.id && s.entries === b.sections[i]?.entries)
   );

@@ -5,25 +5,13 @@
 
 /* ── Jetons ── */
 
-/* Couleurs, espacements, rayons, ombres, tailles de texte : ceux du thème Radix :
-   - --gray-12 texte, --gray-11 texte atténué (≥ 4,5:1 sur blanc, sur --gray-2 et sur les
-     fonds des empans) ; --gray-2 survol et nœud ouvert, --gray-3 survol d'une surface déjà
-     sur --gray-2 ; --gray-11 guides de la Liste ;
-   - --radius-4 lignes et cartes, --radius-2 coude du guide ; --shadow-4 relief ;
-     --font-size-2 texte petit ; --focus-8 anneau du focus clavier.
-   Ici, seulement nos jetons, ceux qui servent plusieurs fois ; définis sur le thème, où les
-   variables de Radix existent. */
+/* Couleurs, espacements, rayons, ombres, tailles : ceux du thème Radix. Ici, seulement nos
+   jetons qui servent plusieurs fois, définis sur le thème, où les variables de Radix existent. */
 .radix-themes {
   /* Fira Sans (next/font, app/layout.tsx), pour ses vraies petites capitales */
   --default-font-family:
     var(--font-fira), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
-
-  /* empans : couleurs transparentes de Radix, qui se fondent dans le fond d'une ligne survolée ou
-     ouverte ; les boutons des zones (components/SearchForm.tsx) en reprennent les couleurs */
-  --tint-subj: var(--violet-a4);
-  --tint-desc: var(--teal-a4);
-  --tint-addr: var(--yellow-a3);
 
   /* lignes (Liste, arbre des facettes) : marges intérieures horizontale et verticale ; icônes */
   --line-pad: 0.375rem;
@@ -109,8 +97,10 @@ summary::-webkit-details-marker {
   white-space: pre-line;
 }
 
-/* Empan : fond coloré aux coins arrondis. Le fond déborde un peu de chaque côté (marge
-   négative) sans décaler le texte ; un filet blanc sépare deux empans voisins. */
+/* Empan : fond coloré aux coins arrondis, transparent pour se fondre dans le fond d'une ligne
+   survolée ou ouverte (mêmes couleurs que les boutons des zones, components/SearchForm.tsx). Le
+   fond déborde un peu de chaque côté (marge négative) sans décaler le texte ; un filet blanc
+   sépare deux empans voisins. */
 .span {
   padding: 0.08em;
   margin: 0 -0.08em;
@@ -121,15 +111,15 @@ summary::-webkit-details-marker {
 
 .span-subj {
   font-variant: small-caps;
-  background: var(--tint-subj);
+  background: var(--violet-a4);
 }
 
 .span-desc {
-  background: var(--tint-desc);
+  background: var(--teal-a4);
 }
 
 .span-addr {
-  background: var(--tint-addr);
+  background: var(--yellow-a3);
 }
 
 /* réglage Span colors décoché (components/Settings.tsx) : les empans sans fond */
@@ -173,26 +163,22 @@ summary::-webkit-details-marker {
   text-transform: uppercase;
 }
 
-/* Une ligne, « … » si le texte est trop long (entier ailleurs : fiche, nœud seul) */
+/* Une ligne, bornée à sa colonne, « … » si le texte est trop long (entier ailleurs : fiche,
+   nœud seul) */
 .path li,
 .text-section .label,
 .text-out_of_scope .label,
 .tree-label {
+  display: inline-block;
+  max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  vertical-align: top;
 }
 
 :is(.path, .text-section, .text-out_of_scope) .printed {
   white-space: nowrap;
-}
-
-/* texte d'une rubrique ou d'un hors champ (Liste), borné à sa colonne */
-.text-section .label,
-.text-out_of_scope .label {
-  display: inline-block;
-  max-width: 100%;
-  vertical-align: top;
 }
 
 /* Ligne (vue Liste, arbre des facettes) : coins arrondis, fond au survol ; le chevron dans sa
@@ -229,30 +215,9 @@ details[open] > summary .chevron {
   box-shadow: var(--shadow-4);
 }
 
-/* ── Barre (components/Explorer.tsx) : la barre de la sélection, puis les outils de la vue ── */
+/* ── Barre (components/Explorer.tsx, mise en page par Flex de Radix) ── */
 
-/* Barre : toujours en haut de la vue, ses contrôles en rangée ; la liste dessous défile seule,
-   ses intitulés fixés juste sous la barre, quelle que soit sa hauteur. Un trait vertical
-   (Separator de Radix) sépare la barre de la sélection (recherche, export) des outils de la vue. */
-.bar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  padding-block: var(--space-4) var(--space-2);
-}
-
-.selection-bar,
-.view-tools {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-}
-
-.selection-bar {
-  flex: 1;
-  min-width: 0;
-}
-
+/* sous la barre, la liste défile seule : ses intitulés fixés restent juste sous la barre */
 .view-scroll {
   flex: 1;
   overflow-y: auto;
@@ -276,11 +241,6 @@ details[open] > summary .chevron {
   margin-left: -1px;
   border-top-left-radius: 0;
   border-bottom-left-radius: 0;
-}
-
-/* export, au bout de la barre de la sélection */
-.selection-bar .export {
-  margin-left: auto;
 }
 
 /* vue vide (components/Explorer.tsx, mise en page par Flex de Radix) : un grand aplat */
@@ -409,7 +369,7 @@ details[open] > summary .chevron {
   border-top-left-radius: var(--radius-2);
 }
 
-/* Texte : seul il distingue les types (rubriques : voir « Intitulés », plus haut). */
+/* Texte : seul il distingue les types. */
 .text {
   min-width: 0;
 }
@@ -582,8 +542,7 @@ details[open] > summary .chevron {
   padding-left: 1.25rem;
 }
 
-/* ligne de l'arbre (voir « Ligne ») : case | intitulé | décompte, centrés (intitulé sur une
-   ligne) */
+/* ligne de l'arbre : case | intitulé | décompte, centrés (intitulé sur une ligne) */
 .tree-line {
   grid-template-columns: auto minmax(0, 1fr) auto;
   align-items: center;

@@ -1,12 +1,12 @@
 // Exploration de plusieurs volumes, chargés à la demande : quels volumes une requête demande ;
 // ce qu'elle donne sur les volumes chargés, commun à toutes les vues ; le contexte de ce qu'une
-// vue montre ; la fiche d'un nœud. Fonctions pures.
+// vue montre. Fonctions pures.
 
 import { sections } from "./facets.ts";
 import type { Query } from "./query.ts";
 import { context, NodeNotFoundError, selection } from "./resolve.ts";
-import type { Detail, FacetSection, SubgraphNode, Volume } from "./types.ts";
-import { ancestors, type LoadedVolume } from "./volume.ts";
+import type { FacetSection, SubgraphNode, Volume } from "./types.ts";
+import type { LoadedVolume } from "./volume.ts";
 
 /**
  * Volumes dont la requête a besoin : tous si elle n'a pas de rubrique (elle porte alors sur tous
@@ -69,12 +69,4 @@ export function withContext(
       (a, b) => a.documentReadingOrder - b.documentReadingOrder,
     );
   });
-}
-
-/** Fiche d'un nœud des volumes chargés : le nœud seul (une rubrique, sans son sous-arbre). */
-export function detail(loaded: readonly LoadedVolume[], id: string): Detail {
-  const volume = volumeOf(loaded, id);
-  const node = volume?.byId.get(id);
-  if (volume === undefined || node === undefined) throw new NodeNotFoundError(id);
-  return { node, path: [...ancestors(volume, node)].reverse() };
 }

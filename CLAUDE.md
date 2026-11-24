@@ -5,12 +5,20 @@ voisin `../adresses_revolutionnaires` (numrev).
 
 ## À lire d'abord
 
-- `docs/INITIAL_PROMPT.md` : le brief et les **règles d'or** (toujours
-  demander avant de toucher à l'architecture, au modèle de données, aux
-  fonctionnalités ou aux dépendances ; `data/` et numrev en lecture seule ;
-  hooks jamais contournés).
 - `docs/SPRINTS.md` : le sprint en cours et les suivants.
-- `docs/JOURNAL.md` et `docs/DECISIONS.md` : historique et décisions.
+- `docs/DECISIONS.md` et `docs/JOURNAL.md` : décisions en vigueur et
+  historique.
+
+## Règles d'or
+
+- Code simple et explicite : une abstraction n'est introduite que pour un
+  problème présent, jamais par anticipation.
+- **Toujours demander** avant de toucher à l'architecture, au modèle de
+  données, aux fonctionnalités (même mineures) ou aux dépendances.
+- Pas de rétro-compatibilité par défaut : le projet est en développement
+  initial.
+- `data/` et le projet numrev sont en lecture seule.
+- Les hooks Git ne sont jamais contournés (`--no-verify` interdit).
 
 ## Façon de travailler
 

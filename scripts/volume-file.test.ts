@@ -95,11 +95,6 @@ describe("indexVolume", () => {
       "rue de la Paix, 12.",
     ]);
   });
-
-  it("relie chaque entrée à l'entrée suivante dans l'ordre de lecture, à travers les sections", () => {
-    // T2 s'intercale entre E3 et E1 ; E2 est la dernière entrée du volume
-    expect(Object.fromEntries(indexVolume(file).nextEntry)).toEqual({ [E3]: E1, [E1]: E2 });
-  });
 });
 
 describe("anchorsOf", () => {

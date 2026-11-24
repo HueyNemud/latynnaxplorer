@@ -24,9 +24,6 @@ même si deux nœuds désignés sont l'un sous l'autre.
 
 - Le nœud désigné fait partie du résultat.
 - Nœuds dans l'ordre de lecture.
-- Arcs `member_of`, `child_of` et `follows` dont les deux bouts sont dans
-  le résultat ; `follows` relie une entrée à l'entrée suivante du volume,
-  seulement si celle-ci est aussi dans le résultat.
 - À part du résultat, le **contexte** (`context`) : les rubriques ancêtres
   du nœud désigné, de la racine à son parent (avec plusieurs nœuds :
   celles de chacun, une fois chacune). Il entoure la sélection sans en
@@ -68,7 +65,7 @@ casse.
 - Blancs en tête et en fin retirés, blancs intérieurs réduits à une
   espace ; un texte vide ne filtre rien (un formulaire vide envoie
   `text=`).
-- Nœuds, arcs et ordre comme au scénario 1 ; une sélection vide n'est pas
+- Nœuds et ordre comme au scénario 1 ; une sélection vide n'est pas
   une erreur.
 - Contexte : les rubriques ancêtres des résultats qui n'en font pas
   partie, chacune une fois, dans l'ordre de lecture. Vide sans résultat.

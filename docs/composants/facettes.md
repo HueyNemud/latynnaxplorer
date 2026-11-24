@@ -22,17 +22,17 @@ Relevé sur 1807 :
 ## Anatomie
 
 ```
-┌──────────┬─┬──────────────────────────────┬─┬───────────────────────────────┐
-│ ◉        │‹│ [           Clear           ] │‹│      🔍 Search_______          │
-│   1807   │V│ › ☐ LISTES PARTICULIÈRES… 13,311│C│                          Page │
-│ 1807_AD75│o│   ☑ LISTE DE NON-COMM… 3,277 │o│ ┌› ADMINISTRATION GÉNÉRALE…  178 │
-│ -PER292  ▶l│ ⌄ ☑ ADMINISTRATION GÉN…  234 │n│ │ › M. Lavallette, …         178 │
-│ (cernée) │u│     ▣ Conseiller d'état…   1 │t│ …                              │
-│ ○        │m│     ▣ Administrateurs…     7 │e│                                │
-│   1810   │e│   ☐ DOCTEURS EN MÉDECINE. 335│n│                                │
-│          │s│   …                          │t│                                │
-└──────────┴─┴──────────────────────────────┴─┴───────────────────────────────┘
-  Volumes  bande      Contents             bande    vue (centrée, 64rem au plus)
+┌──────────┬─┬────────────────────────────────┬─┬────────────────────┐
+│ ◉        │‹│ [            Clear           ] │‹│ barre de la        │
+│   1807   │V│ › ☐ LISTES PARTICULIÈRES 13,311│C│ sélection          │
+│ 1807_AD75│o│   ☑ LISTE DE NON-COMM…    3,277│o│                    │
+│ -PER292  ▶l│ ⌄ ☑ ADMINISTRATION GÉN…     234│n│ vue                │
+│ (cernée) │u│     ▣ Conseiller d'état…      1│t│                    │
+│ ○        │m│     ▣ Administrateurs…        7│e│                    │
+│   1810   │e│   ☐ DOCTEURS EN MÉDECINE.   335│n│                    │
+│          │s│   …                            │t│                    │
+└──────────┴─┴────────────────────────────────┴─┴────────────────────┘
+  Volumes  bande      Contents               bande  vue (centrée, 64 rem au plus)
 ```
 
 ◉ case ronde cochée, ○ vide ; ☑ case cochée ; ▣ case couverte ; ▶ encoche

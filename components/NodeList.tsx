@@ -1,9 +1,5 @@
-// Vue Liste (docs/composants/noeud-liste.md) : la sélection dans ses rubriques, à plat. Toute
-// rubrique, contexte compris, est marquée par son guide de niveau ; tout nœud est une ligne qui
-// déplie sa fiche juste dessous (<details> natif), rendue au premier dépliage
-// (components/NodeDetails.tsx), sauf pour une sélection d'un seul nœud, dépliée d'emblée.
-// Montrée par tranches : la suivante quand le bas de la Liste approche ; une autre sélection
-// repart de la première.
+// Vue Liste (docs/composants/noeud-liste.md) : la sélection dans ses rubriques, à plat, montrée
+// par tranches ; tout nœud est une ligne qui déplie sa fiche juste dessous (<details> natif).
 
 import {
   type CSSProperties,
@@ -15,17 +11,16 @@ import {
   useRef,
   useState,
 } from "react";
-import { detail, withContext } from "../lib/query/explore.ts";
+import { withContext } from "../lib/query/explore.ts";
 import type { Query } from "../lib/query/query.ts";
 import type { SubgraphNode } from "../lib/query/types.ts";
 import type { LoadedVolume } from "../lib/query/volume.ts";
 import { matches } from "../lib/text/matches.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
-import { NodeDetails } from "./NodeDetails.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
-/** Nœuds sélectionnés par tranche : la première est montrée en moins de 100 ms. */
+/** Nœuds sélectionnés par tranche. */
 const STEP = 200;
 
 /**
@@ -56,7 +51,6 @@ export function NodeList({
   );
   // une sélection d'un seul nœud : montré déplié
   const opened = selection.length === 1 ? selection[0]?.id : undefined;
-  const detailOf = useCallback((id: string) => detail(volumes, id), [volumes]);
 
   const ids = new Set(shown.map((n) => n.id));
   // enfants de chaque nœud montré, dans l'ordre de lecture ; null : les nœuds sans parent montré
@@ -92,7 +86,6 @@ export function NodeList({
       </div>
       {children.get(null)?.map((n) => render(n, []))}
       {count < selection.length && <More key={count} onVisible={more} />}
-      <NodeDetails detail={detailOf} />
     </>
   );
 }
@@ -101,8 +94,9 @@ export function NodeList({
 type Search = Pick<Query, "text" | "zones">;
 
 /**
- * Un nœud, quel que soit son type : seul son texte change. Rendu une fois par texte cherché : une
- * tranche de plus ne rend que ses nœuds (son chemin ne dépend que du nœud).
+ * Un nœud, quel que soit son type : seul son texte change. Sa fiche est rendue au premier
+ * dépliage, puis gardée. Rendu une fois par texte cherché : une tranche de plus ne rend que ses
+ * nœuds (son chemin ne dépend que du nœud).
  */
 const ListNode = memo(
   function ListNode({
@@ -116,8 +110,13 @@ const ListNode = memo(
     open: boolean;
     search: Search;
   }) {
+    const [unfolded, setUnfolded] = useState(open);
     return (
-      <details className="node" open={open}>
+      <details
+        className="node"
+        open={open}
+        onToggle={(event) => event.currentTarget.open && setUnfolded(true)}
+      >
         <summary className="row line" aria-labelledby={`text-${node.id}`}>
           <span className={`text text-${node.kind}`}>
             <ChevronIcon className="chevron" />
@@ -134,14 +133,7 @@ const ListNode = memo(
           </span>
           <span className="page">{node.anchors[0]?.page}</span>
         </summary>
-        {/* dépliée d'emblée : la fiche ; sinon une case vide, remplie au premier dépliage */}
-        {open ? (
-          <div className="detail">
-            <NodeDetail node={node} path={path} />
-          </div>
-        ) : (
-          <div className="detail" data-node={node.id} />
-        )}
+        <div className="detail">{unfolded && <NodeDetail node={node} path={path} />}</div>
       </details>
     );
   },

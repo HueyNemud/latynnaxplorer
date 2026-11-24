@@ -1,10 +1,9 @@
-// Résolution d'une requête sur un volume chargé (docs/SCENARIOS.md, docs/MODELE_DONNEES.md) :
-// la sélection, son contexte, et le sous-graphe induit. Plusieurs volumes : lib/query/explore.ts.
-// Fonctions pures.
+// Résolution d'une requête sur un volume chargé (docs/SCENARIOS.md) : la sélection et son
+// contexte. Plusieurs volumes : lib/query/explore.ts. Fonctions pures.
 
 import { fold } from "./fold.ts";
 import type { Query } from "./query.ts";
-import type { Arc, Subgraph, SubgraphNode } from "./types.ts";
+import type { SubgraphNode } from "./types.ts";
 import { ancestors, type LoadedVolume } from "./volume.ts";
 
 /** Le nœud désigné par la requête n'existe pas. */
@@ -60,34 +59,4 @@ export function context(volume: LoadedVolume, selected: readonly SubgraphNode[])
     }
   }
   return [...result].sort((a, b) => a.documentReadingOrder - b.documentReadingOrder);
-}
-
-/**
- * Arcs entre des nœuds, dans leur ordre : `child_of` (section → section parente) ou `member_of`
- * (autre nœud → section parente), puis `follows` (entrée → entrée suivante du volume). Un arc
- * n'est gardé que si ses deux bouts sont parmi les nœuds : deux entrées entre lesquelles le
- * volume en compte une autre ne sont pas reliées.
- */
-export function inducedArcs(
-  nodes: readonly Pick<SubgraphNode, "id" | "kind" | "parentId">[],
-  nextEntry: ReadonlyMap<string, string>,
-): Arc[] {
-  const ids = new Set(nodes.map((n) => n.id));
-  return nodes.flatMap((n): Arc[] => {
-    const arcs: Arc[] = [];
-    if (n.parentId !== null && ids.has(n.parentId)) {
-      const kind = n.kind === "section" ? "child_of" : "member_of";
-      arcs.push({ source: n.id, target: n.parentId, kind });
-    }
-    const next = nextEntry.get(n.id);
-    if (next !== undefined && ids.has(next))
-      arcs.push({ source: n.id, target: next, kind: "follows" });
-    return arcs;
-  });
-}
-
-/** Sous-graphe induit par les nœuds que désigne la requête dans ce volume. */
-export function resolve(volume: LoadedVolume, query: Query): Subgraph {
-  const nodes = selection(volume, query);
-  return { nodes, arcs: inducedArcs(nodes, volume.nextEntry) };
 }

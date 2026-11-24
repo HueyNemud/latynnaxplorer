@@ -3,6 +3,7 @@
 // de rubriques ; seules les plus hautes sont gardées, leurs descendantes sont couvertes.
 
 import type { FacetSection } from "../query/types.ts";
+import { ancestors } from "../query/volume.ts";
 
 /** Arbre des rubriques : chaque rubrique ; enfants de chaque rubrique, et rubriques de premier
  * niveau de chaque volume (clé : l'identifiant du volume), dans l'ordre de lecture. */
@@ -19,9 +20,7 @@ export function sectionTree(sections: readonly FacetSection[]): SectionTree {
 }
 
 /** Rubriques au-dessus de `id`, de son parent à la racine. */
-function* ancestors(tree: SectionTree, id: string): Generator<string> {
-  for (let p = tree.byId.get(id)?.parentId; p; p = tree.byId.get(p)?.parentId) yield p;
-}
+const above = (tree: SectionTree, id: string) => ancestors(tree, tree.byId.get(id));
 
 /** Les rubriques cochées de l'URL (un `subtree` d'un autre nœud ne coche rien). */
 export function checkedOf(tree: SectionTree, subtree: readonly string[]): Set<string> {
@@ -34,7 +33,7 @@ export function coveredBy(
   checked: ReadonlySet<string>,
   id: string,
 ): FacetSection | undefined {
-  for (const p of ancestors(tree, id)) if (checked.has(p)) return tree.byId.get(p);
+  for (const p of above(tree, id)) if (checked.has(p.id)) return p;
   return undefined;
 }
 
@@ -42,7 +41,7 @@ export function coveredBy(
  * cochée à sa place ; les autres cases ne changent pas. */
 export function keepOnly(tree: SectionTree, checked: ReadonlySet<string>, id: string): Set<string> {
   const next = new Set(checked);
-  for (const p of ancestors(tree, id)) next.delete(p);
+  for (const p of above(tree, id)) next.delete(p.id);
   next.add(id);
   return next;
 }
@@ -123,6 +122,6 @@ export function toggleVolume(
  * en partie (une rubrique en dessous d'elles est cochée). */
 export function pathTo(tree: SectionTree, checked: ReadonlySet<string>): Set<string> {
   const path = new Set<string>();
-  for (const id of checked) for (const p of ancestors(tree, id)) path.add(p);
+  for (const id of checked) for (const p of above(tree, id)) path.add(p.id);
   return path;
 }

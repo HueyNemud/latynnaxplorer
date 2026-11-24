@@ -145,10 +145,8 @@ au survol ou au dépliage. Pas de transition.
 - **Rubriques hors de l'écran** : `content-visibility: auto`, hauteur
   estimée (20 rem) tant qu'elles n'ont pas été montrées ; la barre de
   défilement est donc approchée.
-- **Fiches au dépliage** : un seul composant pour toute la Liste
-  (`components/NodeDetails.tsx`) écoute les dépliages (l'événement `toggle`
-  ne remonte pas : écouté à la capture) et rend chaque fiche dans sa case
-  par un portail.
+- **Fiches au dépliage** : chaque ligne rend sa fiche au premier `toggle`
+  de son `<details>`, puis la garde.
 
 ## Jetons
 
@@ -158,11 +156,10 @@ blanc, sur `--gray-2` et sur les fonds des empans.
 
 | Jeton | Valeur | Usage |
 |---|---|---|
-| `--tint-subj` / `--tint-desc` / `--tint-addr` | `--violet-a4` / `--teal-a4` / `--yellow-a3` | fonds des empans |
 | `--heading-height` | `1.75rem` | hauteur de la ligne d'une rubrique, pas de la pile |
 | `--line-pad` / `--line-pad-y` | `0.375rem` / `0.125rem` | marges intérieures d'une ligne (Liste et Contents) ; retrait d'une sous-rubrique |
 | `--guide-width` / `--guide-gap` / `--ball` | `2px` / `0.25rem` / `6px` | guide, écart avec les lignes, boule |
-| `--icon` | `0.875rem` | chevron |
+| `--icon` | `0.875rem` | icônes (chevron) |
 
 Police **Fira Sans** pour toute l'interface (vraies petites capitales),
 chargée par `next/font` et servie avec le site. Lignes, intitulés et

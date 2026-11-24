@@ -4,7 +4,7 @@
 
 import { fold } from "./fold.ts";
 import type { Zone } from "./query.ts";
-import type { Anchor, NodeKind, Span, SpanLabel, SubgraphNode, Volume } from "./types.ts";
+import type { Anchor, NodeKind, Span, SubgraphNode, Volume } from "./types.ts";
 
 /** Index des volumes : leurs métadonnées, et l'adresse de leur fichier. */
 export interface VolumeIndex {
@@ -49,8 +49,6 @@ export interface LoadedVolume {
   folded: string[];
   /** texte plié de chaque nœud par zone (voir zoned), dans l'ordre de `nodes` */
   zoned: Record<Zone, string>[];
-  /** entrée suivante dans l'ordre de lecture (arc follows), pour les entrées */
-  nextEntry: Map<string, string>;
 }
 
 /** Le fichier d'un volume, décodé (ce que son format omet est rétabli) et indexé. */
@@ -71,45 +69,61 @@ export function indexVolume(file: VolumeFile): LoadedVolume {
       };
     },
   );
-  // follows : chaque entrée vers l'entrée suivante, à travers les sections
-  const nextEntry = new Map<string, string>();
-  let next: string | undefined;
-  for (const n of nodes.toReversed()) {
-    if (n.kind !== "entry") continue;
-    if (next !== undefined) nextEntry.set(n.id, next);
-    next = n.id;
-  }
   return {
     meta: file.volume,
     nodes,
     byId: new Map(nodes.map((n) => [n.id, n])),
     folded: nodes.map((n) => fold(n.text)),
     zoned: nodes.map(zoned),
-    nextEntry,
   };
 }
 
-/** Texte plié d'un nœud dans chaque zone : ses empans de ce libellé et, pour « other », son texte
- * hors empan ; les morceaux séparés par un saut de ligne, que le texte cherché ne contient pas. */
+/**
+ * Les morceaux d'un texte de `length` points de code où chercher, [début, fin) : chaque empan
+ * d'une zone demandée, et pour « other » chaque passage entre deux empans ; sans zone, tout le
+ * texte. Le texte cherché doit tenir dans un morceau, pour la sélection comme pour le surlignage.
+ */
+export function zonePieces(
+  length: number,
+  spans: readonly Pick<Span, "label" | "charStart" | "charEnd">[],
+  zones: readonly Zone[] | undefined,
+): [number, number][] {
+  if (zones === undefined) return [[0, length]];
+  const result: [number, number][] = spans
+    .filter((s) => zones.includes(s.label.toLowerCase() as Zone))
+    .map((s) => [s.charStart, s.charEnd]);
+  if (zones.includes("other")) {
+    let at = 0;
+    for (const s of spans.toSorted((a, b) => a.charStart - b.charStart)) {
+      if (s.charStart > at) result.push([at, s.charStart]);
+      at = Math.max(at, s.charEnd);
+    }
+    if (at < length) result.push([at, length]);
+  }
+  return result;
+}
+
+/** Texte plié d'un nœud dans chaque zone : ses morceaux (zonePieces), séparés par un saut de
+ * ligne, que le texte cherché ne contient pas. */
 function zoned({ text, spans }: SubgraphNode): Record<Zone, string> {
   const chars = Array.from(text);
-  const rest = [...chars];
-  const pieces: Record<Zone, string[]> = { subj: [], desc: [], addr: [], other: [] };
-  for (const s of spans) {
-    pieces[s.label.toLowerCase() as Lowercase<SpanLabel>].push(
-      chars.slice(s.charStart, s.charEnd).join(""),
+  const join = (zone: Zone) =>
+    fold(
+      zonePieces(chars.length, spans, [zone])
+        .map(([start, end]) => chars.slice(start, end).join(""))
+        .join("\n"),
     );
-    rest.fill("\n", s.charStart, s.charEnd);
-  }
-  pieces.other.push(rest.join(""));
-  const join = (zone: Zone) => fold(pieces[zone].join("\n"));
   return { subj: join("subj"), desc: join("desc"), addr: join("addr"), other: join("other") };
 }
 
-/** Rubriques au-dessus du nœud, de son parent à la racine. */
-export function* ancestors(volume: LoadedVolume, node: SubgraphNode): Generator<SubgraphNode> {
-  for (let id = node.parentId; id !== null; ) {
-    const parent = volume.byId.get(id);
+/** Rubriques au-dessus d'un nœud d'un volume (ou d'une rubrique de l'arbre des facettes), de son
+ * parent à la racine. */
+export function* ancestors<T extends { parentId: string | null }>(
+  { byId }: { byId: ReadonlyMap<string, T> },
+  node: T | undefined,
+): Generator<T> {
+  for (let id = node?.parentId ?? null; id !== null; ) {
+    const parent = byId.get(id);
     if (parent === undefined) return;
     yield parent;
     id = parent.parentId;

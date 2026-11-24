@@ -4,7 +4,7 @@ Exploration visuelle des annuaires commerciaux parisiens traités par la
 chaîne numrev (`../adresses_revolutionnaires`). Un site statique : chaque
 annuaire est un fichier, téléchargé quand on en a besoin, et interrogé dans
 le navigateur (`lib/query/`). La sélection s'affiche dans la vue Liste, sous
-la barre de recherche, avec à gauche les facettes de structure (volumes et
+la barre de la sélection, avec à gauche les facettes de structure (volumes et
 rubriques à cocher) ; interface en composants et jetons de
 [Radix Themes](https://www.radix-ui.com/themes).
 
@@ -37,7 +37,7 @@ La requête est dans l'URL (`docs/SCENARIOS.md`) :
 - `?text=<texte>` garde les nœuds qui contiennent le texte, sans tenir
   compte des accents ni de la casse ; `&in=subj` (répétable : `subj`,
   `desc`, `addr`, `other`) le cherche seulement dans ces zones ;
-- les critères se combinent ; sans critère, rien n'est sélectionné.
+- les critères se combinent ; sans critère, tout est sélectionné.
 
 ## Commandes
 
@@ -99,4 +99,3 @@ au lieu de 7,2 pour 1807).
 - [`docs/SPRINTS.md`](docs/SPRINTS.md) : sprint en cours et suivants
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) : décisions structurantes
 - [`docs/JOURNAL.md`](docs/JOURNAL.md) : journal de développement
-- [`docs/INITIAL_PROMPT.md`](docs/INITIAL_PROMPT.md) : consigne initiale

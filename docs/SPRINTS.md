@@ -33,20 +33,19 @@ dépendances, choix discutables).
 | 16, surlignage | #33 | correspondances sur fond iris opaque, là où elles sélectionnent ; un empan = un élément |
 | 17, réglages | #34 | bouton « ⚙ », fonds des empans montrés ou cachés, mémorisé dans le navigateur |
 | 18, requête vide | #35 | un critère absent ne filtre rien, requête vide = tous les volumes, bouton All retiré |
+| 19, barre de la sélection | #36 | barre de la sélection commune aux vues, outils de la vue après un trait |
 
-## Sprint 19 : barre de la sélection
+## Sprint 20 : nettoyage
 
-Branche `refactor/barre-selection`. La barre au-dessus de la vue sépare ce
-qui est commun à toutes les vues de ce qui est propre à chacune :
+Branche `refactor/nettoyage`. Aucune dépendance, aucun changement de
+comportement :
 
-- **Barre de la sélection** : zones, champ de recherche, Export ; une seule,
-  au-dessus de toutes les vues.
-- **Outils de la vue** : ce que la vue fournit, pour la Liste son menu
-  « ⚙ ». Tant qu'il n'y a qu'une vue, au bout de la même ligne, après un
-  trait vertical discret ; une ligne d'en-tête par vue viendra avec la
-  deuxième vue.
-- `docs/DESIGN.md` réécrit en conséquence ; aucune dépendance, aucun
-  changement de comportement.
+- docs remises d'accord avec le code ; mesures, demande traitée et brief
+  initial retirés (règles d'or dans `CLAUDE.md`) ;
+- code mort retiré : calcul des arcs, inutilisé par les vues ;
+- fiche au dépliage par `onToggle`, sans portail ni écouteur global ;
+- duplications retirées (`ancestors`, découpage en zones) ;
+- barre en `Flex` de Radix, commentaires et CSS resserrés.
 
 ## Hors sprint : demandes à numrev
 
