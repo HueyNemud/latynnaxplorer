@@ -1,10 +1,10 @@
 "use client";
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous la barre de la
-// vue (la recherche, plus tard d'autres critères ; l'export). L'index des volumes est lu à
-// l'arrivée, chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis la requête
-// de l'URL est résolue sur les volumes chargés (explore). Facettes et recherche changent l'URL sans
-// recharger la page ; Next garde useSearchParams à jour.
+// vue (la recherche, plus tard d'autres critères ; l'export et les réglages). L'index des volumes
+// est lu à l'arrivée, chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis
+// la requête de l'URL est résolue sur les volumes chargés (explore). Facettes et recherche changent
+// l'URL sans recharger la page ; Next garde useSearchParams à jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
@@ -24,6 +24,7 @@ import { ExportButton } from "./ExportButton.tsx";
 import { Facets } from "./Facets.tsx";
 import { NodeList } from "./NodeList.tsx";
 import { SearchForm } from "./SearchForm.tsx";
+import { Settings, useSpanColors } from "./Settings.tsx";
 
 /** `index` : adresse de l'index des volumes, absolue ou relative à la page. */
 export function Explorer({ index }: { index: string }) {
@@ -101,6 +102,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
     }
   }, [query, ready, list]);
   if (result !== undefined && result !== shown) setShown(result);
+  const [spanColors, setSpanColors] = useSpanColors();
 
   if (query === "bad-request") return <Message>Invalid query.</Message>;
   if (failed) return <Message>A volume could not be loaded.</Message>;
@@ -127,10 +129,11 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
         onFocus={setChosen}
         loaded={loaded}
       />
-      <div className="view">
+      <div className={spanColors ? "view" : "view no-span-colors"}>
         <div className="view-bar">
           <SearchForm query={shown.query} />
           <ExportButton selection={selection} volumes={list} />
+          <Settings spanColors={spanColors} onSpanColors={setSpanColors} />
         </div>
         <div className="view-scroll">
           {selection.length > 0 ? (

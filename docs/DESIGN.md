@@ -136,7 +136,10 @@ zone (Subj, Desc, Addr, Other), aux couleurs de ses empans dans la Liste :
 enfoncé, la zone est fouillée ; relâché, elle ne l'est pas ; un clic ne
 lance rien. Puis le champ, plus grand, soudé à son bouton Search ; Entrée
 ou Search lance la recherche, en gardant les rubriques cochées. Au bout de
-la barre, le bouton Export (en CSV), inactif quand rien n'est sélectionné.
+la barre, le bouton Export (en CSV), inactif quand rien n'est sélectionné,
+puis le bouton « ⚙ » des réglages d'affichage : un menu de cases à cocher
+(Span colors : les fonds des empans), hors de l'URL, mémorisées dans le
+navigateur.
 
 ## Export
 
