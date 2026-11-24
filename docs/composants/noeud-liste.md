@@ -91,7 +91,9 @@ Relevé sur 1807 (22 158 nœuds) :
 Couleurs transparentes de Radix : elles se fondent dans le fond d'une ligne
 survolée ou ouverte. Le fond déborde de 0,08 em de chaque côté (coins
 arrondis visibles, texte non décalé, filet blanc entre deux empans
-voisins) ; le texte hors empan n'a pas de fond.
+voisins) ; le texte hors empan n'a pas de fond. Le réglage Span colors
+décoché (`components/Settings.tsx`) retire ces fonds ; le sujet garde ses
+petites capitales.
 
 **Correspondances** du texte cherché (`lib/text/matches.ts`) : les mêmes
 que celles qui sélectionnent, texte plié et zones fouillées, ramenées aux

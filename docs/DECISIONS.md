@@ -64,6 +64,8 @@ de revenir.
 - Explorer, sélectionner, exporter ; mesurer et relier reviennent aux
   historiens, à partir de l'export (`docs/IDEES.md`).
 - Sélection (dans l'URL) et focus (hors de l'URL) distingués partout.
+- Réglages d'affichage hors de l'URL, mémorisés dans le navigateur
+  (`localStorage`, une clé par réglage) ; ils ne changent pas la sélection.
 - Radix Themes pour toute l'interface (iris sur gris mauve), feuille
   importée entière ; `app/globals.css` ne garde que ce que Radix n'a pas.
   Écartés sur maquette : Primer React, shadcn/ui (Tailwind obligatoire).

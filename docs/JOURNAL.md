@@ -58,6 +58,13 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-24 — Réglages d'affichage (sprint 17)
+
+- Bouton « ⚙ » au bout de la barre de la vue : menu de Radix, une case
+  Span colors qui montre ou cache les fonds des empans ; mémorisée dans
+  `localStorage` (`components/Settings.tsx`). Cacher les éléments hors
+  champ : reporté (`docs/IDEES.md`).
+
 ## 2026-11-24 — Surlignage (sprint 16)
 
 - Correspondances du texte cherché surlignées dans les lignes de la Liste,
