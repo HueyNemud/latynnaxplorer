@@ -145,10 +145,8 @@ au survol ou au dépliage. Pas de transition.
 - **Rubriques hors de l'écran** : `content-visibility: auto`, hauteur
   estimée (20 rem) tant qu'elles n'ont pas été montrées ; la barre de
   défilement est donc approchée.
-- **Fiches au dépliage** : un seul composant pour toute la Liste
-  (`components/NodeDetails.tsx`) écoute les dépliages (l'événement `toggle`
-  ne remonte pas : écouté à la capture) et rend chaque fiche dans sa case
-  par un portail.
+- **Fiches au dépliage** : chaque ligne rend sa fiche au premier `toggle`
+  de son `<details>`, puis la garde.
 
 ## Jetons
 

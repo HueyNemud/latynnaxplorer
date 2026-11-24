@@ -128,8 +128,8 @@ leur texte plié pour la recherche, en entier et par zone.
   sous-arbre qui contiennent le texte cherché ;
 - `explore.ts`, sur plusieurs volumes : quels volumes une requête demande
   (`neededVolumes`), ce qu'elle donne sur les volumes chargés, mis bout à
-  bout dans l'ordre de l'index (`explore`), et la fiche d'un nœud
-  (`detail` : le nœud et son chemin).
+  bout dans l'ordre de l'index (`explore`), et le contexte de ce qu'une
+  vue en montre (`withContext`).
 
 Une requête parcourt tout le volume, sans index. Le coût d'une grosse
 sélection est son rendu : la Liste la montre par tranches
