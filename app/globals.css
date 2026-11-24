@@ -133,9 +133,9 @@ summary::-webkit-details-marker {
 }
 
 /* Correspondance du texte cherché : fond iris opaque, qui recouvre celui des empans et se lit
-   pareil sur tous */
+   pareil sur tous ; texte foncé, même hors champ (le gris n'y atteint pas 4,5:1) */
 .printed mark {
-  color: inherit;
+  color: var(--gray-12);
   background: var(--iris-6);
   border-radius: 0.2em;
 }
