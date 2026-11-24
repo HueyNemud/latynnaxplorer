@@ -177,8 +177,8 @@ describe("resolve, texte dans des zones", () => {
 });
 
 describe("resolve, sans critère", () => {
-  it("ne rend rien", () => {
-    expect(resolve(volume, {})).toEqual({ nodes: [], arcs: [] });
+  it("rend tout le volume, sans contexte", () => {
+    expect(resolve(volume, {}).nodes).toEqual(volume.nodes);
     expect(context({})).toEqual([]);
   });
 });

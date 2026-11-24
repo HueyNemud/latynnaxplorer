@@ -29,13 +29,12 @@ export function matcher(
 }
 
 /**
- * Nœuds que désigne la requête, dans l'ordre de lecture : conjonction de ses critères ; sans
- * critère, rien. Sous-arbre : les nœuds désignés et tous leurs descendants (un nœud désigné qui
- * n'est pas de ce volume n'y désigne rien).
+ * Nœuds que désigne la requête, dans l'ordre de lecture : conjonction de ses critères, dont un
+ * critère absent ne filtre rien (sans critère, tout le volume). Sous-arbre : les nœuds désignés et
+ * tous leurs descendants (un nœud désigné qui n'est pas de ce volume n'y désigne rien).
  */
 export function selection(volume: LoadedVolume, query: Query): SubgraphNode[] {
-  const { subtree, text } = query;
-  if (subtree === undefined && text === undefined) return [];
+  const { subtree } = query;
   const designated = new Set(subtree);
   const inSubtree = (n: SubgraphNode) => {
     if (designated.has(n.id)) return true;

@@ -9,9 +9,10 @@ import type { Detail, FacetSection, SubgraphNode, Volume } from "./types.ts";
 import { ancestors, type LoadedVolume } from "./volume.ts";
 
 /**
- * Volumes dont la requête a besoin : celui que l'on regarde ; tous si elle cherche un texte sans
- * rubrique (tous les volumes), ou si l'un de ses sous-arbres n'est dans aucun volume chargé (l'URL
- * ne dit pas de quel volume il est). `all` : les volumes de l'index, dans son ordre.
+ * Volumes dont la requête a besoin : tous si elle n'a pas de rubrique (elle porte alors sur tous
+ * les volumes) ou si l'un de ses sous-arbres n'est dans aucun volume chargé (l'URL ne dit pas de
+ * quel volume il est) ; sinon celui que l'on regarde. `all` : les volumes de l'index, dans son
+ * ordre.
  */
 export function neededVolumes<V extends Volume>(
   all: readonly V[],
@@ -19,9 +20,8 @@ export function neededVolumes<V extends Volume>(
   query: Query,
   focus: string | undefined,
 ): V[] {
-  const searchesAll = query.text !== undefined && query.subtree === undefined;
   const unplaced = query.subtree?.some((id) => volumeOf(loaded, id) === undefined);
-  if (searchesAll || unplaced) return [...all];
+  if (query.subtree === undefined || unplaced) return [...all];
   return all.filter((v) => v.id === focus);
 }
 

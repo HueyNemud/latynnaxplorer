@@ -23,7 +23,7 @@ Relevé sur 1807 :
 
 ```
 ┌──────────┬─┬──────────────────────────────┬─┬───────────────────────────────┐
-│ ◉        │‹│ [     All     ] [   Clear   ] │‹│      🔍 Search_______          │
+│ ◉        │‹│ [           Clear           ] │‹│      🔍 Search_______          │
 │   1807   │V│ › ☐ LISTES PARTICULIÈRES… 13,311│C│                          Page │
 │ 1807_AD75│o│   ☑ LISTE DE NON-COMM… 3,277 │o│ ┌› ADMINISTRATION GÉNÉRALE…  178 │
 │ -PER292  ▶l│ ⌄ ☑ ADMINISTRATION GÉN…  234 │n│ │ › M. Lavallette, …         178 │
@@ -112,15 +112,16 @@ a des sous-rubriques est un `<details>` dont la ligne est le `<summary>`.
 | Dépliée | chevron vers le bas |
 | Focus clavier | anneau de Radix sur la case, `--focus-8` sur la ligne |
 
-## All, Clear et application
+## Clear et application
 
-- **All** coche toutes les rubriques de premier niveau du volume au focus,
-  **Clear** les décoche toutes ; inactifs quand ils ne changeraient rien.
-  En haut de Contents, fixés au-dessus de l'arbre, toujours là ; boutons
-  `soft` de Radix, chacun sur la moitié de la largeur.
+- **Clear** décoche toutes les rubriques du volume au focus ; inactif quand
+  il ne changerait rien. En haut de Contents, fixé au-dessus de l'arbre,
+  toujours là ; bouton `soft` de Radix, sur toute la largeur. Sans case
+  cochée, la rubrique ne filtre rien : tout est sélectionné.
 - **Application** : chaque case s'applique aussitôt ; l'URL est remplacée
-  (sans nouvelle entrée d'historique) 300 ms après le dernier clic ; la
-  liste est estompée pendant le calcul ; volume au focus et branches
+  (sans nouvelle entrée d'historique) 100 ms après le dernier clic, pour
+  que des clics rapides ne donnent qu'un calcul ; la liste est estompée dès
+  le clic, jusqu'à la nouvelle sélection ; volume au focus et branches
   dépliées restent.
 - **Formulaire** : les cases appartiennent au formulaire de la recherche
   (attribut `form`) : une recherche envoie un `subtree` par rubrique cochée
@@ -171,8 +172,10 @@ a des sous-rubriques est un `<details>` dont la ligne est le `<summary>`.
 - Rubrique cochée = ses seuls nœuds propres, ou « A sauf B ».
 - Vignette enfoncée pour la sélection ou le focus (confondait les deux) ;
   case carrée ou bandeau « Selected » ; nom et décompte sous la carte.
-- Bouton « Apply » : remplacé par l'application à chaque case. All et
-  Clear sur tous les volumes. Une entrée d'historique par case.
+- Bouton « Apply » : remplacé par l'application à chaque case. Clear sur
+  tous les volumes. Une entrée d'historique par case.
+- Bouton All (cocher tout le volume au focus) : redondant avec « aucune
+  case » et avec la case ronde du volume.
 
 ## Questions ouvertes
 

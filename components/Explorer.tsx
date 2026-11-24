@@ -139,7 +139,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
           {selection.length > 0 ? (
             <NodeList selection={selection} volumes={list} search={shown.query} />
           ) : (
-            // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond
+            // vue vide : les critères ne trouvent rien (sans critère, tout est sélectionné)
             <Flex
               className="empty"
               direction="column"
@@ -152,7 +152,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
                 ∅
               </Text>
               <Text size="2" color="gray">
-                {shown.query.subtree || text ? "No match" : "Nothing to show"}
+                No match
               </Text>
             </Flex>
           )}

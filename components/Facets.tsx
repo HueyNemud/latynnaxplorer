@@ -17,7 +17,6 @@ import { memo, type ReactNode, useEffect, useMemo, useRef, useState, useTransiti
 import {
   checkedOf,
   coveredBy,
-  isVolumeFull,
   isVolumeSelected,
   keepOnly,
   pathTo,
@@ -80,18 +79,25 @@ export const Facets = memo(function Facets({
   // à l'arrivée, le chemin des rubriques cochées est déplié
   const [open] = useState(() => pathTo(tree, checked));
 
-  // appliquer : l'URL suit les cases, 300 ms après le dernier clic
+  // appliquer : l'URL suit les cases, 100 ms après le dernier clic (des clics rapides donnent un
+  // seul calcul) ; la Liste est estompée dès le clic, jusqu'à la nouvelle sélection
   const pathname = usePagePath();
-  const [loading, startTransition] = useTransition();
+  const [computing, startTransition] = useTransition();
+  const [waiting, setWaiting] = useState(false);
+  const loading = waiting || computing;
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
   const select = (next: Set<string>) => {
     setChecked(next);
+    setWaiting(true);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       const url = queryUrl(pathname, { ...query, subtree: [...next] });
-      startTransition(() => window.history.replaceState(null, "", url));
-    }, 300);
+      startTransition(() => {
+        setWaiting(false);
+        window.history.replaceState(null, "", url);
+      });
+    }, 100);
   };
   // panneaux ouverts : toujours les premiers (Volumes, puis Contents) ; ouvrir un panneau ouvre
   // ceux des niveaux au-dessus, en replier un replie ceux des niveaux en dessous
@@ -189,7 +195,7 @@ export const Facets = memo(function Facets({
         </div>
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
-        {/* tout le volume au focus, ou rien de lui ; inactifs quand ils ne changeraient rien */}
+        {/* plus rien du volume au focus ; inactif quand il ne changerait rien */}
         {focus !== undefined && !loaded.has(focus) && (
           <Flex justify="center" p="4">
             <Spinner />
@@ -197,13 +203,6 @@ export const Facets = memo(function Facets({
         )}
         {focus !== undefined && loaded.has(focus) && (
           <div className="facet-actions">
-            <Button
-              variant="soft"
-              disabled={isVolumeFull(tree, checked, focus)}
-              onClick={() => select(setVolume(tree, checked, focus, true))}
-            >
-              All
-            </Button>
             <Button
               variant="soft"
               disabled={!isVolumeSelected(tree, checked, focus)}

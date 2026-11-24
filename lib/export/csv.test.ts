@@ -28,7 +28,7 @@ describe("selectionCsv", () => {
   });
 
   it("sélection vide : l'en-tête seul", () => {
-    expect(csv({})).toBe(
+    expect(csv({ text: "introuvable" })).toBe(
       "﻿volume,id,kind,parent_id,reading_order,text,subject,description,address,pages\r\n",
     );
   });

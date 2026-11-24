@@ -24,13 +24,13 @@ const needed = (...args: Parameters<typeof neededVolumes>) =>
   neededVolumes(...args).map((v) => v.id);
 
 describe("neededVolumes", () => {
-  it("demande le volume au focus, rien d'autre sans texte ni sous-arbre inconnu", () => {
-    expect(needed(ALL, [], {}, "AUTRE")).toEqual(["AUTRE"]);
+  it("demande le volume au focus quand les rubriques sont toutes dans les volumes chargés", () => {
     expect(needed(ALL, [first], { subtree: [T2] }, "TEST")).toEqual(["TEST"]);
     expect(needed(ALL, [first], { subtree: [T2], text: "paix" }, "TEST")).toEqual(["TEST"]);
   });
 
-  it("demande tous les volumes pour un texte seul, ou un sous-arbre d'aucun volume chargé", () => {
+  it("demande tous les volumes sans rubrique, ou pour un sous-arbre d'aucun volume chargé", () => {
+    expect(needed(ALL, [], {}, "AUTRE")).toEqual(["TEST", "AUTRE"]);
     expect(needed(ALL, [first], { text: "paix" }, "TEST")).toEqual(["TEST", "AUTRE"]);
     expect(needed(ALL, [first], { subtree: [other(T2)] }, "TEST")).toEqual(["TEST", "AUTRE"]);
   });

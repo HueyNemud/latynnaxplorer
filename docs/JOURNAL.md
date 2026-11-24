@@ -58,6 +58,16 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-24 — Requête vide = tout (sprint 18)
+
+- Modèle standard des facettes : un critère absent ne filtre rien. Sans
+  rubrique ni recherche, tous les volumes sont sélectionnés et montrés par
+  tranches (première ligne en 650 ms sur 1807) ; « Nothing to show » et le
+  bouton All, redondant, disparaissent.
+- Une case de Contents estompe la Liste dès le clic, et l'URL ne l'attend
+  plus que 100 ms (300 avant) : Liste à jour en 220 à 280 ms au lieu de
+  420 à 460.
+
 ## 2026-11-24 — Réglages d'affichage (sprint 17)
 
 - Bouton « ⚙ » au bout de la barre de la vue : menu de Radix, une case

@@ -13,8 +13,6 @@ d'ici.
 - Un clic sur une case rend de nouveau toutes les lignes de Contents, et
   chaque case de Radix pèse plusieurs composants. Si cela gêne : ne rendre
   que les cases qui changent.
-- Après un clic sur une case, l'URL attend 300 ms : c'est le plus long du
-  trajet jusqu'à la Liste. À raccourcir si l'attente se sent.
 
 ## Plusieurs volumes
 
