@@ -1,11 +1,9 @@
 "use client";
 
-// Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous la barre
-// (docs/DESIGN.md) : la barre de la sélection, commune aux vues (la recherche, plus tard d'autres
-// critères ; l'export), puis les outils de la vue (pour la Liste, ses réglages). L'index des volumes
+// Page d'exploration (docs/DESIGN.md) : les facettes, puis la barre et la vue. L'index des volumes
 // est lu à l'arrivée, chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis
-// la requête de l'URL est résolue sur les volumes chargés (explore). Facettes et recherche changent
-// l'URL sans recharger la page ; Next garde useSearchParams à jour.
+// la requête de l'URL résolue sur les volumes chargés (explore). Facettes et recherche changent
+// l'URL par l'API History, sans recharger la page ; Next garde useSearchParams à jour.
 
 import { Flex, Separator, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
