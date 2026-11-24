@@ -31,13 +31,13 @@ dépendances, choix discutables).
 | Mise en ligne | #31 | GitHub Pages, volumes dans une release |
 | 15, export | #32 | CSV de la sélection, une colonne par niveau de rubrique et par libellé d'empan |
 | 16, surlignage | #33 | correspondances sur fond iris opaque, là où elles sélectionnent ; un empan = un élément |
+| 17, réglages | #34 | bouton « ⚙ », fonds des empans montrés ou cachés, mémorisé dans le navigateur |
 
-## Sprint 17 : réglages d'affichage
+## Sprint 18 : requête vide = tout
 
-Branche `feat/reglages`. Un bouton « ⚙ » au bout de la barre de la vue
-ouvre un menu de réglages : pour l'instant une case, Span colors, qui
-montre ou cache les fonds des empans. Hors de l'URL, mémorisé dans le
-navigateur (`localStorage`).
+Branche `fix/requete-vide`. Modèle standard des facettes : un critère
+absent ne filtre rien, une requête vide sélectionne tous les volumes (plus
+de « Nothing to show »). Le bouton All de Contents, redondant, est retiré.
 
 ## Hors sprint : demandes à numrev
 
