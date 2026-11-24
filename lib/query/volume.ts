@@ -95,10 +95,14 @@ function zoned({ text, spans }: SubgraphNode): Record<Zone, string> {
   return { subj: join("subj"), desc: join("desc"), addr: join("addr"), other: join("other") };
 }
 
-/** Rubriques au-dessus du nœud, de son parent à la racine. */
-export function* ancestors(volume: LoadedVolume, node: SubgraphNode): Generator<SubgraphNode> {
-  for (let id = node.parentId; id !== null; ) {
-    const parent = volume.byId.get(id);
+/** Rubriques au-dessus d'un nœud d'un volume (ou d'une rubrique de l'arbre des facettes), de son
+ * parent à la racine. */
+export function* ancestors<T extends { parentId: string | null }>(
+  { byId }: { byId: ReadonlyMap<string, T> },
+  node: T | undefined,
+): Generator<T> {
+  for (let id = node?.parentId ?? null; id !== null; ) {
+    const parent = byId.get(id);
     if (parent === undefined) return;
     yield parent;
     id = parent.parentId;
