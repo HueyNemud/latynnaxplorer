@@ -64,6 +64,9 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   rubrique ni recherche, tous les volumes sont sélectionnés et montrés par
   tranches (première ligne en 650 ms sur 1807) ; « Nothing to show » et le
   bouton All, redondant, disparaissent.
+- Une case de Contents estompe la Liste dès le clic, et l'URL ne l'attend
+  plus que 100 ms (300 avant) : Liste à jour en 220 à 280 ms au lieu de
+  420 à 460.
 
 ## 2026-11-24 — Réglages d'affichage (sprint 17)
 

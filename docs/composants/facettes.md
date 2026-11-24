@@ -119,8 +119,9 @@ a des sous-rubriques est un `<details>` dont la ligne est le `<summary>`.
   toujours là ; bouton `soft` de Radix, sur toute la largeur. Sans case
   cochée, la rubrique ne filtre rien : tout est sélectionné.
 - **Application** : chaque case s'applique aussitôt ; l'URL est remplacée
-  (sans nouvelle entrée d'historique) 300 ms après le dernier clic ; la
-  liste est estompée pendant le calcul ; volume au focus et branches
+  (sans nouvelle entrée d'historique) 100 ms après le dernier clic, pour
+  que des clics rapides ne donnent qu'un calcul ; la liste est estompée dès
+  le clic, jusqu'à la nouvelle sélection ; volume au focus et branches
   dépliées restent.
 - **Formulaire** : les cases appartiennent au formulaire de la recherche
   (attribut `form`) : une recherche envoie un `subtree` par rubrique cochée

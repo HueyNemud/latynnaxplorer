@@ -79,18 +79,25 @@ export const Facets = memo(function Facets({
   // à l'arrivée, le chemin des rubriques cochées est déplié
   const [open] = useState(() => pathTo(tree, checked));
 
-  // appliquer : l'URL suit les cases, 300 ms après le dernier clic
+  // appliquer : l'URL suit les cases, 100 ms après le dernier clic (des clics rapides donnent un
+  // seul calcul) ; la Liste est estompée dès le clic, jusqu'à la nouvelle sélection
   const pathname = usePagePath();
-  const [loading, startTransition] = useTransition();
+  const [computing, startTransition] = useTransition();
+  const [waiting, setWaiting] = useState(false);
+  const loading = waiting || computing;
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
   useEffect(() => () => clearTimeout(timer.current), []);
   const select = (next: Set<string>) => {
     setChecked(next);
+    setWaiting(true);
     clearTimeout(timer.current);
     timer.current = setTimeout(() => {
       const url = queryUrl(pathname, { ...query, subtree: [...next] });
-      startTransition(() => window.history.replaceState(null, "", url));
-    }, 300);
+      startTransition(() => {
+        setWaiting(false);
+        window.history.replaceState(null, "", url);
+      });
+    }, 100);
   };
   // panneaux ouverts : toujours les premiers (Volumes, puis Contents) ; ouvrir un panneau ouvre
   // ceux des niveaux au-dessus, en replier un replie ceux des niveaux en dessous
