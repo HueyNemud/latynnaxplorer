@@ -134,7 +134,26 @@ tard les autres critères) ; la vue défile dessous. À gauche, un bouton par
 zone (Subj, Desc, Addr, Other), aux couleurs de ses empans dans la Liste :
 enfoncé, la zone est fouillée ; relâché, elle ne l'est pas ; un clic ne
 lance rien. Puis le champ, plus grand, soudé à son bouton Search ; Entrée
-ou Search lance la recherche, en gardant les rubriques cochées.
+ou Search lance la recherche, en gardant les rubriques cochées. Au bout de
+la barre, le bouton Export (en CSV), inactif quand rien n'est sélectionné.
+
+## Export
+
+Toute la sélection (pas seulement ce que la vue montre, jamais le
+contexte), en CSV fabriqué dans le navigateur : `latynnaxplorer-selection.csv`,
+UTF-8 avec BOM (pour les tableurs), virgules, fins de ligne CRLF
+(`lib/export/csv.ts`).
+
+- Une ligne par nœud, tous types confondus, volume après volume, chacun
+  dans l'ordre de lecture.
+- Colonnes : `volume`, `id`, `kind`, `parent_id`, `reading_order` ; une
+  colonne `section_<n>` par niveau de rubrique du chemin, autant que le
+  chemin le plus long de la sélection ; `text` ; `subject`, `description`,
+  `address`, le texte normalisé de ses empans ; `pages`, celles de ses
+  ancres.
+- Plusieurs valeurs dans une case (empans de même libellé, pages) sont
+  séparées par ` | `. Les textes sont ceux de numrev, marques d'emphase
+  comprises.
 
 ## Représentation d'un nœud
 

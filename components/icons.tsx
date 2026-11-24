@@ -47,3 +47,11 @@ export function ClearIcon() {
     </Icon>
   );
 }
+
+export function DownloadIcon() {
+  return (
+    <Icon>
+      <path d="M8 2.5v8m-3.5-3.5L8 10.5 11.5 7M3 13.5h10" />
+    </Icon>
+  );
+}

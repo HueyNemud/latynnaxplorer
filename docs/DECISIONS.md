@@ -52,8 +52,12 @@ de revenir.
 - Volumes chargés à la demande : celui au focus, ou tous si la requête ne
   dit pas où chercher ; une requête parcourt tout le volume, sans index.
 - Le contexte n'est jamais compté dans la sélection.
-- API publique : les fichiers des volumes ; une API d'export suivra une
-  pratique standard (OpenAPI ou plus récent), à trancher avec l'export.
+- Export de la sélection en CSV, fabriqué dans le navigateur : une ligne
+  par nœud, une colonne par niveau de rubrique et par libellé d'empan
+  (`docs/DESIGN.md`, « Export »).
+- API publique : les fichiers des volumes ; pas d'API JSON pour l'instant.
+  Si elle vient, ses réponses suivront une pratique standard (OpenAPI ou
+  plus récent).
 
 ## Interface (`docs/DESIGN.md`)
 

@@ -1,9 +1,9 @@
 "use client";
 
 // Page d'exploration : les facettes à gauche, la sélection dans la vue Liste sous la barre de la
-// vue (la recherche ; plus tard, d'autres critères). L'index des volumes est lu à l'arrivée,
-// chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis la requête de l'URL
-// est résolue sur les volumes chargés (explore). Facettes et recherche changent l'URL sans
+// vue (la recherche, plus tard d'autres critères ; l'export). L'index des volumes est lu à
+// l'arrivée, chaque volume téléchargé quand la requête en a besoin (neededVolumes), puis la requête
+// de l'URL est résolue sur les volumes chargés (explore). Facettes et recherche changent l'URL sans
 // recharger la page ; Next garde useSearchParams à jour.
 
 import { Flex, Spinner, Text } from "@radix-ui/themes";
@@ -20,6 +20,7 @@ import {
   type VolumeIndex,
 } from "../lib/query/volume.ts";
 import { plainText } from "../lib/text/segments.ts";
+import { ExportButton } from "./ExportButton.tsx";
 import { Facets } from "./Facets.tsx";
 import { NodeList } from "./NodeList.tsx";
 import { SearchForm } from "./SearchForm.tsx";
@@ -129,6 +130,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
       <div className="view">
         <div className="view-bar">
           <SearchForm query={shown.query} />
+          <ExportButton selection={selection} volumes={list} />
         </div>
         <div className="view-scroll">
           {selection.length > 0 ? (

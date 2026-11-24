@@ -85,6 +85,14 @@ d'ici.
 - « Voisins temporels » et « composante » (lignée) par parcours de ces arcs
   jusqu'au point fixe (`docs/MODELE_DONNEES.md`, « Plus tard »).
 
+## Export
+
+- Les boîtes des ancres, en plus des numéros de page.
+- L'adresse de la requête dans le fichier ou son nom, pour citer la
+  sélection.
+- D'autres formats que CSV (JSON, Parquet).
+- Le texte sans les marques d'emphase de numrev (`*…*`).
+
 ## Écartées : analyse dans le site
 
 Le site sert à explorer, sélectionner et exporter ; l'analyse revient aux

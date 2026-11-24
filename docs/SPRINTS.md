@@ -28,12 +28,14 @@ dépendances, choix discutables).
 | Recherche par zone | #28 | `in` (sujet, description, adresse, reste), boutons des zones, bouton Search |
 | 14, sélection et vues | #29 | sélection commune aux vues, Liste par tranches, facettes rendues seulement si elles changent, guides d'un seul gris |
 | Vocabulaire et docs | #30 | un terme par objet, une ligne par décision, fiches resserrées |
+| Mise en ligne | #31 | GitHub Pages, volumes dans une release |
 
 ## Sprint 15 : exporter
 
-But : récupérer la sélection dans un format de données ; trancher en même
-temps le format de l'API JSON (ci-dessous). Contenu à proposer et valider au
-début du sprint.
+Branche `feat/export-csv`. Un bouton de la barre de la vue télécharge toute
+la sélection en CSV, fabriqué dans le navigateur : une ligne par nœud, une
+colonne par niveau de rubrique, une par libellé d'empan. Pas d'API JSON
+pour l'instant.
 
 ## À décider au moment voulu : format de l'API JSON
 
