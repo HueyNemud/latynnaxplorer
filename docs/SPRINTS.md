@@ -32,12 +32,21 @@ dépendances, choix discutables).
 | 15, export | #32 | CSV de la sélection, une colonne par niveau de rubrique et par libellé d'empan |
 | 16, surlignage | #33 | correspondances sur fond iris opaque, là où elles sélectionnent ; un empan = un élément |
 | 17, réglages | #34 | bouton « ⚙ », fonds des empans montrés ou cachés, mémorisé dans le navigateur |
+| 18, requête vide | #35 | un critère absent ne filtre rien, requête vide = tous les volumes, bouton All retiré |
 
-## Sprint 18 : requête vide = tout
+## Sprint 19 : barre de la sélection
 
-Branche `fix/requete-vide`. Modèle standard des facettes : un critère
-absent ne filtre rien, une requête vide sélectionne tous les volumes (plus
-de « Nothing to show »). Le bouton All de Contents, redondant, est retiré.
+Branche `refactor/barre-selection`. La barre au-dessus de la vue sépare ce
+qui est commun à toutes les vues de ce qui est propre à chacune :
+
+- **Barre de la sélection** : zones, champ de recherche, Export ; une seule,
+  au-dessus de toutes les vues.
+- **Outils de la vue** : ce que la vue fournit, pour la Liste son menu
+  « ⚙ ». Tant qu'il n'y a qu'une vue, au bout de la même ligne, après un
+  trait vertical discret ; une ligne d'en-tête par vue viendra avec la
+  deuxième vue.
+- `docs/DESIGN.md` réécrit en conséquence ; aucune dépendance, aucun
+  changement de comportement.
 
 ## Hors sprint : demandes à numrev
 

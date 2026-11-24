@@ -1,6 +1,6 @@
 /* Feuille de style unique, par-dessus celle de Radix Themes (app/layout.tsx) : seulement ce que
    Radix n'a pas. Ordre : jetons, base, texte imprimé, styles partagés (ce qui se répète d'un
-   composant à l'autre, écrit une fois), puis chaque composant : barre de la vue, vue Liste, fiche,
+   composant à l'autre, écrit une fois), puis chaque composant : barre, vue Liste, fiche,
    facettes. Fiches de composant : docs/composants/. */
 
 /* ── Jetons ── */
@@ -229,15 +229,28 @@ details[open] > summary .chevron {
   box-shadow: var(--shadow-4);
 }
 
-/* ── Barre de la vue (components/Explorer.tsx) : recherche, plus tard d'autres critères ── */
+/* ── Barre (components/Explorer.tsx) : la barre de la sélection, puis les outils de la vue ── */
 
 /* Barre : toujours en haut de la vue, ses contrôles en rangée ; la liste dessous défile seule,
-   ses intitulés fixés juste sous la barre, quelle que soit sa hauteur */
-.view-bar {
+   ses intitulés fixés juste sous la barre, quelle que soit sa hauteur. Un trait vertical
+   (Separator de Radix) sépare la barre de la sélection (recherche, export) des outils de la vue. */
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding-block: var(--space-4) var(--space-2);
+}
+
+.selection-bar,
+.view-tools {
   display: flex;
   align-items: center;
   gap: var(--space-2);
-  padding-block: var(--space-4) var(--space-2);
+}
+
+.selection-bar {
+  flex: 1;
+  min-width: 0;
 }
 
 .view-scroll {
@@ -265,8 +278,8 @@ details[open] > summary .chevron {
   border-bottom-left-radius: 0;
 }
 
-/* export, au bout de la barre de la vue */
-.view-bar .export {
+/* export, au bout de la barre de la sélection */
+.selection-bar .export {
   margin-left: auto;
 }
 

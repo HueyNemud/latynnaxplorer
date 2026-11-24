@@ -67,6 +67,9 @@ de revenir.
 - Sélection (dans l'URL) et focus (hors de l'URL) distingués partout.
 - Réglages d'affichage hors de l'URL, mémorisés dans le navigateur
   (`localStorage`, une clé par réglage) ; ils ne changent pas la sélection.
+- Une barre de la sélection (critères, export) commune à toutes les vues ;
+  chaque vue fournit ses outils (ses réglages), séparés par un trait
+  (`docs/DESIGN.md`, « Barre de la sélection et outils de la vue »).
 - Radix Themes pour toute l'interface (iris sur gris mauve), feuille
   importée entière ; `app/globals.css` ne garde que ce que Radix n'a pas.
   Écartés sur maquette : Primer React, shadcn/ui (Tailwind obligatoire).

@@ -1,7 +1,7 @@
 "use client";
 
-// Réglages d'affichage, au bout de la barre de la vue (docs/DESIGN.md, « Barre de la vue ») : hors
-// de l'URL, mémorisés dans le navigateur. Pour l'instant, les fonds colorés des empans.
+// Réglages d'affichage de la Liste, parmi les outils de la vue (docs/DESIGN.md, « Barre de la
+// sélection et outils de la vue ») : hors de l'URL, mémorisés dans le navigateur. Pour l'instant, les fonds colorés des empans.
 
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { useState } from "react";

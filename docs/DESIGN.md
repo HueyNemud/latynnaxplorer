@@ -129,18 +129,30 @@ couvert : la Structure, volumes et rubriques (`docs/composants/facettes.md`).
   tout est sélectionné, et la vue montre tous les volumes. Quand les
   critères ne trouvent rien, la vue le dit (« No match »).
 
-## Barre de la vue
+## Barre de la sélection et outils de la vue
 
-En haut de la vue, une barre toujours visible porte la recherche (et plus
-tard les autres critères) ; la vue défile dessous. À gauche, un bouton par
-zone (Subj, Desc, Addr, Other), aux couleurs de ses empans dans la Liste :
-enfoncé, la zone est fouillée ; relâché, elle ne l'est pas ; un clic ne
-lance rien. Puis le champ, plus grand, soudé à son bouton Search ; Entrée
-ou Search lance la recherche, en gardant les rubriques cochées. Au bout de
-la barre, le bouton Export (en CSV), inactif quand rien n'est sélectionné,
-puis le bouton « ⚙ » des réglages d'affichage : un menu de cases à cocher
-(Span colors : les fonds des empans), hors de l'URL, mémorisées dans le
-navigateur.
+Au-dessus des vues, une barre toujours visible ; les vues défilent dessous.
+Elle sépare ce qui change ou emporte la sélection, commun à toutes les vues,
+de ce qui ne change que l'affichage d'une vue.
+
+- **Barre de la sélection** : une seule, au-dessus de toutes les vues, même
+  côte à côte. Elle prolonge les facettes de gauche à droite et portera
+  aussi les critères posés depuis une vue (secteur, période), pour les
+  retirer de partout.
+  - Un bouton par zone (Subj, Desc, Addr, Other), aux couleurs de ses
+    empans : enfoncé, la zone est fouillée ; relâché, elle ne l'est pas ;
+    un clic ne lance rien.
+  - Le champ, plus grand, soudé à son bouton Search ; Entrée ou Search
+    lance la recherche, en gardant les rubriques cochées.
+  - Le bouton Export (en CSV), inactif quand rien n'est sélectionné.
+- **Outils de la vue** : fournis par chaque vue. Celle de la Liste : le
+  bouton « ⚙ » des réglages d'affichage, un menu de cases à cocher (Span
+  colors : les fonds des empans), hors de l'URL, mémorisées dans le
+  navigateur. Le menu change avec la vue ; un réglage qui vaut pour
+  plusieurs vues est mémorisé une fois et figure dans le menu de chacune.
+  Tant qu'il n'y a qu'une vue, ses outils sont au bout de la barre, après
+  un trait vertical discret ; avec plusieurs, chaque vue a son en-tête
+  (son nom, ce qu'elle ne peut pas placer, ses outils).
 
 ## Export
 
