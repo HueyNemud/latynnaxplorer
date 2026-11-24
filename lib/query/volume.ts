@@ -4,7 +4,7 @@
 
 import { fold } from "./fold.ts";
 import type { Zone } from "./query.ts";
-import type { Anchor, NodeKind, Span, SpanLabel, SubgraphNode, Volume } from "./types.ts";
+import type { Anchor, NodeKind, Span, SubgraphNode, Volume } from "./types.ts";
 
 /** Index des volumes : leurs métadonnées, et l'adresse de leur fichier. */
 export interface VolumeIndex {
@@ -78,20 +78,41 @@ export function indexVolume(file: VolumeFile): LoadedVolume {
   };
 }
 
-/** Texte plié d'un nœud dans chaque zone : ses empans de ce libellé et, pour « other », son texte
- * hors empan ; les morceaux séparés par un saut de ligne, que le texte cherché ne contient pas. */
+/**
+ * Les morceaux d'un texte de `length` points de code où chercher, [début, fin) : chaque empan
+ * d'une zone demandée, et pour « other » chaque passage entre deux empans ; sans zone, tout le
+ * texte. Le texte cherché doit tenir dans un morceau, pour la sélection comme pour le surlignage.
+ */
+export function zonePieces(
+  length: number,
+  spans: readonly Pick<Span, "label" | "charStart" | "charEnd">[],
+  zones: readonly Zone[] | undefined,
+): [number, number][] {
+  if (zones === undefined) return [[0, length]];
+  const result: [number, number][] = spans
+    .filter((s) => zones.includes(s.label.toLowerCase() as Zone))
+    .map((s) => [s.charStart, s.charEnd]);
+  if (zones.includes("other")) {
+    let at = 0;
+    for (const s of spans.toSorted((a, b) => a.charStart - b.charStart)) {
+      if (s.charStart > at) result.push([at, s.charStart]);
+      at = Math.max(at, s.charEnd);
+    }
+    if (at < length) result.push([at, length]);
+  }
+  return result;
+}
+
+/** Texte plié d'un nœud dans chaque zone : ses morceaux (zonePieces), séparés par un saut de
+ * ligne, que le texte cherché ne contient pas. */
 function zoned({ text, spans }: SubgraphNode): Record<Zone, string> {
   const chars = Array.from(text);
-  const rest = [...chars];
-  const pieces: Record<Zone, string[]> = { subj: [], desc: [], addr: [], other: [] };
-  for (const s of spans) {
-    pieces[s.label.toLowerCase() as Lowercase<SpanLabel>].push(
-      chars.slice(s.charStart, s.charEnd).join(""),
+  const join = (zone: Zone) =>
+    fold(
+      zonePieces(chars.length, spans, [zone])
+        .map(([start, end]) => chars.slice(start, end).join(""))
+        .join("\n"),
     );
-    rest.fill("\n", s.charStart, s.charEnd);
-  }
-  pieces.other.push(rest.join(""));
-  const join = (zone: Zone) => fold(pieces[zone].join("\n"));
   return { subj: join("subj"), desc: join("desc"), addr: join("addr"), other: join("other") };
 }
 

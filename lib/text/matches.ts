@@ -3,8 +3,9 @@
 // texte plié et zones fouillées, ramenées à des positions du texte brut. Fonction pure.
 
 import { fold } from "../query/fold.ts";
-import type { Query, Zone } from "../query/query.ts";
+import type { Query } from "../query/query.ts";
 import type { Span } from "../query/types.ts";
+import { zonePieces } from "../query/volume.ts";
 
 /** Une correspondance : positions dans le texte brut, en points de code, fin exclue. */
 export interface Match {
@@ -28,7 +29,7 @@ export function matches(
   // chaque point de code plié à part : mis bout à bout, ils font fold(text)
   const folded = Array.from(text, fold);
   const result: Match[] = [];
-  for (const [start, end] of pieces(folded.length, spans, zones)) {
+  for (const [start, end] of zonePieces(folded.length, spans, zones)) {
     // texte plié du morceau, et le point de code d'où vient chacune de ses unités
     let haystack = "";
     const from: number[] = [];
@@ -46,26 +47,4 @@ export function matches(
     }
   }
   return result.sort((a, b) => a.charStart - b.charStart);
-}
-
-/** Les morceaux du texte où chercher, [début, fin) : chaque empan d'une zone fouillée, et pour
- * « other » chaque passage entre deux empans ; sans zone, tout le texte. */
-function pieces(
-  length: number,
-  spans: readonly Pick<Span, "label" | "charStart" | "charEnd">[],
-  zones: readonly Zone[] | undefined,
-): [number, number][] {
-  if (zones === undefined) return [[0, length]];
-  const result: [number, number][] = spans
-    .filter((s) => zones.includes(s.label.toLowerCase() as Zone))
-    .map((s) => [s.charStart, s.charEnd]);
-  if (zones.includes("other")) {
-    let at = 0;
-    for (const s of spans.toSorted((a, b) => a.charStart - b.charStart)) {
-      if (s.charStart > at) result.push([at, s.charStart]);
-      at = Math.max(at, s.charEnd);
-    }
-    if (at < length) result.push([at, length]);
-  }
-  return result;
 }
