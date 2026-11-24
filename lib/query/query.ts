@@ -1,6 +1,6 @@
 // Requête : ce que l'utilisateur demande, lisible depuis l'URL et réécrite à l'identique.
 // Filtres et scénarios : docs/SCENARIOS.md. Tous les critères sont facultatifs et se combinent
-// (conjonction) ; sans critère, la requête est vide et ne sélectionne rien.
+// (conjonction) ; un critère absent ne filtre rien : sans critère, la requête sélectionne tout.
 
 import type { SpanLabel } from "./types.ts";
 

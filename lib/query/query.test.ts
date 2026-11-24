@@ -101,7 +101,7 @@ describe("serializeQuery", () => {
 });
 
 describe("queryUrl", () => {
-  it("ajoute les paramètres au chemin, et rien sans critère", () => {
+  it("ajoute les paramètres au chemin, et aucun sans critère", () => {
     expect(queryUrl("/", { subtree: [ID], text: "paix" })).toBe(`/?subtree=${ID}&text=paix`);
     expect(queryUrl("/", {})).toBe("/");
   });

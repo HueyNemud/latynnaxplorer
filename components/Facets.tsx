@@ -17,7 +17,6 @@ import { memo, type ReactNode, useEffect, useMemo, useRef, useState, useTransiti
 import {
   checkedOf,
   coveredBy,
-  isVolumeFull,
   isVolumeSelected,
   keepOnly,
   pathTo,
@@ -189,7 +188,7 @@ export const Facets = memo(function Facets({
         </div>
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
-        {/* tout le volume au focus, ou rien de lui ; inactifs quand ils ne changeraient rien */}
+        {/* plus rien du volume au focus ; inactif quand il ne changerait rien */}
         {focus !== undefined && !loaded.has(focus) && (
           <Flex justify="center" p="4">
             <Spinner />
@@ -197,13 +196,6 @@ export const Facets = memo(function Facets({
         )}
         {focus !== undefined && loaded.has(focus) && (
           <div className="facet-actions">
-            <Button
-              variant="soft"
-              disabled={isVolumeFull(tree, checked, focus)}
-              onClick={() => select(setVolume(tree, checked, focus, true))}
-            >
-              All
-            </Button>
             <Button
               variant="soft"
               disabled={!isVolumeSelected(tree, checked, focus)}
