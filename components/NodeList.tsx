@@ -16,8 +16,10 @@ import {
   useState,
 } from "react";
 import { detail, withContext } from "../lib/query/explore.ts";
+import type { Query } from "../lib/query/query.ts";
 import type { SubgraphNode } from "../lib/query/types.ts";
 import type { LoadedVolume } from "../lib/query/volume.ts";
+import { matches } from "../lib/text/matches.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
 import { NodeDetails } from "./NodeDetails.tsx";
@@ -28,14 +30,17 @@ const STEP = 200;
 
 /**
  * `selection` : les nœuds sélectionnés, volume après volume, chacun dans l'ordre de lecture ;
- * `volumes` : les volumes chargés, d'où la Liste tire le contexte et les fiches.
+ * `volumes` : les volumes chargés, d'où la Liste tire le contexte et les fiches ; `search` : le
+ * texte cherché et ses zones, surligné dans les lignes.
  */
 export function NodeList({
   selection,
   volumes,
+  search,
 }: {
   selection: SubgraphNode[];
   volumes: readonly LoadedVolume[];
+  search: Search;
 }) {
   // nombre de nœuds sélectionnés montrés, pour cette sélection ; une autre repart d'une tranche
   const [shownOf, setShownOf] = useState({ selection, count: STEP });
@@ -62,7 +67,9 @@ export function NodeList({
   // un nœud et, pour une rubrique, son contenu ; `path` : son chemin (rubriques montrées, de la
   // racine au parent), qui donne aussi sa profondeur
   const render = (n: SubgraphNode, path: SubgraphNode[]): ReactNode => {
-    const node = <ListNode key={n.id} node={n} path={path} open={n.id === opened} />;
+    const node = (
+      <ListNode key={n.id} node={n} path={path} open={n.id === opened} search={search} />
+    );
     if (n.kind !== "section") return node;
     return (
       <section
@@ -90,19 +97,24 @@ export function NodeList({
   );
 }
 
+/** Texte cherché et zones fouillées, dont la Liste surligne les correspondances. */
+type Search = Pick<Query, "text" | "zones">;
+
 /**
- * Un nœud, quel que soit son type : seul son texte change. Rendu une fois : une tranche de plus
- * ne rend que ses nœuds (son chemin ne dépend que du nœud).
+ * Un nœud, quel que soit son type : seul son texte change. Rendu une fois par texte cherché : une
+ * tranche de plus ne rend que ses nœuds (son chemin ne dépend que du nœud).
  */
 const ListNode = memo(
   function ListNode({
     node,
     path,
     open,
+    search,
   }: {
     node: SubgraphNode;
     path: SubgraphNode[];
     open: boolean;
+    search: Search;
   }) {
     return (
       <details className="node" open={open}>
@@ -113,7 +125,11 @@ const ListNode = memo(
               {node.kind === "out_of_scope" && (
                 <span className="visually-hidden">Out of scope: </span>
               )}
-              <PrintedText text={node.text} spans={node.spans} />
+              <PrintedText
+                text={node.text}
+                spans={node.spans}
+                matches={matches(node.text, node.spans, search)}
+              />
             </span>
           </span>
           <span className="page">{node.anchors[0]?.page}</span>
@@ -129,7 +145,11 @@ const ListNode = memo(
       </details>
     );
   },
-  (a, b) => a.node === b.node && a.open === b.open,
+  (a, b) =>
+    a.node === b.node &&
+    a.open === b.open &&
+    a.search.text === b.search.text &&
+    a.search.zones?.join() === b.search.zones?.join(),
 );
 
 /**

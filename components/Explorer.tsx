@@ -134,7 +134,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
         </div>
         <div className="view-scroll">
           {selection.length > 0 ? (
-            <NodeList selection={selection} volumes={list} />
+            <NodeList selection={selection} volumes={list} search={shown.query} />
           ) : (
             // vue vide : sans critère, rien n'est sélectionné ; avec, rien ne correspond
             <Flex

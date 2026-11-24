@@ -23,7 +23,7 @@
      ouverte ; les boutons des zones (components/SearchForm.tsx) en reprennent les couleurs */
   --tint-subj: var(--violet-a4);
   --tint-desc: var(--teal-a4);
-  --tint-addr: var(--yellow-a4);
+  --tint-addr: var(--yellow-a3);
 
   /* lignes (Liste, arbre des facettes) : marges intérieures horizontale et verticale ; icônes */
   --line-pad: 0.375rem;
@@ -130,6 +130,14 @@ summary::-webkit-details-marker {
 
 .span-addr {
   background: var(--tint-addr);
+}
+
+/* Correspondance du texte cherché : fond iris opaque, qui recouvre celui des empans et se lit
+   pareil sur tous */
+.printed mark {
+  color: inherit;
+  background: var(--iris-6);
+  border-radius: 0.2em;
 }
 
 /* ── Styles partagés ── */
