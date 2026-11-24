@@ -41,8 +41,9 @@ de revenir.
 ## Requête (`docs/SCENARIOS.md`, `lib/query/`)
 
 - La requête vit dans l'URL et s'y réécrit à l'identique ; critères
-  `subtree`, `text`, `in`, combinés en conjonction ; sans critère, rien
-  n'est sélectionné ; sous-graphe toujours induit strict.
+  `subtree`, `text`, `in`, combinés en conjonction ; un critère absent ne
+  filtre rien (modèle standard des facettes) : sans critère, tous les
+  volumes sont sélectionnés ; sous-graphe toujours induit strict.
 - Requête mal formée ou uuid inconnu : un message à la place de la vue.
 - Recherche exacte, sans accents ni casse (`lib/query/fold.ts`) ; écartée
   après mesure : la similarité par trigrammes (`docs/IDEES.md`, « Recherche
@@ -98,4 +99,6 @@ de revenir.
   s'exprime pas en union de sous-arbres.
 - Chaque case s'applique aussitôt ; l'URL suit les cases sans les
   synchroniser.
-- Contents est local au volume au focus : All et Clear ne touchent que lui.
+- Contents est local au volume au focus : Clear ne touche que lui. Pas de
+  bouton All : tout cocher revient à ne rien cocher, et restreindre à un
+  volume est le rôle de sa case ronde.

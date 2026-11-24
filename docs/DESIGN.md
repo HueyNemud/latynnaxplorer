@@ -125,8 +125,9 @@ couvert : la Structure, volumes et rubriques (`docs/composants/facettes.md`).
 - Colonnes de Miller collées à gauche : Volumes, Contents, puis la vue.
 - Seules les facettes et la recherche changent la sélection : la Liste n'a
   aucun lien qui le fasse.
-- Sans aucun critère, rien n'est sélectionné ; la vue le dit (« Nothing to
-  show », ou « No match » quand les critères ne trouvent rien).
+- Un critère absent ne filtre rien : sans rubrique cochée ni recherche,
+  tout est sélectionné, et la vue montre tous les volumes. Quand les
+  critères ne trouvent rien, la vue le dit (« No match »).
 
 ## Barre de la vue
 

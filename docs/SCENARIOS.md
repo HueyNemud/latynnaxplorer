@@ -4,7 +4,8 @@ Chaque scénario décrit ce qu'un utilisateur demande et ce qu'il obtient ;
 il donne un critère de la requête (`lib/query/`) et au moins un test.
 
 Tous les critères sont facultatifs et se combinent (conjonction), sans cas
-particulier ; sans aucun critère, rien n'est sélectionné. Le résultat
+particulier ; un critère absent ne filtre rien, et sans aucun critère tout
+est sélectionné. Le résultat
 contient tout ce que la requête désigne, quel que soit le type de nœud :
 `lib/query/` fait confiance aux données et ne juge pas de la pertinence.
 

@@ -17,8 +17,8 @@ d'un nœud »). Jetons et fiche de Radix Themes.
   quand la fin de la Liste approche ; une autre sélection repart de la
   première. Ni décompte ni URL changée ; Ctrl+F ne trouve que les lignes
   montrées (la recherche couvre le reste).
-- **Vue vide** : un grand aplat gris, « Nothing to show » sans critère,
-  « No match » sinon.
+- **Vue vide** : un grand aplat gris, « No match », quand les critères ne
+  trouvent rien (sans critère, tout est montré).
 
 ## Ce que les données imposent
 
