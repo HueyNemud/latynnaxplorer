@@ -1,6 +1,6 @@
 "use client";
 
-// Bouton d'export de la barre de la vue (docs/DESIGN.md, « Export ») : toute la sélection en CSV,
+// Bouton d'export de la barre de la sélection (docs/DESIGN.md, « Export ») : toute la sélection en CSV,
 // fabriqué dans le navigateur au clic et téléchargé ; inactif quand rien n'est sélectionné.
 
 import { Button } from "@radix-ui/themes";
