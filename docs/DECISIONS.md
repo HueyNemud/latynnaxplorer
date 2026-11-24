@@ -33,8 +33,8 @@ de revenir.
   se déduit.
 - Un seul type de nœud (rubrique, entrée, élément hors champ), un seul
   ordre de lecture ; un groupe à accolade est un seul nœud.
-- Arcs déduits au chargement, jamais stockés : `member_of`, `child_of`,
-  `follows`.
+- Arcs jamais stockés : `member_of`, `child_of`, `follows` se déduisent
+  des nœuds, et ne seront calculés que pour une vue qui les montre.
 - Rien ne suppose qu'une rubrique soit d'un seul tenant tant que numrev ne
   le garantit pas.
 

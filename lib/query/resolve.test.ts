@@ -3,132 +3,104 @@
 import { describe, expect, it } from "vitest";
 import { E1, E2, E3, fixtureVolume, O1, T1, T2 } from "../../scripts/fixture.ts";
 import type { Query } from "./query.ts";
-import { context as contextOf, inducedArcs, resolve, selection } from "./resolve.ts";
+import { context as contextOf, selection } from "./resolve.ts";
 
 const volume = fixtureVolume();
+const ids = (query: Query) => selection(volume, query).map((n) => n.id);
 const context = (query: Query) => contextOf(volume, selection(volume, query));
 
-describe("resolve, sous-arbre", () => {
-  it("rend le nœud, ses descendants et les arcs entre eux, dans l'ordre de lecture", () => {
-    expect(resolve(volume, { subtree: [T2] })).toEqual({
-      nodes: [
-        {
-          id: T2,
-          kind: "section",
-          parentId: T1,
-          documentReadingOrder: 2,
-          text: "RUBRIQUE.",
-          spans: [],
-          anchors: [{ page: 1, x0: 100, y0: 40, x1: 600, y1: 60 }],
-        },
-        {
-          id: E1,
-          kind: "entry",
-          parentId: T2,
-          documentReadingOrder: 3,
-          text: "Dupont, rue de la Paix, 12.",
-          spans: [
-            {
-              label: "SUBJ",
-              charStart: 0,
-              charEnd: 6,
-              normalized: "Dupont",
-            },
-            {
-              label: "ADDR",
-              charStart: 8,
-              charEnd: 27,
-              normalized: "rue de la Paix, 12.",
-            },
-          ],
-          anchors: [{ page: 1, x0: 100, y0: 70, x1: 500, y1: 90 }],
-        },
-        {
-          id: E2,
-          kind: "entry",
-          parentId: T2,
-          documentReadingOrder: 4,
-          text: "Martin, rue Longue, 3.",
-          spans: [],
-          anchors: [
-            { page: 1, x0: 120, y0: 950, x1: 480, y1: 970 },
-            { page: 2, x0: 100, y0: 10, x1: 300, y1: 30 },
-          ],
-        },
-        {
-          id: O1,
-          kind: "out_of_scope",
-          parentId: T2,
-          documentReadingOrder: 5,
-          text: "ALMANACH",
-          spans: [],
-          anchors: [{ page: 2, x0: 400, y0: 0, x1: 600, y1: 8 }],
-        },
-      ],
-      // ni T2 → T1 ni E3 → E1 : T1 et E3 sont hors du sous-arbre
-      arcs: [
-        { source: E1, target: T2, kind: "member_of" },
-        { source: E1, target: E2, kind: "follows" },
-        { source: E2, target: T2, kind: "member_of" },
-        { source: O1, target: T2, kind: "member_of" },
-      ],
-    });
-  });
-
-  it("descend récursivement dans les sous-rubriques", () => {
-    const { nodes, arcs } = resolve(volume, { subtree: [T1] });
-    expect(nodes.map((n) => n.id)).toEqual([T1, E3, T2, E1, E2, O1]);
-    expect(arcs).toEqual([
-      { source: E3, target: T1, kind: "member_of" },
-      { source: E3, target: E1, kind: "follows" },
-      { source: T2, target: T1, kind: "child_of" },
-      { source: E1, target: T2, kind: "member_of" },
-      { source: E1, target: E2, kind: "follows" },
-      { source: E2, target: T2, kind: "member_of" },
-      { source: O1, target: T2, kind: "member_of" },
+describe("selection, sous-arbre", () => {
+  it("rend le nœud et ses descendants, dans l'ordre de lecture", () => {
+    expect(selection(volume, { subtree: [T2] })).toEqual([
+      {
+        id: T2,
+        kind: "section",
+        parentId: T1,
+        documentReadingOrder: 2,
+        text: "RUBRIQUE.",
+        spans: [],
+        anchors: [{ page: 1, x0: 100, y0: 40, x1: 600, y1: 60 }],
+      },
+      {
+        id: E1,
+        kind: "entry",
+        parentId: T2,
+        documentReadingOrder: 3,
+        text: "Dupont, rue de la Paix, 12.",
+        spans: [
+          {
+            label: "SUBJ",
+            charStart: 0,
+            charEnd: 6,
+            normalized: "Dupont",
+          },
+          {
+            label: "ADDR",
+            charStart: 8,
+            charEnd: 27,
+            normalized: "rue de la Paix, 12.",
+          },
+        ],
+        anchors: [{ page: 1, x0: 100, y0: 70, x1: 500, y1: 90 }],
+      },
+      {
+        id: E2,
+        kind: "entry",
+        parentId: T2,
+        documentReadingOrder: 4,
+        text: "Martin, rue Longue, 3.",
+        spans: [],
+        anchors: [
+          { page: 1, x0: 120, y0: 950, x1: 480, y1: 970 },
+          { page: 2, x0: 100, y0: 10, x1: 300, y1: 30 },
+        ],
+      },
+      {
+        id: O1,
+        kind: "out_of_scope",
+        parentId: T2,
+        documentReadingOrder: 5,
+        text: "ALMANACH",
+        spans: [],
+        anchors: [{ page: 2, x0: 400, y0: 0, x1: 600, y1: 8 }],
+      },
     ]);
   });
 
+  it("descend récursivement dans les sous-rubriques", () => {
+    expect(ids({ subtree: [T1] })).toEqual([T1, E3, T2, E1, E2, O1]);
+  });
+
   it("réduit le sous-arbre d'une entrée à l'entrée seule", () => {
-    const { nodes, arcs } = resolve(volume, { subtree: [E1] });
-    expect(nodes.map((n) => n.id)).toEqual([E1]);
-    expect(arcs).toEqual([]);
+    expect(ids({ subtree: [E1] })).toEqual([E1]);
   });
 
   it("rend un nœud sans ligne boîtée avec des ancres vides", () => {
-    const { nodes } = resolve(volume, { subtree: [E3] });
-    expect(nodes).toMatchObject([{ id: E3, spans: [], anchors: [] }]);
+    expect(selection(volume, { subtree: [E3] })).toMatchObject([
+      { id: E3, spans: [], anchors: [] },
+    ]);
   });
 });
 
-describe("resolve, plusieurs sous-arbres", () => {
-  it("rend leur union, dans l'ordre de lecture, avec les arcs entre eux", () => {
-    const { nodes, arcs } = resolve(volume, { subtree: [T2, E3] });
-    expect(nodes.map((n) => n.id)).toEqual([E3, T2, E1, E2, O1]);
-    // E3 → E1 : les deux sont sélectionnés ; ni E3 → T1 ni T2 → T1 : T1 ne l'est pas
-    expect(arcs).toContainEqual({ source: E3, target: E1, kind: "follows" });
-    expect(arcs.some((a) => a.target === T1)).toBe(false);
+describe("selection, plusieurs sous-arbres", () => {
+  it("rend leur union, dans l'ordre de lecture", () => {
+    expect(ids({ subtree: [T2, E3] })).toEqual([E3, T2, E1, E2, O1]);
   });
 
   it("ne rend qu'une fois les nœuds de deux sous-arbres emboîtés", () => {
-    const { nodes } = resolve(volume, { subtree: [T2, T1, E1] });
-    expect(nodes.map((n) => n.id)).toEqual([T1, E3, T2, E1, E2, O1]);
+    expect(ids({ subtree: [T2, T1, E1] })).toEqual([T1, E3, T2, E1, E2, O1]);
   });
 
   it("se combine avec le texte", () => {
-    const { nodes } = resolve(volume, { subtree: [T2, E3], text: "u" });
-    expect(nodes.map((n) => n.id)).toEqual([E3, T2, E1, E2]); // Durand, RUBRIQUE., Dupont, Martin
+    expect(ids({ subtree: [T2, E3], text: "u" })).toEqual([E3, T2, E1, E2]); // Durand, RUBRIQUE., Dupont, Martin
   });
 });
 
-describe("resolve, texte", () => {
-  const ids = (query: Query) => resolve(volume, query).nodes.map((n) => n.id);
-
-  it("rend les nœuds de tout type qui contiennent le texte, et les arcs entre eux", () => {
-    const { nodes, arcs } = resolve(volume, { text: "rue" });
+describe("selection, texte", () => {
+  it("rend les nœuds de tout type qui contiennent le texte", () => {
+    const nodes = selection(volume, { text: "rue" });
     expect(nodes.map((n) => n.id)).toEqual([E1, E2]);
     expect(nodes[0]?.spans).toHaveLength(2);
-    expect(arcs).toEqual([{ source: E1, target: E2, kind: "follows" }]);
     expect(ids({ text: "rubrique" })).toEqual([T2]);
     expect(ids({ text: "almanach" })).toEqual([O1]);
   });
@@ -154,9 +126,7 @@ describe("resolve, texte", () => {
   });
 });
 
-describe("resolve, texte dans des zones", () => {
-  const ids = (query: Query) => selection(volume, query).map((n) => n.id);
-
+describe("selection, texte dans des zones", () => {
   it("cherche dans les empans des zones demandées", () => {
     expect(ids({ text: "rue", zones: ["addr"] })).toEqual([E1]);
     expect(ids({ text: "Dupont", zones: ["subj"] })).toEqual([E1]);
@@ -176,9 +146,9 @@ describe("resolve, texte dans des zones", () => {
   });
 });
 
-describe("resolve, sans critère", () => {
+describe("selection, sans critère", () => {
   it("rend tout le volume, sans contexte", () => {
-    expect(resolve(volume, {}).nodes).toEqual(volume.nodes);
+    expect(selection(volume, {})).toEqual(volume.nodes);
     expect(context({})).toEqual([]);
   });
 });
@@ -241,18 +211,5 @@ describe("context", () => {
     it("est vide sans résultat", () => {
       expect(ids({ text: "introuvable" })).toEqual([]);
     });
-  });
-});
-
-describe("inducedArcs", () => {
-  const entry = (id: string) => ({ id, kind: "entry" as const, parentId: null });
-
-  it("ne relie pas deux entrées sélectionnées séparées par une entrée qui ne l'est pas", () => {
-    // volume A, B, C ; sélection A, C
-    const nextEntry = new Map([
-      ["A", "B"],
-      ["B", "C"],
-    ]);
-    expect(inducedArcs([entry("A"), entry("C")], nextEntry)).toEqual([]);
   });
 });

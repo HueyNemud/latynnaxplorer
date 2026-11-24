@@ -1,8 +1,7 @@
-// Formes des données que rendent les requêtes (lib/query/resolve.ts, lib/query/facets.ts),
-// partagées avec les composants : des types seuls.
+// Formes des données que rendent les requêtes (lib/query/), partagées avec les composants : des
+// types seuls.
 
 export type NodeKind = "entry" | "section" | "out_of_scope";
-export type ArcKind = "member_of" | "child_of" | "follows";
 /** sujet, description, adresse */
 export type SpanLabel = "SUBJ" | "DESC" | "ADDR";
 
@@ -33,18 +32,6 @@ export interface SubgraphNode {
   spans: Span[];
   /** Dans l'ordre des pages ; vide si le nœud n'a aucune ligne boîtée. */
   anchors: Anchor[];
-}
-
-export interface Arc {
-  source: string;
-  target: string;
-  kind: ArcKind;
-}
-
-/** Nœuds dans l'ordre de lecture ; arcs dont les deux bouts sont parmi ces nœuds. */
-export interface Subgraph {
-  nodes: SubgraphNode[];
-  arcs: Arc[];
 }
 
 /** Métadonnées d'un volume. */

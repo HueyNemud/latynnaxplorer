@@ -49,8 +49,6 @@ export interface LoadedVolume {
   folded: string[];
   /** texte plié de chaque nœud par zone (voir zoned), dans l'ordre de `nodes` */
   zoned: Record<Zone, string>[];
-  /** entrée suivante dans l'ordre de lecture (arc follows), pour les entrées */
-  nextEntry: Map<string, string>;
 }
 
 /** Le fichier d'un volume, décodé (ce que son format omet est rétabli) et indexé. */
@@ -71,21 +69,12 @@ export function indexVolume(file: VolumeFile): LoadedVolume {
       };
     },
   );
-  // follows : chaque entrée vers l'entrée suivante, à travers les sections
-  const nextEntry = new Map<string, string>();
-  let next: string | undefined;
-  for (const n of nodes.toReversed()) {
-    if (n.kind !== "entry") continue;
-    if (next !== undefined) nextEntry.set(n.id, next);
-    next = n.id;
-  }
   return {
     meta: file.volume,
     nodes,
     byId: new Map(nodes.map((n) => [n.id, n])),
     folded: nodes.map((n) => fold(n.text)),
     zoned: nodes.map(zoned),
-    nextEntry,
   };
 }
 

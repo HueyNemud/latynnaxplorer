@@ -54,13 +54,15 @@ Un volume est une liste de **nœuds** dans l'ordre de lecture. Un nœud
 - `anchors` : par page touchée, l'union des boîtes de ses lignes (repère
   numrev 0–1000) ; aucune ligne boîtée sur la page, pas d'ancre.
 
-**Arcs**, déduits des nœuds :
+**Arcs**, jamais stockés : ils se déduisent des nœuds, et ne seront
+calculés que lorsqu'une vue en aura besoin. Aujourd'hui, la Liste montre
+les rubriques par `parentId` et la contiguïté par l'ordre de lecture.
 
 | Arc | Entre | Déduit de |
 |---|---|---|
 | `member_of` | entrée ou élément hors champ → rubrique | `parentId` |
 | `child_of` | rubrique → rubrique | `parentId` |
-| `follows` | entrée → entrée suivante dans l'ordre de lecture, à travers les rubriques | l'ordre de lecture, au chargement |
+| `follows` | entrée → entrée suivante dans l'ordre de lecture, à travers les rubriques | l'ordre de lecture |
 
 numrev donne un seul arbre : tout objet a pour parent une rubrique (ou la
 racine). Un élément hors champ est rangé sous la rubrique ouverte à cet
@@ -122,8 +124,6 @@ leur texte plié pour la recherche, en entier et par zone.
   leurs ancêtres, `ancestors`), dans l'ordre de lecture ;
 - `context` : les rubriques ancêtres d'une sélection qui n'en font pas
   partie ;
-- `resolve` : la sélection et les arcs dont les deux bouts en font partie
-  (`inducedArcs`) ; la vue n'a besoin que des nœuds ;
 - `sections` (`facets.ts`) : les rubriques et le nombre d'entrées de leur
   sous-arbre qui contiennent le texte cherché ;
 - `explore.ts`, sur plusieurs volumes : quels volumes une requête demande
