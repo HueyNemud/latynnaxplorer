@@ -30,13 +30,14 @@ dépendances, choix discutables).
 | Vocabulaire et docs | #30 | un terme par objet, une ligne par décision, fiches resserrées |
 | Mise en ligne | #31 | GitHub Pages, volumes dans une release |
 | 15, export | #32 | CSV de la sélection, une colonne par niveau de rubrique et par libellé d'empan |
+| 16, surlignage | #33 | correspondances sur fond iris opaque, là où elles sélectionnent ; un empan = un élément |
 
-## Sprint 16 : surligner les correspondances
+## Sprint 17 : réglages d'affichage
 
-Branche `feat/surlignage`. Dans les lignes de la Liste, le texte cherché est
-marqué (`<mark>`) là où il sélectionne : texte plié, zones fouillées
-seulement, contexte compris ; style choisi sur captures, distinct des fonds
-des empans. Ni la fiche ni Contents.
+Branche `feat/reglages`. Un bouton « ⚙ » au bout de la barre de la vue
+ouvre un menu de réglages : pour l'instant une case, Span colors, qui
+montre ou cache les fonds des empans. Hors de l'URL, mémorisé dans le
+navigateur (`localStorage`).
 
 ## Hors sprint : demandes à numrev
 
