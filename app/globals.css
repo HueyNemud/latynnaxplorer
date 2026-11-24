@@ -132,6 +132,11 @@ summary::-webkit-details-marker {
   background: var(--tint-addr);
 }
 
+/* réglage Span colors décoché (components/Settings.tsx) : les empans sans fond */
+.no-span-colors .span {
+  background: none;
+}
+
 /* Correspondance du texte cherché : fond iris opaque, qui recouvre celui des empans et se lit
    pareil sur tous ; texte foncé, même hors champ (le gris n'y atteint pas 4,5:1) */
 .printed mark {
