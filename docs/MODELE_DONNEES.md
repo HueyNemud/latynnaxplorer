@@ -110,9 +110,8 @@ de l'empan tel quel (90 % des empans).
 ```
 
 1807 : 22 158 nœuds, 7,2 Mo, 1,3 Mo compressés en gzip. Chargé,
-`indexVolume` rétablit ce qui est omis, et calcule l'index des nœuds, leur
-texte plié pour la recherche et `follows` (30 ms environ) ; le volume tient
-alors environ 27 Mo de mémoire.
+`indexVolume` rétablit ce qui est omis, et calcule l'index des nœuds et
+leur texte plié pour la recherche, en entier et par zone.
 
 ## 4. Requête → sous-graphe induit
 
@@ -132,8 +131,8 @@ alors environ 27 Mo de mémoire.
   bout dans l'ordre de l'index (`explore`), et la fiche d'un nœud
   (`detail` : le nœud et son chemin).
 
-Une requête parcourt tout le volume : 13 ms au plus sur 1807. Le coût d'une
-grosse sélection est son rendu : la Liste la montre par tranches
+Une requête parcourt tout le volume, sans index. Le coût d'une grosse
+sélection est son rendu : la Liste la montre par tranches
 (`docs/composants/noeud-liste.md`).
 
 ## Plus tard

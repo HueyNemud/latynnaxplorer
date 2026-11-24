@@ -37,7 +37,7 @@ La requête est dans l'URL (`docs/SCENARIOS.md`) :
 - `?text=<texte>` garde les nœuds qui contiennent le texte, sans tenir
   compte des accents ni de la casse ; `&in=subj` (répétable : `subj`,
   `desc`, `addr`, `other`) le cherche seulement dans ces zones ;
-- les critères se combinent ; sans critère, rien n'est sélectionné.
+- les critères se combinent ; sans critère, tout est sélectionné.
 
 ## Commandes
 
