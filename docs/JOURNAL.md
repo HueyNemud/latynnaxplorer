@@ -58,6 +58,14 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-25 — Barre de la sélection (sprint 19)
+
+- La barre au-dessus de la vue sépare ce qui est commun aux vues (zones,
+  champ, Export : la barre de la sélection) de ce que fournit la vue (pour
+  la Liste, le menu « ⚙ »), par un trait vertical (`Separator` de Radix).
+  Avec plusieurs vues, chacune aura son en-tête ; aucun changement de
+  comportement.
+
 ## 2026-11-24 — Requête vide = tout (sprint 18)
 
 - Modèle standard des facettes : un critère absent ne filtre rien. Sans
