@@ -159,7 +159,7 @@ blanc, sur `--gray-2` et sur les fonds des empans.
 | `--heading-height` | `1.75rem` | hauteur de la ligne d'une rubrique, pas de la pile |
 | `--line-pad` / `--line-pad-y` | `0.375rem` / `0.125rem` | marges intérieures d'une ligne (Liste et Contents) ; retrait d'une sous-rubrique |
 | `--guide-width` / `--guide-gap` / `--ball` | `2px` / `0.25rem` / `6px` | guide, écart avec les lignes, boule |
-| `--icon` | `0.875rem` | chevron |
+| `--icon` | `0.875rem` | icônes (chevron) |
 
 Police **Fira Sans** pour toute l'interface (vraies petites capitales),
 chargée par `next/font` et servie avec le site. Lignes, intitulés et

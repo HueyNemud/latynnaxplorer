@@ -4,7 +4,7 @@ Exploration visuelle des annuaires commerciaux parisiens traités par la
 chaîne numrev (`../adresses_revolutionnaires`). Un site statique : chaque
 annuaire est un fichier, téléchargé quand on en a besoin, et interrogé dans
 le navigateur (`lib/query/`). La sélection s'affiche dans la vue Liste, sous
-la barre de recherche, avec à gauche les facettes de structure (volumes et
+la barre de la sélection, avec à gauche les facettes de structure (volumes et
 rubriques à cocher) ; interface en composants et jetons de
 [Radix Themes](https://www.radix-ui.com/themes).
 

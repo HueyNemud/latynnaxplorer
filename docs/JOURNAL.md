@@ -58,6 +58,20 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-25 — Nettoyage (sprint 20)
+
+- Docs remises d'accord avec le code (requête vide, schéma des facettes),
+  mesures et demande à numrev traitée retirées.
+- Code mort : calcul des arcs (`resolve`, `inducedArcs`, `nextEntry`),
+  qu'aucune vue n'utilisait ; ils seront calculés pour la vue qui les
+  montrera.
+- Fiche au dépliage par `onToggle` de React dans chaque ligne, à la place
+  d'un écouteur global et d'un portail hérités du rendu serveur ; mesuré
+  en production, sans coût.
+- Une seule fonction `ancestors` ; sélection et surlignage sur le même
+  découpage en zones (`zonePieces`) ; barre en `Flex` de Radix ;
+  commentaires et CSS resserrés, rendu identique au pixel près.
+
 ## 2026-11-25 — Barre de la sélection (sprint 19)
 
 - La barre au-dessus de la vue sépare ce qui est commun aux vues (zones,
