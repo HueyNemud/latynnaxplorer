@@ -61,7 +61,9 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 ## 2026-11-25 — Nettoyage (sprint 20)
 
 - Docs remises d'accord avec le code (requête vide, schéma des facettes),
-  mesures et demande à numrev traitée retirées.
+  mesures et demande à numrev traitée retirées ; le brief initial, dont la
+  stack est abandonnée, est supprimé, ses règles d'or passent dans
+  `CLAUDE.md`.
 - Code mort : calcul des arcs (`resolve`, `inducedArcs`, `nextEntry`),
   qu'aucune vue n'utilisait ; ils seront calculés pour la vue qui les
   montrera.

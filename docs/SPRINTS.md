@@ -40,7 +40,8 @@ dépendances, choix discutables).
 Branche `refactor/nettoyage`. Aucune dépendance, aucun changement de
 comportement :
 
-- docs remises d'accord avec le code ; mesures et demande traitée retirées ;
+- docs remises d'accord avec le code ; mesures, demande traitée et brief
+  initial retirés (règles d'or dans `CLAUDE.md`) ;
 - code mort retiré : calcul des arcs, inutilisé par les vues ;
 - fiche au dépliage par `onToggle`, sans portail ni écouteur global ;
 - duplications retirées (`ancestors`, découpage en zones) ;

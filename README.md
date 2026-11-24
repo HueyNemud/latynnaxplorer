@@ -99,4 +99,3 @@ au lieu de 7,2 pour 1807).
 - [`docs/SPRINTS.md`](docs/SPRINTS.md) : sprint en cours et suivants
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) : décisions structurantes
 - [`docs/JOURNAL.md`](docs/JOURNAL.md) : journal de développement
-- [`docs/INITIAL_PROMPT.md`](docs/INITIAL_PROMPT.md) : consigne initiale
