@@ -21,7 +21,7 @@ export function ExportButton({
       type="button"
       size="3"
       variant="surface"
-      className="export"
+      ml="auto"
       disabled={selection.length === 0}
       onClick={() => download(selectionCsv(volumes, selection), "latynnaxplorer-selection.csv")}
     >

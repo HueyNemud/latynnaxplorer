@@ -93,7 +93,7 @@ export function SearchForm({ query }: { query: Query }) {
 }
 
 /** Bouton de chaque zone : libellé, infobulle, et couleur de ses empans dans la Liste
- * (--tint-* dans app/globals.css). */
+ * (.span-* dans app/globals.css). */
 const ZONE_BUTTONS = {
   subj: {
     label: "Subj",

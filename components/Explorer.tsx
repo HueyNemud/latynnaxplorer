@@ -131,16 +131,17 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
         loaded={loaded}
       />
       <div className={spanColors ? "view" : "view no-span-colors"}>
-        <div className="bar">
-          <div className="selection-bar">
+        {/* la barre de la sélection, puis, après un trait, les outils de la vue */}
+        <Flex align="center" gap="3" pt="4" pb="2">
+          <Flex align="center" gap="2" flexGrow="1" minWidth="0">
             <SearchForm query={shown.query} />
             <ExportButton selection={selection} volumes={list} />
-          </div>
+          </Flex>
           <Separator orientation="vertical" size="2" />
-          <div className="view-tools">
+          <Flex align="center" gap="2">
             <Settings spanColors={spanColors} onSpanColors={setSpanColors} />
-          </div>
-        </div>
+          </Flex>
+        </Flex>
         <div className="view-scroll">
           {selection.length > 0 ? (
             <NodeList selection={selection} volumes={list} search={shown.query} />
