@@ -29,19 +29,14 @@ dépendances, choix discutables).
 | 14, sélection et vues | #29 | sélection commune aux vues, Liste par tranches, facettes rendues seulement si elles changent, guides d'un seul gris |
 | Vocabulaire et docs | #30 | un terme par objet, une ligne par décision, fiches resserrées |
 | Mise en ligne | #31 | GitHub Pages, volumes dans une release |
+| 15, export | #32 | CSV de la sélection, une colonne par niveau de rubrique et par libellé d'empan |
 
-## Sprint 15 : exporter
+## Sprint 16 : surligner les correspondances
 
-Branche `feat/export-csv`. Un bouton de la barre de la vue télécharge toute
-la sélection en CSV, fabriqué dans le navigateur : une ligne par nœud, une
-colonne par niveau de rubrique, une par libellé d'empan. Pas d'API JSON
-pour l'instant.
-
-## À décider au moment voulu : format de l'API JSON
-
-Dès qu'une API publique exposera les sous-graphes : décrire ses réponses
-selon une pratique standard plutôt qu'un formalisme ad hoc (OpenAPI ou plus
-récent, à comparer alors).
+Branche `feat/surlignage`. Dans les lignes de la Liste, le texte cherché est
+marqué (`<mark>`) là où il sélectionne : texte plié, zones fouillées
+seulement, contexte compris ; style choisi sur captures, distinct des fonds
+des empans. Ni la fiche ni Contents.
 
 ## Hors sprint : demandes à numrev
 
@@ -55,8 +50,7 @@ récent, à comparer alors).
 
 ## Plus tard (non planifié)
 
-Surlignage des correspondances. Vues Page (IIIF),
-Carte et Frise, avec leurs critères (page, zone, période) ; géocodage ;
-liens temporels, autres annuaires et « suivre » ; deux vues côte à côte.
-Pistes détaillées dans `docs/IDEES.md`. Chacun aura son sprint, proposé le
-moment venu.
+Vues Page (IIIF), Carte et Frise, avec leurs critères (page, zone,
+période) ; géocodage ; liens temporels, autres annuaires et « suivre » ;
+deux vues côte à côte. Pistes détaillées dans `docs/IDEES.md`. Chacun aura
+son sprint, proposé le moment venu.

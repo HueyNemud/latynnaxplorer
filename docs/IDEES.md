@@ -53,14 +53,17 @@ d'ici.
 
 ## Affichage
 
-- Surligner les correspondances d'une recherche dans les lignes, distinct
-  du fond des empans.
 - Choix de densité (serré, normal, aéré) et réglage des fonds des empans
   (par exemple ne colorer que les sujets), mémorisés.
 - En-tête des colonnes fixé au défilement, en tête de la pile des
   intitulés.
 - Sélection multiple de quelques entrées et actions groupées : à discuter
   avec l'export.
+
+## Surlignage
+
+- Les correspondances dans la fiche et dans Contents (intitulés).
+- Aller d'une correspondance à la suivante ; leur décompte.
 
 ## Tests de rendu des composants
 

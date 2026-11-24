@@ -27,7 +27,7 @@ Relevé sur 1807 (22 158 nœuds) :
 | Constat | Conséquence |
 |---|---|
 | Emphase `*…*` dans 4 525 nœuds | rendue en italique, astérisques retirés |
-| 24 empans coupent une emphase | texte découpé aux bornes des empans et de l'emphase (`lib/text/segments.ts`) ; le fond d'un empan reste continu |
+| 24 empans coupent une emphase | texte découpé aux bornes des empans, de l'emphase et des correspondances (`lib/text/segments.ts`) ; un empan reste un seul élément, son fond continu |
 | Empans en points de code, astérisques compris | positions lues dans le texte brut, avant de retirer l'emphase |
 | 58 groupes à accolade, sur plusieurs lignes | retours à la ligne gardés ; plusieurs empans de même libellé |
 | Entrées de 39 caractères en moyenne, 729 au plus | une ligne le plus souvent ; une entrée longue passe à la ligne, alignée après le chevron |
@@ -86,12 +86,18 @@ Relevé sur 1807 (22 158 nœuds) :
 |---|---|---|
 | SUBJ | violet transparent `--violet-a4` | petites capitales |
 | DESC | sarcelle transparent `--teal-a4` | normal |
-| ADDR | jaune transparent `--yellow-a4` | normal |
+| ADDR | jaune transparent `--yellow-a3` | normal |
 
 Couleurs transparentes de Radix : elles se fondent dans le fond d'une ligne
 survolée ou ouverte. Le fond déborde de 0,08 em de chaque côté (coins
 arrondis visibles, texte non décalé, filet blanc entre deux empans
 voisins) ; le texte hors empan n'a pas de fond.
+
+**Correspondances** du texte cherché (`lib/text/matches.ts`) : les mêmes
+que celles qui sélectionnent, texte plié et zones fouillées, ramenées aux
+positions du texte brut ; dans toute ligne, contexte compris. Chacune est
+un `<mark>` sur fond `--iris-6` : opaque, il recouvre le fond de l'empan et
+se lit pareil sur tous ; texte `--gray-12`, même hors champ.
 
 **Chevron** : devant toute ligne (tout nœud se déplie), gris, tourné vers
 le bas quand le nœud est ouvert ; le texte garde sa place après lui, même
@@ -150,7 +156,7 @@ blanc, sur `--gray-2` et sur les fonds des empans.
 
 | Jeton | Valeur | Usage |
 |---|---|---|
-| `--tint-subj` / `--tint-desc` / `--tint-addr` | `--violet-a4` / `--teal-a4` / `--yellow-a4` | fonds des empans |
+| `--tint-subj` / `--tint-desc` / `--tint-addr` | `--violet-a4` / `--teal-a4` / `--yellow-a3` | fonds des empans |
 | `--heading-height` | `1.75rem` | hauteur de la ligne d'une rubrique, pas de la pile |
 | `--line-pad` / `--line-pad-y` | `0.375rem` / `0.125rem` | marges intérieures d'une ligne (Liste et Contents) ; retrait d'une sous-rubrique |
 | `--guide-width` / `--guide-gap` / `--ball` | `2px` / `0.25rem` / `6px` | guide, écart avec les lignes, boule |
@@ -196,6 +202,9 @@ plus petits.
 - Empans soulignés ou en couleur ; table Subject / Description / Address ;
   sujet en gras ; couleurs néon, puis opaques ; sujet et description trop
   proches (cyan, sarcelle).
+- Correspondances en gras (peu lisible, invisible sur les intitulés), en
+  texte iris (trop discret), sur un iris transparent (sa teinte change
+  avec l'empan : kaki sur le jaune).
 - Intitulés en petites capitales ; autres polices (Noto Sans, Source
   Sans 3, IBM Plex Sans, Alegreya, EB Garamond…).
 - Fiche en page à part ; fiche rendue d'avance pour chaque ligne.

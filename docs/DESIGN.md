@@ -30,6 +30,7 @@ anglais (« Section », « Subject »…).
 | zone | `Zone` | où chercher le texte : un libellé d'empan, ou `other` (hors empan) |
 | sélection | `selection` | les nœuds que donne la requête (le sous-graphe induit) |
 | contexte | `context` | les rubriques ancêtres de la sélection qui n'en font pas partie |
+| correspondance | `Match` | un endroit du texte d'un nœud où se trouve le texte cherché, dans les zones fouillées |
 | chemin | `path` | les rubriques au-dessus d'un nœud, de la racine à son parent |
 | fiche | `detail` | un nœud montré en détail |
 | vue | — | la sélection disposée selon un domaine : Liste, Page, Carte, Frise |
@@ -162,7 +163,7 @@ détaillée (sa fiche). Le contenu (texte, empans) est porté par toutes.
 
 | Vue | Compacte | Fiche | Disponible |
 |---|---|---|---|
-| Liste | une ligne de texte imprimé, empans sur fond coloré ; une rubrique est marquée par son guide de niveau, son intitulé fixé en haut | dépliée sous la ligne | maintenant |
+| Liste | une ligne de texte imprimé, empans sur fond coloré, correspondances sur fond iris ; une rubrique est marquée par son guide de niveau, son intitulé fixé en haut | dépliée sous la ligne | maintenant |
 | Page | la boîte du nœud sur sa page (vignette) | la page, boîte surlignée | ancres présentes, images à venir (IIIF) |
 | Carte | un point | le point dans son quartier | après le géocodage |
 | Frise | un repère | sa date ; plus tard, ses entrées liées | date du volume maintenant, liens plus tard |
