@@ -30,6 +30,10 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   fond la marge haute d'un premier enfant dans celle de son parent, et
   sous-estime en flexbox la largeur d'un texte dont des enfants ont des
   marges négatives.
+- **Fonds transparents** : un même fond coupé en plusieurs éléments à
+  marges négatives se chevauche en bandes plus foncées ; un fond posé sur
+  un autre transparent change de teinte avec lui. Un empan = un élément ;
+  un fond par-dessus est opaque.
 - **Biome** : `noDescendingSpecificity` (une règle qui en surcharge une
   autre vient après elle), `useSemanticElements` (`<search>` plutôt que
   `role="search"`), `useImportExtensions`.
@@ -53,6 +57,15 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
   une règle sans `:has()`.
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
+
+## 2026-11-24 — Surlignage (sprint 16)
+
+- Correspondances du texte cherché surlignées dans les lignes de la Liste,
+  aux endroits mêmes qui sélectionnent (`lib/text/matches.ts` ; vérifié
+  sur 1807 : aucun écart avec la sélection sur douze recherches). Fond
+  `--iris-6` opaque, choisi sur captures ; jaune des adresses éclairci.
+- Un empan coupé par l'emphase ou une correspondance reste un seul
+  élément : les fonds ne se chevauchent plus.
 
 ## 2026-11-24 — Export CSV (sprint 15)
 

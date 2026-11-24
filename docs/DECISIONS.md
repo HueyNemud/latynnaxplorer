@@ -82,6 +82,9 @@ de revenir.
 - Un seul élément pour tout nœud, deux états (survol, ouvert) ; les types
   ne se distinguent que par leur texte.
 - Fiche rendue au premier dépliage.
+- Correspondances surlignées là où elles sélectionnent (texte plié, zones
+  fouillées), contexte compris, sur un fond iris opaque, le même sur tous
+  les empans ; un empan reste un seul élément.
 - Sélection montrée par tranches de 200 nœuds ; écartées : la pagination
   (lecture coupée) et la virtualisation (dépendance, mal accordée aux
   rubriques emboîtées et aux intitulés fixés).
