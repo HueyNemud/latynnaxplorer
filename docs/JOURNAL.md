@@ -56,7 +56,7 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 
 ## 2026-11-24 — Export CSV (sprint 15)
 
-- Bouton Export CSV au bout de la barre de la vue : toute la sélection,
+- Bouton Export au bout de la barre de la vue : toute la sélection en CSV,
   une ligne par nœud, une colonne par niveau de rubrique et par libellé
   d'empan (`lib/export/csv.ts`, `docs/DESIGN.md`, « Export »). Tout 1807 :
   7,6 Mo, 7 niveaux, 80 ms.

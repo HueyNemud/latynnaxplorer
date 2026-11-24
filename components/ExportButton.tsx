@@ -26,7 +26,7 @@ export function ExportButton({
       onClick={() => download(selectionCsv(volumes, selection), "latynnaxplorer-selection.csv")}
     >
       <DownloadIcon />
-      Export CSV
+      Export
     </Button>
   );
 }
