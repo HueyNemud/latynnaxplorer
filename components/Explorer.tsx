@@ -131,7 +131,7 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
       <div className={spanColors ? "view" : "view no-span-colors"}>
         {/* la barre de la sélection, puis, après un trait, les outils de la vue */}
         <Flex align="center" gap="3" pt="4" pb="2">
-          <Flex align="center" gap="2" flexGrow="1" minWidth="0">
+          <Flex align="center" gap="2" flexGrow="1" wrap="wrap">
             <SearchForm query={shown.query} />
             <ExportButton selection={selection} volumes={list} />
           </Flex>

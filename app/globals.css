@@ -225,10 +225,11 @@ details[open] > summary .chevron {
 }
 
 /* recherche (components/SearchForm.tsx) : les boutons des zones, puis le champ soudé à son
-   bouton Search, à une largeur raisonnable */
+   bouton Search, à une largeur raisonnable ; faute de place, le champ passe sous les zones (il
+   garde une largeur minimale), et Export sous la recherche */
 .search-form {
-  flex: 0 1 46rem;
-  min-width: 0;
+  flex: 1 1 0;
+  max-width: 46rem;
 }
 
 /* le champ et le bouton Search soudés */

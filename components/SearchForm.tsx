@@ -27,7 +27,7 @@ export function SearchForm({ query }: { query: Query }) {
   const go = (query: Query) => window.history.pushState(null, "", queryUrl(pathname, query));
   return (
     <search className="search-form">
-      <Flex asChild align="center" gap="3">
+      <Flex asChild align="center" gap="3" wrap="wrap">
         <form
           id={QUERY_FORM}
           method="get"
@@ -41,7 +41,7 @@ export function SearchForm({ query }: { query: Query }) {
         >
           {/* clé : des boutons neufs à chaque requête, comme le champ */}
           <ZoneToggles key={zones?.join()} zones={zones} />
-          <Flex flexGrow="1">
+          <Flex flexGrow="1" minWidth="16rem">
             <label htmlFor="search-text" className="visually-hidden">
               Search text
             </label>
