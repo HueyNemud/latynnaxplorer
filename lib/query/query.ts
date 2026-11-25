@@ -1,6 +1,7 @@
 // Requête : ce que l'utilisateur demande, lisible depuis l'URL et réécrite à l'identique.
-// Filtres et scénarios : docs/SCENARIOS.md. Tous les critères sont facultatifs et se combinent
-// (conjonction) ; un critère absent ne filtre rien : sans critère, la requête sélectionne tout.
+// Filtres et scénarios : docs/SCENARIOS.md. Elle porte sur un seul volume ; tous les critères
+// sont facultatifs et se combinent (conjonction) ; un critère absent ne filtre rien : sans critère,
+// la requête sélectionne tout le volume.
 
 import type { SpanLabel } from "./types.ts";
 
@@ -9,6 +10,8 @@ export type Zone = Lowercase<SpanLabel> | "other";
 export const ZONES: readonly Zone[] = ["subj", "desc", "addr", "other"];
 
 export interface Query {
+  /** Identifiant du volume interrogé ; absent : le premier de l'index. */
+  volume?: string;
   /**
    * Scénario 1 : uuid des nœuds dont on veut tout le sous-arbre, eux compris ; plusieurs : l'union
    * de leurs sous-arbres (facettes de structure). Jamais vide, sans doublon, dans l'ordre de l'URL.
@@ -34,6 +37,8 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 /** Lit la requête dans les paramètres d'une URL ; les paramètres inconnus sont ignorés. */
 export function parseQuery(params: URLSearchParams): Query {
   const query: Query = {};
+  const volume = single(params, "volume");
+  if (volume) query.volume = volume;
   // répétable : chaque valeur est un sous-arbre de plus (union)
   const subtrees = params.getAll("subtree");
   for (const subtree of subtrees)
@@ -62,6 +67,7 @@ function single(params: URLSearchParams, name: string): string | undefined {
 /** Écrit la requête en paramètres d'URL ; parseQuery la relit à l'identique. */
 export function serializeQuery(query: Query): URLSearchParams {
   const params = new URLSearchParams();
+  if (query.volume !== undefined) params.set("volume", query.volume);
   for (const subtree of query.subtree ?? []) params.append("subtree", subtree);
   if (query.text !== undefined) params.set("text", query.text);
   for (const zone of query.zones ?? []) params.append("in", zone);
