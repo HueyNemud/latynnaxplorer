@@ -8,6 +8,7 @@
 import { Box, Button, Flex, IconButton, TextField } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { flushSync } from "react-dom";
 import { parseQuery, type Query, queryUrl, ZONES, type Zone } from "../lib/query/query.ts";
 import { ClearIcon, SearchIcon } from "./icons.tsx";
 
@@ -40,7 +41,7 @@ export function SearchForm({ query }: { query: Query }) {
           }}
         >
           {/* clé : des boutons neufs à chaque requête, comme le champ */}
-          <ZoneToggles key={zones?.join()} zones={zones} />
+          <ZoneToggles key={zones?.join()} zones={zones} live={text !== undefined} />
           <Flex flexGrow="1" flexBasis="16rem" minWidth="16rem">
             <label htmlFor="search-text" className="visually-hidden">
               Search text
@@ -106,9 +107,16 @@ const ZONE_BUTTONS = {
   },
 } as const satisfies Record<Zone, object>;
 
-/** Boutons des zones où chercher, enfoncés pour celles de la requête (toutes sans zone) ; un clic
- * n'envoie rien, le formulaire envoie les zones enfoncées avec le texte. */
-function ZoneToggles({ zones = ZONES }: { zones: readonly Zone[] | undefined }) {
+/** Boutons des zones où chercher, enfoncés pour celles de la requête (toutes sans zone) ; le
+ * formulaire envoie les zones enfoncées avec le texte. `live` : un texte est cherché, un clic
+ * relance aussitôt la recherche ; sinon il n'envoie rien. */
+function ZoneToggles({
+  zones = ZONES,
+  live,
+}: {
+  zones: readonly Zone[] | undefined;
+  live: boolean;
+}) {
   const [pressed, setPressed] = useState(zones);
   return (
     <Flex gap="1" align="center" role="group" aria-label="Search in">
@@ -122,7 +130,13 @@ function ZoneToggles({ zones = ZONES }: { zones: readonly Zone[] | undefined }) 
             color={ZONE_BUTTONS[z].color}
             aria-pressed={on}
             title={ZONE_BUTTONS[z].title}
-            onClick={() => setPressed(on ? pressed.filter((p) => p !== z) : [...pressed, z])}
+            onClick={(event) => {
+              const next = on ? pressed.filter((p) => p !== z) : [...pressed, z];
+              if (!live) return setPressed(next);
+              // les champs cachés des zones à jour avant l'envoi
+              flushSync(() => setPressed(next));
+              event.currentTarget.form?.requestSubmit();
+            }}
           >
             {ZONE_BUTTONS[z].label}
           </Button>
