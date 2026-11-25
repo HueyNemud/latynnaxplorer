@@ -21,6 +21,7 @@ import {
 } from "../lib/facets/selection.ts";
 import { type Query, queryUrl } from "../lib/query/query.ts";
 import type { FacetSection, Volume } from "../lib/query/types.ts";
+import { volumeName } from "../lib/query/volume.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { ChevronIcon } from "./icons.tsx";
 import { Panel } from "./Panel.tsx";
@@ -157,7 +158,7 @@ export const Facets = memo(function Facets({
         <div className="volume-cards">
           {volumes.map((v) => {
             const year = v.temporalStart.slice(0, 4);
-            const name = `${year} ${v.title ?? v.id}`;
+            const name = volumeName(v);
             return (
               <div key={v.id} className="volume-card" data-focus={v.id === focus || undefined}>
                 <Card asChild variant="classic" className="volume-thumb">

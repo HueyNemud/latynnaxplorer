@@ -17,6 +17,7 @@ import {
   type LoadedVolume,
   type VolumeFile,
   type VolumeIndex,
+  volumeName,
 } from "../lib/query/volume.ts";
 import { plainText } from "../lib/text/segments.ts";
 import { ExportButton } from "./ExportButton.tsx";
@@ -70,6 +71,11 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   const [chosen, setChosen] = useState<string>();
   const subtree = query === "bad-request" ? undefined : query.subtree;
   const focus = chosen ?? volumeOf(list, subtree?.[0])?.meta.id ?? volumes[0]?.id;
+  // titre de l'onglet : le nom du volume au focus
+  const focused = volumes.find((v) => v.id === focus);
+  useEffect(() => {
+    if (focused) document.title = volumeName(focused);
+  }, [focused]);
 
   const needed = useMemo(
     () => (query === "bad-request" ? [] : neededVolumes(volumes, list, query, focus)),
