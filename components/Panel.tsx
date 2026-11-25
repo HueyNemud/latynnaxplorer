@@ -1,8 +1,8 @@
 // Panneau repliable des facettes (docs/composants/facettes.md) : son contenu, et à sa droite une
 // bande qui le replie ou le déplie. Replié, il ne reste que la bande.
 
+import { ChevronLeftIcon, ChevronRightIcon } from "@radix-ui/react-icons";
 import type { ReactNode } from "react";
-import { ChevronIcon } from "./icons.tsx";
 
 export function Panel({
   id,
@@ -31,7 +31,7 @@ export function Panel({
         onClick={onToggle}
       >
         {/* ouvert : pointe vers la gauche, où le panneau se replie */}
-        <ChevronIcon direction={open ? "left" : "right"} />
+        {open ? <ChevronLeftIcon aria-hidden="true" /> : <ChevronRightIcon aria-hidden="true" />}
         <span className="panel-strip-title">{title}</span>
       </button>
     </section>

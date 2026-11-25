@@ -5,6 +5,7 @@
 // depuis l'URL, que l'URL suit ; elles appartiennent au formulaire de la recherche (attribut
 // `form`). Le volume au focus est l'état de la page (components/Explorer.tsx), qui le charge.
 
+import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
 import { memo, type ReactNode, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
@@ -23,7 +24,6 @@ import { type Query, queryUrl } from "../lib/query/query.ts";
 import type { FacetSection, Volume } from "../lib/query/types.ts";
 import { volumeName } from "../lib/query/volume.ts";
 import { plainText } from "../lib/text/segments.ts";
-import { ChevronIcon } from "./icons.tsx";
 import { Panel } from "./Panel.tsx";
 import { QUERY_FORM, usePagePath } from "./SearchForm.tsx";
 
@@ -110,7 +110,7 @@ export const Facets = memo(function Facets({
     const label = plainText(s.text);
     const line = (
       <>
-        {kids.length > 0 && <ChevronIcon className="chevron" />}
+        {kids.length > 0 && <ChevronRightIcon className="chevron" aria-hidden="true" />}
         <Checkbox
           size="1"
           // couverte : cochée en pâle, sans nom (pas envoyée) ; un clic ne garde qu'elle

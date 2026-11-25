@@ -4,11 +4,11 @@
 // formats, pour l'instant CSV seul. Le fichier est fabriqué dans le navigateur au choix du format,
 // puis téléchargé ; inactif quand rien n'est sélectionné.
 
+import { DownloadIcon } from "@radix-ui/react-icons";
 import { Button, DropdownMenu } from "@radix-ui/themes";
 import { selectionCsv } from "../lib/export/csv.ts";
 import type { SubgraphNode } from "../lib/query/types.ts";
 import type { LoadedVolume } from "../lib/query/volume.ts";
-import { DownloadIcon } from "./icons.tsx";
 
 export function ExportButton({
   selection,
@@ -22,7 +22,7 @@ export function ExportButton({
       {/* inactif par le déclencheur, qui impose son `disabled` au bouton */}
       <DropdownMenu.Trigger disabled={selection.length === 0}>
         <Button type="button" size="3" variant="surface" ml="auto">
-          <DownloadIcon />
+          <DownloadIcon aria-hidden="true" />
           Export
           <DropdownMenu.TriggerIcon />
         </Button>

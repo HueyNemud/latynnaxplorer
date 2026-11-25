@@ -3,6 +3,7 @@
 // Réglages d'affichage de la Liste, parmi les outils de la vue (docs/DESIGN.md) : hors de l'URL,
 // mémorisés dans le navigateur. Pour l'instant, les fonds colorés des empans.
 
+import { GearIcon } from "@radix-ui/react-icons";
 import { DropdownMenu, IconButton } from "@radix-ui/themes";
 import { useState } from "react";
 
@@ -41,8 +42,7 @@ export function Settings({
     <DropdownMenu.Root>
       <DropdownMenu.Trigger>
         <IconButton size="3" variant="surface" title="Settings" aria-label="Settings">
-          {/* engrenage en texte, pas en emoji (sélecteur de variante U+FE0E) */}
-          <span aria-hidden="true">{"⚙︎"}</span>
+          <GearIcon aria-hidden="true" />
         </IconButton>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end">

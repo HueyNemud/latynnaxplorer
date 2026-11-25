@@ -5,12 +5,12 @@
 // L'envoi, comme le lien qui efface la recherche, ajoute une entrée à l'historique sans recharger
 // la page, comme un envoi natif.
 
+import { Cross2Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Box, Button, Flex, IconButton, TextField } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { flushSync } from "react-dom";
 import { parseQuery, type Query, queryUrl, ZONES, type Zone } from "../lib/query/query.ts";
-import { ClearIcon, SearchIcon } from "./icons.tsx";
 
 /** Identifiant du formulaire de la requête, auquel les cases des facettes se rattachent. */
 export const QUERY_FORM = "query";
@@ -71,7 +71,7 @@ export function SearchForm({ query }: { query: Query }) {
                           go(cleared);
                         }}
                       >
-                        <ClearIcon />
+                        <Cross2Icon aria-hidden="true" />
                         <span className="visually-hidden">Clear search</span>
                       </a>
                     </IconButton>
@@ -80,7 +80,7 @@ export function SearchForm({ query }: { query: Query }) {
               </TextField.Root>
             </Box>
             <Button type="submit" size="3" variant="surface" className="search-submit">
-              <SearchIcon />
+              <MagnifyingGlassIcon aria-hidden="true" />
               Search
             </Button>
           </Flex>

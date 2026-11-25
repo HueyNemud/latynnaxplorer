@@ -1,6 +1,7 @@
 // Vue Liste (docs/composants/noeud-liste.md) : la sélection dans ses rubriques, à plat, montrée
 // par tranches ; tout nœud est une ligne qui déplie sa fiche juste dessous (<details> natif).
 
+import { ChevronRightIcon } from "@radix-ui/react-icons";
 import {
   type CSSProperties,
   memo,
@@ -16,7 +17,6 @@ import type { Query } from "../lib/query/query.ts";
 import type { SubgraphNode } from "../lib/query/types.ts";
 import type { LoadedVolume } from "../lib/query/volume.ts";
 import { matches } from "../lib/text/matches.ts";
-import { ChevronIcon } from "./icons.tsx";
 import { NodeDetail } from "./NodeDetail.tsx";
 import { PrintedText } from "./PrintedText.tsx";
 
@@ -123,7 +123,7 @@ const ListNode = memo(
       >
         <summary className="row line" aria-labelledby={`text-${node.id}`}>
           <span className={`text text-${node.kind}`}>
-            <ChevronIcon className="chevron" />
+            <ChevronRightIcon className="chevron" aria-hidden="true" />
             <span id={`text-${node.id}`} className="label">
               {node.kind === "out_of_scope" && (
                 <span className="visually-hidden">Out of scope: </span>
