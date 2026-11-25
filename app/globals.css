@@ -252,7 +252,7 @@ details[open] > summary .chevron {
 
 /* ── Vue Liste (components/NodeList.tsx, docs/composants/noeud-liste.md) ── */
 
-/* En-tête (seulement « Page ») et lignes : mêmes colonnes texte | page */
+/* En-tête (décompte de la sélection, « Page ») et lignes : mêmes colonnes texte | page */
 .columns,
 .line {
   display: grid;

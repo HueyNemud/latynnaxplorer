@@ -80,9 +80,13 @@ export function NodeList({
 
   return (
     <>
-      <div className="columns" aria-hidden="true">
-        <span />
-        <span className="page">Page</span>
+      {/* en-tête : le décompte de la sélection (les lignes de l'export, pas le contexte), puis le
+          titre de la colonne des pages */}
+      <div className="columns">
+        <span>{selection.length.toLocaleString("en")} selected</span>
+        <span className="page" aria-hidden="true">
+          Page
+        </span>
       </div>
       {children.get(null)?.map((n) => render(n, []))}
       {count < selection.length && <More key={count} onVisible={more} />}
