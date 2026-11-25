@@ -17,7 +17,7 @@ Relevé sur 1807 :
 | 603 rubriques, 43 au premier niveau, jusqu'à 149 sous une même rubrique, 7 niveaux | arbre replié par défaut, retrait simple |
 | Intitulés : 24 caractères en médiane, 197 au plus ; casse imprimée variable | une ligne, coupée par « … », entier en infobulle ; casse imprimée gardée |
 | Décomptes de 0 à 13 311 entrées | chiffres tabulaires, séparateur de milliers, alignés à droite ; 0 affiché |
-| 90 éléments hors champ sous aucune rubrique | aucune case pour eux : la recherche seule les trouve (racine demandée à numrev) |
+| 90 éléments hors champ sous aucune rubrique | aucune case pour eux : la recherche seule les trouve, réglage coché (racine demandée à numrev) |
 
 ## Anatomie
 

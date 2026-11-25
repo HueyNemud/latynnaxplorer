@@ -63,6 +63,14 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-25 — Hors champ et réglages (sprint 22)
+
+- Les éléments hors champ sont écartés de la sélection (Liste, recherche,
+  export) ; la case « Show out-of-scope elements » les rétablit.
+- Le bouton ⚙ ouvre les réglages de l'application : une section General,
+  puis une par vue (List : Span colors). Le trait des outils de la vue
+  est retiré.
+
 ## 2026-11-25 — Barre et retours (sprint 21)
 
 - Suite d'un audit UX/UI. La barre passe à la ligne au lieu d'écraser le

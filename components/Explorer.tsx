@@ -5,7 +5,7 @@
 // la requête de l'URL résolue sur les volumes chargés (explore). Facettes et recherche changent
 // l'URL par l'API History, sans recharger la page ; Next garde useSearchParams à jour.
 
-import { Flex, Separator, Spinner, Text } from "@radix-ui/themes";
+import { Flex, Spinner, Text } from "@radix-ui/themes";
 import { useSearchParams } from "next/navigation";
 import { type ReactNode, useEffect, useMemo, useRef, useState } from "react";
 import { type Exploration, explore, neededVolumes, volumeOf } from "../lib/query/explore.ts";
@@ -24,7 +24,7 @@ import { ExportButton } from "./ExportButton.tsx";
 import { Facets } from "./Facets.tsx";
 import { NodeList } from "./NodeList.tsx";
 import { SearchForm } from "./SearchForm.tsx";
-import { Settings, useSpanColors } from "./Settings.tsx";
+import { Settings, useSetting } from "./Settings.tsx";
 
 /** `index` : adresse de l'index des volumes, absolue ou relative à la page. */
 export function Explorer({ index }: { index: string }) {
@@ -97,17 +97,22 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
   // résultat montré : seulement une fois les volumes demandés chargés ; le dernier prêt reste
   // affiché pendant le chargement d'un volume mis au focus
   const [shown, setShown] = useState<{ query: Query; exploration: Exploration } | "not-found">();
+  // éléments hors champ écartés de la sélection, sauf si le réglage les montre
+  const [outOfScope, setOutOfScope] = useSetting("latynnaxplorer:out-of-scope", false);
   const result = useMemo(() => {
     if (query === "bad-request" || !ready) return undefined;
     try {
-      return { query, exploration: explore(list, query) };
+      const exploration = explore(list, query);
+      if (!outOfScope)
+        exploration.selection = exploration.selection.filter((n) => n.kind !== "out_of_scope");
+      return { query, exploration };
     } catch (error) {
       if (error instanceof NodeNotFoundError) return "not-found" as const;
       throw error;
     }
-  }, [query, ready, list]);
+  }, [query, ready, list, outOfScope]);
   if (result !== undefined && result !== shown) setShown(result);
-  const [spanColors, setSpanColors] = useSpanColors();
+  const [spanColors, setSpanColors] = useSetting("latynnaxplorer:span-colors", true);
 
   if (query === "bad-request") return <Message>Invalid query.</Message>;
   if (failed) return <Message>A volume could not be loaded.</Message>;
@@ -135,16 +140,18 @@ function Volumes({ volumes }: { volumes: IndexedVolume[] }) {
         loaded={loaded}
       />
       <div className={spanColors ? "view" : "view no-span-colors"}>
-        {/* la barre de la sélection, puis, après un trait, les outils de la vue */}
+        {/* la barre de la sélection, puis les réglages de l'application */}
         <Flex align="center" gap="3" pt="4" pb="2">
           <Flex align="center" gap="2" flexGrow="1" wrap="wrap">
             <SearchForm query={shown.query} />
             <ExportButton selection={selection} volumes={list} />
           </Flex>
-          <Separator orientation="vertical" size="2" />
-          <Flex align="center" gap="2">
-            <Settings spanColors={spanColors} onSpanColors={setSpanColors} />
-          </Flex>
+          <Settings
+            outOfScope={outOfScope}
+            onOutOfScope={setOutOfScope}
+            spanColors={spanColors}
+            onSpanColors={setSpanColors}
+          />
         </Flex>
         <div className="view-scroll">
           {selection.length > 0 ? (

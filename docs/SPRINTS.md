@@ -35,16 +35,17 @@ dépendances, choix discutables).
 | 18, requête vide | #35 | un critère absent ne filtre rien, requête vide = tous les volumes, bouton All retiré |
 | 19, barre de la sélection | #36 | barre de la sélection commune aux vues, outils de la vue après un trait |
 | 20, nettoyage | #37 | docs d'accord avec le code, brief initial retiré, calcul des arcs retiré, fiche par `onToggle`, barre en `Flex` de Radix |
+| 21, barre et retours | #39 | barre qui passe à la ligne, menu Export, zone qui relance la recherche, icônes Radix |
+| 22, hors champ | #40 | hors champ écartés par défaut, menu des réglages de l'application (General, List) |
 
-## Prochain : sprint 22, Liste et facettes
+## Prochain : sprint 23, facettes (`feat/facettes`)
 
-- Cacher les éléments hors champ : un réglage d'affichage seulement (menu
-  des réglages), l'export les garde.
-- Clear de Contents : « Clear sections », montré seulement s'il sert ; à
-  voir sur captures (l'arbre ne doit pas sauter).
-- Écran étroit, au plus simple : panneaux repliés d'emblée.
-- Atteindre une rubrique dans la Liste depuis Contents, seulement si
-  l'implémentation reste légère.
+- Clear de Contents : « Clear sections », caché quand il ne sert pas mais
+  gardant sa place (`visibility: hidden`), pour que l'arbre ne saute pas ;
+  vérifié sur captures, case cochée puis décochée.
+- Écran étroit : sous 64 rem (panneaux 34,5 rem + Liste 30 rem), Volumes
+  et Contents repliés au chargement (`matchMedia`, lu une fois). Pas de
+  tiroir.
 
 ## Hors sprint : demandes à numrev
 
@@ -54,7 +55,7 @@ dépendances, choix discutables).
   gardent des marques Markdown (`##` au milieu, `\` final).
 - `docs/demandes/numrev_noeud_racine.md` : un vrai nœud racine par volume.
   Sans lui, 1807 a 133 racines, et ses 90 éléments hors champ à la racine ne
-  se sélectionnent que par la recherche.
+  se sélectionnent que par la recherche, réglage coché.
 
 ## Plus tard (non planifié)
 

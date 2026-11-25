@@ -128,12 +128,15 @@ couvert : la Structure, volumes et rubriques (`docs/composants/facettes.md`).
 - Un critère absent ne filtre rien : sans rubrique cochée ni recherche,
   tout est sélectionné, et la vue montre tous les volumes. Quand les
   critères ne trouvent rien, la vue le dit (« No match »).
+- Les éléments hors champ sont écartés de la sélection, donc de la vue et
+  de l'export, sauf si un réglage les montre. Une rubrique qui n'en
+  contient que reste là, vide.
 
-## Barre de la sélection et outils de la vue
+## Barre de la sélection et réglages
 
 Au-dessus des vues, une barre toujours visible ; les vues défilent dessous.
-Elle sépare ce qui change ou emporte la sélection, commun à toutes les vues,
-de ce qui ne change que l'affichage d'une vue.
+Elle porte ce qui change ou emporte la sélection, commun à toutes les vues,
+puis les réglages de l'application.
 
 - **Barre de la sélection** : une seule, au-dessus de toutes les vues, même
   côte à côte. Elle prolonge les facettes de gauche à droite et portera
@@ -149,14 +152,10 @@ de ce qui ne change que l'affichage d'une vue.
     « Export to CSV ») ; inactif quand rien n'est sélectionné.
   - Faute de place, le champ (16 rem au moins) passe sous les zones, puis
     Export sous la recherche.
-- **Outils de la vue** : fournis par chaque vue. Celle de la Liste : le
-  bouton à roue dentée des réglages d'affichage, un menu de cases à cocher (Span
-  colors : les fonds des empans), hors de l'URL, mémorisées dans le
-  navigateur. Le menu change avec la vue ; un réglage qui vaut pour
-  plusieurs vues est mémorisé une fois et figure dans le menu de chacune.
-  Tant qu'il n'y a qu'une vue, ses outils sont au bout de la barre, après
-  un trait vertical discret ; avec plusieurs, chaque vue a son en-tête
-  (son nom, ce qu'elle ne peut pas placer, ses outils).
+- **Réglages** : au bout de la barre, le bouton à roue dentée ouvre un
+  menu de cases à cocher, hors de l'URL, mémorisées dans le navigateur.
+  Une section General (Show out-of-scope elements, décochée d'emblée),
+  puis une par vue (List : Span colors, les fonds des empans).
 
 ## Export
 
