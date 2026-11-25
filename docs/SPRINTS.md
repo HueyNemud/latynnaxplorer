@@ -38,13 +38,14 @@ dépendances, choix discutables).
 | 21, barre et retours | #39 | barre qui passe à la ligne, menu Export, zone qui relance la recherche, icônes Radix |
 | 22, hors champ | #40 | hors champ écartés par défaut, menu des réglages de l'application (General, List) |
 
-## Prochain : sprint 23, Liste et facettes
+## Prochain : sprint 23, facettes (`feat/facettes`)
 
-- Clear de Contents : « Clear sections », montré seulement s'il sert ; à
-  voir sur captures (l'arbre ne doit pas sauter).
-- Écran étroit, au plus simple : panneaux repliés d'emblée.
-- Atteindre une rubrique dans la Liste depuis Contents, seulement si
-  l'implémentation reste légère.
+- Clear de Contents : « Clear sections », caché quand il ne sert pas mais
+  gardant sa place (`visibility: hidden`), pour que l'arbre ne saute pas ;
+  vérifié sur captures, case cochée puis décochée.
+- Écran étroit : sous 64 rem (panneaux 34,5 rem + Liste 30 rem), Volumes
+  et Contents repliés au chargement (`matchMedia`, lu une fois). Pas de
+  tiroir.
 
 ## Hors sprint : demandes à numrev
 
