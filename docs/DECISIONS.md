@@ -65,11 +65,15 @@ de revenir.
 - Explorer, sélectionner, exporter ; mesurer et relier reviennent aux
   historiens, à partir de l'export (`docs/IDEES.md`).
 - Sélection (dans l'URL) et focus (hors de l'URL) distingués partout.
-- Réglages d'affichage hors de l'URL, mémorisés dans le navigateur
-  (`localStorage`, une clé par réglage) ; ils ne changent pas la sélection.
-- Une barre de la sélection (critères, export) commune à toutes les vues ;
-  chaque vue fournit ses outils (ses réglages), séparés par un trait
-  (`docs/DESIGN.md`, « Barre de la sélection et outils de la vue »).
+- Réglages de l'application hors de l'URL, mémorisés dans le navigateur
+  (`localStorage`, une clé par réglage) : un seul menu, une section
+  générale puis une par vue.
+- Éléments hors champ écartés de la sélection (vue, recherche, export) ;
+  un réglage les rétablit. Un lien partagé peut donc donner une autre
+  sélection selon ce réglage.
+- Une barre de la sélection (critères, export) commune à toutes les vues,
+  puis les réglages (`docs/DESIGN.md`, « Barre de la sélection et
+  réglages »).
 - Radix Themes pour toute l'interface (iris sur gris mauve), feuille
   importée entière, et ses icônes (`@radix-ui/react-icons`) ;
   `app/globals.css` ne garde que ce que Radix n'a pas. Écartés sur maquette : Primer React, shadcn/ui (Tailwind obligatoire).

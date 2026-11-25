@@ -61,9 +61,6 @@ d'ici.
 
 - Dans le menu des réglages : choix de densité (serré, normal, aéré) ;
   fonds des empans par libellé (par exemple ne colorer que les sujets).
-- Cacher les éléments hors champ : réglage d'affichage (la Liste dit
-  combien elle en cache, l'export les garde) ou critère de la requête (ils
-  sortent aussi de l'export) ; à trancher.
 - En-tête des colonnes fixé au défilement, en tête de la pile des
   intitulés.
 - Sélection multiple de quelques entrées et actions groupées : à discuter
