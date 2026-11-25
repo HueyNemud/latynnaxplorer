@@ -41,11 +41,11 @@ export function SearchForm({ query }: { query: Query }) {
         >
           {/* clé : des boutons neufs à chaque requête, comme le champ */}
           <ZoneToggles key={zones?.join()} zones={zones} />
-          <Flex flexGrow="1" minWidth="16rem">
+          <Flex flexGrow="1" flexBasis="16rem" minWidth="16rem">
             <label htmlFor="search-text" className="visually-hidden">
               Search text
             </label>
-            <Box flexGrow="1">
+            <Box flexGrow="1" minWidth="0">
               {/* clé : un champ neuf à chaque texte, même quand une navigation garde la page */}
               <TextField.Root
                 key={text}
