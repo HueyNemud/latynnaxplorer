@@ -28,14 +28,14 @@ Relevé sur 1807 :
 │ 1807_AD75│o│   ☑ LISTE DE NON-COMM…    3,277│o│                    │
 │ -PER292  ▶l│ ⌄ ☑ ADMINISTRATION GÉN…     234│n│ vue                │
 │ (cernée) │u│     ▣ Conseiller d'état…      1│t│                    │
-│ ○        │m│     ▣ Administrateurs…        7│e│                    │
+│          │m│     ▣ Administrateurs…        7│e│                    │
 │   1810   │e│   ☐ DOCTEURS EN MÉDECINE.   335│n│                    │
 │          │s│   …                            │t│                    │
 └──────────┴─┴────────────────────────────────┴─┴────────────────────┘
   Volumes  bande      Contents               bande  vue (centrée, 64 rem au plus)
 ```
 
-◉ case ronde cochée, ○ vide ; ☑ case cochée ; ▣ case couverte ; ▶ encoche
+◉ case ronde (volume au focus seulement) ; ☑ case cochée ; ▣ case couverte ; ▶ encoche
 du volume au focus.
 
 Grille de trois colonnes collée au bord gauche de la fenêtre ; chaque
@@ -69,14 +69,16 @@ de repli**.
 
 - **Vignette** (provisoire) : Card « classic » de Radix au format 3 : 4,
   l'année en gras, puis le nom du volume en petit, centrés ; rien dessous.
-- **Focus** : un clic sur la vignette met le volume au focus, Contents
-  montre ses rubriques. Vignette cernée (2 px `--gray-12`, à 2 px) et
-  encoche pointée vers Contents ; son nom (`volumeName`) est le titre de
-  l'onglet. Par défaut, le volume de la première rubrique cochée, sinon le
-  premier. Le volume au focus est téléchargé s'il
-  ne l'est pas : Contents attend (Spinner).
+- **Focus** : le volume au focus est celui de la sélection (`volume` dans
+  l'URL, sinon le premier) ; Contents montre ses rubriques. Vignette cernée
+  (2 px `--gray-12`, à 2 px) et encoche pointée vers Contents ; son nom
+  (`volumeName`) est le titre de l'onglet. Un clic sur une autre vignette
+  la met au focus (nouvelle entrée d'historique) : recherche et zones
+  gardées, rubriques retirées ; sur la vignette au focus, il rouvre
+  Contents. Le volume est téléchargé s'il ne l'est pas : Contents attend
+  (Spinner).
 - **Case ronde** : la Checkbox de Radix, ronde et de 1,5 rem, en haut à
-  gauche de la vignette. Cochée si tout le volume l'est (toutes ses
+  gauche de la seule vignette au focus. Cochée si tout le volume l'est (toutes ses
   rubriques de premier niveau), tiret s'il l'est en partie, inactive tant
   que le volume n'est pas chargé. Un clic coche tout le volume, ou le vide
   s'il l'était entier.
@@ -115,7 +117,7 @@ a des sous-rubriques est un `<details>` dont la ligne est le `<summary>`.
 
 ## Clear et application
 
-- **Clear** décoche toutes les rubriques du volume au focus ; inactif quand
+- **Clear** décoche toutes les rubriques ; inactif quand
   il ne changerait rien. En haut de Contents, fixé au-dessus de l'arbre,
   toujours là ; bouton `soft` de Radix, sur toute la largeur. Sans case
   cochée, la rubrique ne filtre rien : tout est sélectionné.
@@ -126,7 +128,7 @@ a des sous-rubriques est un `<details>` dont la ligne est le `<summary>`.
   dépliées restent.
 - **Formulaire** : les cases appartiennent au formulaire de la recherche
   (attribut `form`) : une recherche envoie un `subtree` par rubrique cochée
-  non couverte, y compris celles des autres volumes (champs cachés).
+  non couverte, et le volume (champ caché).
 - Un nœud désigné qui n'est pas une rubrique ne coche rien.
 
 ## Implémentation : ce qui est inévitable
@@ -147,8 +149,8 @@ a des sous-rubriques est un `<details>` dont la ligne est le `<summary>`.
 - **Bande** : `aria-expanded`, `aria-controls` ; infobulle « Collapse
   Volumes » / « Expand Volumes ».
 - **Vignette** : bouton, `aria-pressed` (focus), nom « Show the contents
-  of 1807 1807_AD75-PER292 ». **Case ronde** : nom « Select 1807
-  1807_AD75-PER292 ».
+  of 1807 1807_AD75-PER292 ». **Case ronde** : nom « Select all of
+  1807 1807_AD75-PER292 ».
 - **Arbre** : listes emboîtées et `<details>` natifs ; chaque case nommée
   par l'intitulé, chaque `summary` par l'intitulé seul
   (`aria-labelledby`).
@@ -175,6 +177,8 @@ a des sous-rubriques est un `<details>` dont la ligne est le `<summary>`.
   case carrée ou bandeau « Selected » ; nom et décompte sous la carte.
 - Bouton « Apply » : remplacé par l'application à chaque case. Clear sur
   tous les volumes. Une entrée d'historique par case.
+- Sélection sur plusieurs volumes à la fois, case ronde sur chaque
+  vignette (un volume pas encore chargé n'a pas de rubriques à cocher).
 - Bouton All (cocher tout le volume au focus) : redondant avec « aucune
   case » et avec la case ronde du volume.
 

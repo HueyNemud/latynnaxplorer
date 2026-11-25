@@ -63,6 +63,15 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-25 — Volume au focus (sprint 24)
+
+- La sélection (vue, recherche, export) ne porte que sur le volume au
+  focus, dans l'URL (`volume`) ; seul lui se télécharge. Changer de volume
+  garde la recherche et ses zones, retire les rubriques cochées.
+- Case ronde sur la seule vignette au focus ; un `subtree` hors du volume
+  est une erreur. Code multi-volume retiré (`neededVolumes`, `volumeOf`,
+  `volumeId` des rubriques).
+
 ## 2026-11-25 — Annuaire de l'an XIII
 
 - `1804-1805_BNF-bpt6k62915570-LaTynnaAnXIII` exporté (24 183 nœuds,
