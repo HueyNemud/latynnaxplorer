@@ -1,9 +1,10 @@
 "use client";
 
-// Bouton d'export de la barre de la sélection (docs/DESIGN.md, « Export ») : toute la sélection en CSV,
-// fabriqué dans le navigateur au clic et téléchargé ; inactif quand rien n'est sélectionné.
+// Bouton d'export de la barre de la sélection (docs/DESIGN.md, « Export ») : il ouvre le menu des
+// formats, pour l'instant CSV seul. Le fichier est fabriqué dans le navigateur au choix du format,
+// puis téléchargé ; inactif quand rien n'est sélectionné.
 
-import { Button } from "@radix-ui/themes";
+import { Button, DropdownMenu } from "@radix-ui/themes";
 import { selectionCsv } from "../lib/export/csv.ts";
 import type { SubgraphNode } from "../lib/query/types.ts";
 import type { LoadedVolume } from "../lib/query/volume.ts";
@@ -17,17 +18,25 @@ export function ExportButton({
   volumes: readonly LoadedVolume[];
 }) {
   return (
-    <Button
-      type="button"
-      size="3"
-      variant="surface"
-      ml="auto"
-      disabled={selection.length === 0}
-      onClick={() => download(selectionCsv(volumes, selection), "latynnaxplorer-selection.csv")}
-    >
-      <DownloadIcon />
-      Export
-    </Button>
+    <DropdownMenu.Root>
+      {/* inactif par le déclencheur, qui impose son `disabled` au bouton */}
+      <DropdownMenu.Trigger disabled={selection.length === 0}>
+        <Button type="button" size="3" variant="surface" ml="auto">
+          <DownloadIcon />
+          Export
+          <DropdownMenu.TriggerIcon />
+        </Button>
+      </DropdownMenu.Trigger>
+      <DropdownMenu.Content align="end">
+        <DropdownMenu.Item
+          onSelect={() =>
+            download(selectionCsv(volumes, selection), "latynnaxplorer-selection.csv")
+          }
+        >
+          Export to CSV
+        </DropdownMenu.Item>
+      </DropdownMenu.Content>
+    </DropdownMenu.Root>
   );
 }
 
