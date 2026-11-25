@@ -86,13 +86,15 @@ indépendantes : **sélectionner** (des critères) et **afficher** (une vue).
 - **Sélection** : ce que l'on retient. Dans l'URL ; les vues la montrent,
   l'export la récupère. Seuls les critères la changent.
 - **Focus** : ce que l'on regarde, mis en avant pour être vu en détail ou
-  servir de point de départ, sans rien changer à la sélection. Il peut
-  porter hors de la sélection (un volume non coché). Hors de l'URL pour
-  l'instant.
+  servir de point de départ, sans rien changer à la sélection. Hors de
+  l'URL pour l'instant.
+- Le **volume au focus** fait exception : la sélection ne porte que sur
+  lui, et il est dans l'URL. En changer réapplique la recherche au nouveau
+  volume, sans les rubriques cochées de l'ancien.
 
 | Où | Sélection | Focus |
 |---|---|---|
-| Panneau Volumes | la case ronde sur la vignette | la vignette cliquée, cernée : Contents montre ses rubriques |
+| Panneau Volumes | la vignette cliquée, cernée : le volume de la sélection ; sa case ronde coche toutes ses rubriques | (le volume au focus) |
 | Panneau Contents | les cases des rubriques | à venir (atteindre une rubrique dans la vue ?) |
 | Vue Liste | ce qu'elle montre | le nœud déplié en sa fiche |
 | Vues côte à côte (plus tard) | la même pour toutes | partagé : le nœud au focus dans l'une l'est dans l'autre |
@@ -126,7 +128,7 @@ couvert : la Structure, volumes et rubriques (`docs/composants/facettes.md`).
 - Seules les facettes et la recherche changent la sélection : la Liste n'a
   aucun lien qui le fasse.
 - Un critère absent ne filtre rien : sans rubrique cochée ni recherche,
-  tout est sélectionné, et la vue montre tous les volumes. Quand les
+  tout le volume au focus est sélectionné. Quand les
   critères ne trouvent rien, la vue le dit (« No match »).
 - Les éléments hors champ sont écartés de la sélection, donc de la vue et
   de l'export, sauf si un réglage les montre. Une rubrique qui n'en
@@ -164,8 +166,7 @@ contexte), en CSV fabriqué dans le navigateur : `latynnaxplorer-selection.csv`,
 UTF-8 avec BOM (pour les tableurs), virgules, fins de ligne CRLF
 (`lib/export/csv.ts`).
 
-- Une ligne par nœud, tous types confondus, volume après volume, chacun
-  dans l'ordre de lecture.
+- Une ligne par nœud, tous types confondus, dans l'ordre de lecture.
 - Colonnes : `volume`, `id`, `kind`, `parent_id`, `reading_order` ; une
   colonne `section_<n>` par niveau de rubrique du chemin, autant que le
   chemin le plus long de la sélection ; `text` ; `subject`, `description`,

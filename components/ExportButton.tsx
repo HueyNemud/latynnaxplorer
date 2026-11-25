@@ -12,10 +12,10 @@ import type { LoadedVolume } from "../lib/query/volume.ts";
 
 export function ExportButton({
   selection,
-  volumes,
+  volume,
 }: {
   selection: readonly SubgraphNode[];
-  volumes: readonly LoadedVolume[];
+  volume: LoadedVolume;
 }) {
   return (
     <DropdownMenu.Root>
@@ -29,9 +29,7 @@ export function ExportButton({
       </DropdownMenu.Trigger>
       <DropdownMenu.Content align="end">
         <DropdownMenu.Item
-          onSelect={() =>
-            download(selectionCsv(volumes, selection), "latynnaxplorer-selection.csv")
-          }
+          onSelect={() => download(selectionCsv(volume, selection), "latynnaxplorer-selection.csv")}
         >
           Export to CSV
         </DropdownMenu.Item>

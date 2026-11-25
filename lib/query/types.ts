@@ -48,7 +48,6 @@ export interface FacetSection {
   id: string;
   /** rubrique parente ; null au premier niveau du volume */
   parentId: string | null;
-  volumeId: string;
   /** intitulé tel que numrev le donne */
   text: string;
   /** entrées du sous-arbre, la rubrique comprise, qui contiennent le texte cherché s'il y en a un */

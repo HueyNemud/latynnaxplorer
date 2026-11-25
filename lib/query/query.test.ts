@@ -31,6 +31,13 @@ describe("parseQuery", () => {
     });
   });
 
+  it("lit le volume interrogé", () => {
+    expect(parseQuery(new URLSearchParams(`volume=1807_AD75&subtree=${ID}`))).toEqual({
+      volume: "1807_AD75",
+      subtree: [ID],
+    });
+  });
+
   it("combine les critères", () => {
     expect(parseQuery(new URLSearchParams(`subtree=${ID}&text=paix`))).toEqual({
       subtree: [ID],
@@ -77,6 +84,7 @@ describe("parseQuery", () => {
     ["mal formé", "subtree=10000000-0000-0000-0000"],
     ["avec des caractères en trop", `subtree=${ID}x`],
     ["texte répété", "text=a&text=b"],
+    ["volume répété", "volume=a&volume=b"],
     ["zone inconnue", "text=a&in=loc"],
   ])("refuse un paramètre %s", (_, search) => {
     expect(() => parseQuery(new URLSearchParams(search))).toThrow(QueryError);
@@ -93,6 +101,7 @@ describe("serializeQuery", () => {
     { subtree: [ID, ID2] },
     { text: "rue de la Paix, 12 % _ \\" },
     { subtree: [ID], text: "paix" },
+    { volume: "1807_AD75", text: "paix" },
     { text: "paix", zones: ["desc", "other"] },
     {},
   ])("est relue à l'identique par parseQuery : %o", (query) => {

@@ -42,16 +42,20 @@ de revenir.
 
 - La requête vit dans l'URL et s'y réécrit à l'identique ; critères
   `subtree`, `text`, `in`, combinés en conjonction ; un critère absent ne
-  filtre rien (modèle standard des facettes) : sans critère, tous les
-  volumes sont sélectionnés ; sous-graphe toujours induit strict.
-- Requête mal formée ou uuid inconnu : un message à la place de la vue.
+  filtre rien (modèle standard des facettes) : sans critère, tout le
+  volume est sélectionné ; sous-graphe toujours induit strict.
+- La requête porte sur le seul volume au focus (`volume`, sinon le premier
+  de l'index) : vue, recherche, export. En changer garde la recherche et
+  ses zones, retire les rubriques cochées.
+- Requête mal formée, volume inconnu, uuid hors du volume : un message à la
+  place de la vue.
 - Recherche exacte, sans accents ni casse (`lib/query/fold.ts`) ; écartée
   après mesure : la similarité par trigrammes (`docs/IDEES.md`, « Recherche
   tolérante »).
 - Zones de la recherche : aucune ou toutes = tout le texte, comme sans
-  rubrique cochée = tous les volumes.
-- Volumes chargés à la demande : celui au focus, ou tous si la requête ne
-  dit pas où chercher ; une requête parcourt tout le volume, sans index.
+  rubrique cochée = tout le volume.
+- Seul le volume au focus se télécharge ; un volume chargé reste en
+  mémoire. Une requête parcourt tout le volume, sans index.
 - Le contexte n'est jamais compté dans la sélection.
 - Export de la sélection en CSV, fabriqué dans le navigateur : une ligne
   par nœud, une colonne par niveau de rubrique et par libellé d'empan
@@ -64,7 +68,9 @@ de revenir.
 
 - Explorer, sélectionner, exporter ; mesurer et relier reviennent aux
   historiens, à partir de l'export (`docs/IDEES.md`).
-- Sélection (dans l'URL) et focus (hors de l'URL) distingués partout.
+- Sélection (dans l'URL) et focus (hors de l'URL) distingués partout, sauf
+  le volume au focus : la sélection ne porte que sur lui, il est dans
+  l'URL.
 - Réglages de l'application hors de l'URL, mémorisés dans le navigateur
   (`localStorage`, une clé par réglage) : un seul menu, une section
   générale puis une par vue.
@@ -106,6 +112,6 @@ de revenir.
   s'exprime pas en union de sous-arbres.
 - Chaque case s'applique aussitôt ; l'URL suit les cases sans les
   synchroniser.
-- Contents est local au volume au focus : Clear ne touche que lui. Pas de
-  bouton All : tout cocher revient à ne rien cocher, et restreindre à un
-  volume est le rôle de sa case ronde.
+- Pas de bouton All : tout cocher revient à ne rien cocher ; la case
+  ronde, sur la seule vignette au focus, coche ou décoche toutes ses
+  rubriques.

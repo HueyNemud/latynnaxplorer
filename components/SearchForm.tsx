@@ -1,7 +1,8 @@
 "use client";
 
-// Formulaire de la requête (docs/SCENARIOS.md) : les boutons des zones, le champ soudé à son bouton
-// Search, et les cases des facettes, rattachées par l'attribut `form` (components/Facets.tsx).
+// Formulaire de la requête (docs/SCENARIOS.md) : le volume interrogé, les boutons des zones, le
+// champ soudé à son bouton Search, et les cases des facettes, rattachées par l'attribut `form`
+// (components/Facets.tsx).
 // L'envoi, comme le lien qui efface la recherche, ajoute une entrée à l'historique sans recharger
 // la page, comme un envoi natif.
 
@@ -20,8 +21,8 @@ export function usePagePath(): string {
   return `${process.env.NEXT_PUBLIC_BASE_PATH ?? ""}${usePathname()}`;
 }
 
-/** `query` : la requête de la sélection affichée ; effacer la recherche garde ses rubriques et
- * oublie ses zones. */
+/** `query` : la requête de la sélection affichée ; effacer la recherche garde son volume et ses
+ * rubriques, et oublie ses zones. */
 export function SearchForm({ query }: { query: Query }) {
   const { text, zones, ...cleared } = query;
   const pathname = usePagePath();
@@ -40,6 +41,7 @@ export function SearchForm({ query }: { query: Query }) {
             go(parseQuery(params));
           }}
         >
+          {query.volume !== undefined && <input type="hidden" name="volume" value={query.volume} />}
           {/* clé : des boutons neufs à chaque requête, comme le champ */}
           <ZoneToggles key={zones?.join()} zones={zones} live={text !== undefined} />
           <Flex flexGrow="1" flexBasis="16rem" minWidth="16rem">

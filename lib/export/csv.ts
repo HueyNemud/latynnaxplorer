@@ -1,8 +1,7 @@
-// Export de la sélection en CSV (docs/DESIGN.md, « Export ») : une ligne par nœud, volume après
-// volume, chacun dans l'ordre de lecture ; une colonne par niveau de rubrique du chemin, une par
+// Export de la sélection en CSV (docs/DESIGN.md, « Export ») : une ligne par nœud, dans l'ordre
+// de lecture ; une colonne par niveau de rubrique du chemin, une par
 // libellé d'empan. Textes tels que numrev les donne. Fonction pure.
 
-import { volumeOf } from "../query/explore.ts";
 import type { SpanLabel, SubgraphNode } from "../query/types.ts";
 import { ancestors, type LoadedVolume } from "../query/volume.ts";
 
@@ -13,16 +12,11 @@ const MANY = " | ";
  * Les nœuds sélectionnés, en CSV (RFC 4180, fins de ligne CRLF), précédé d'un BOM pour que les
  * tableurs le lisent en UTF-8. Autant de colonnes `section_<n>` que le chemin le plus long.
  */
-export function selectionCsv(
-  loaded: readonly LoadedVolume[],
-  selection: readonly SubgraphNode[],
-): string {
-  const rows = selection.map((node) => {
-    const volume = volumeOf(loaded, node.id);
-    if (volume === undefined) throw new Error(`nœud hors des volumes chargés : ${node.id}`);
-    const path = [...ancestors(volume, node)].reverse().map((s) => s.text);
-    return { volume: volume.meta.id, node, path };
-  });
+export function selectionCsv(volume: LoadedVolume, selection: readonly SubgraphNode[]): string {
+  const rows = selection.map((node) => ({
+    node,
+    path: [...ancestors(volume, node)].reverse().map((s) => s.text),
+  }));
   const depth = Math.max(0, ...rows.map((r) => r.path.length));
   const levels = Array.from({ length: depth }, (_, i) => i);
   const spans = (node: SubgraphNode, label: SpanLabel) =>
@@ -44,8 +38,8 @@ export function selectionCsv(
     "address",
     "pages",
   ];
-  const lines = rows.map(({ volume, node, path }) => [
-    volume,
+  const lines = rows.map(({ node, path }) => [
+    volume.meta.id,
     node.id,
     node.kind,
     node.parentId ?? "",

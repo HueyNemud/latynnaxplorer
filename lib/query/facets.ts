@@ -25,7 +25,6 @@ export function sections(
     .map((n) => ({
       id: n.id,
       parentId: n.parentId,
-      volumeId: volume.meta.id,
       text: n.text,
       entries: entries.get(n.id) ?? 0,
     }));

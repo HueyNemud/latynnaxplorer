@@ -1,5 +1,5 @@
 // Résolution d'une requête sur un volume chargé (docs/SCENARIOS.md) : la sélection et son
-// contexte. Plusieurs volumes : lib/query/explore.ts. Fonctions pures.
+// contexte. Fonctions pures.
 
 import { fold } from "./fold.ts";
 import type { Query } from "./query.ts";

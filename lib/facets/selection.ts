@@ -5,17 +5,17 @@
 import type { FacetSection } from "../query/types.ts";
 import { ancestors } from "../query/volume.ts";
 
-/** Arbre des rubriques : chaque rubrique ; enfants de chaque rubrique, et rubriques de premier
- * niveau de chaque volume (clé : l'identifiant du volume), dans l'ordre de lecture. */
+/** Arbre des rubriques du volume : chaque rubrique ; enfants de chaque rubrique, et rubriques de
+ * premier niveau (clé : null), dans l'ordre de lecture. */
 export interface SectionTree {
   byId: ReadonlyMap<string, FacetSection>;
-  children: ReadonlyMap<string, FacetSection[]>;
+  children: ReadonlyMap<string | null, FacetSection[]>;
 }
 
 export function sectionTree(sections: readonly FacetSection[]): SectionTree {
   return {
     byId: new Map(sections.map((s) => [s.id, s])),
-    children: Map.groupBy(sections, (s) => s.parentId ?? s.volumeId),
+    children: Map.groupBy(sections, (s) => s.parentId),
   };
 }
 
@@ -66,56 +66,25 @@ export function toggleSection(
   return next;
 }
 
-/** Un volume est sélectionné si une de ses rubriques au moins est cochée. */
-export function isVolumeSelected(
-  tree: SectionTree,
-  checked: ReadonlySet<string>,
-  volumeId: string,
-): boolean {
-  for (const id of checked) if (tree.byId.get(id)?.volumeId === volumeId) return true;
-  return false;
-}
-
 /** Tout le volume est sélectionné : toutes ses rubriques de premier niveau sont cochées. */
-export function isVolumeFull(
-  tree: SectionTree,
-  checked: ReadonlySet<string>,
-  volumeId: string,
-): boolean {
-  return (tree.children.get(volumeId) ?? []).every((s) => checked.has(s.id));
+function isVolumeFull(tree: SectionTree, checked: ReadonlySet<string>): boolean {
+  return (tree.children.get(null) ?? []).every((s) => checked.has(s.id));
 }
 
-/** Tout le volume (ses rubriques de premier niveau), ou plus rien ; les autres volumes ne
- * changent pas. */
-export function setVolume(
-  tree: SectionTree,
-  checked: ReadonlySet<string>,
-  volumeId: string,
-  all: boolean,
-): Set<string> {
-  const next = new Set([...checked].filter((id) => tree.byId.get(id)?.volumeId !== volumeId));
-  if (all) for (const s of tree.children.get(volumeId) ?? []) next.add(s.id);
-  return next;
-}
-
-/** État de la case d'un volume : entier, en partie (une partie de ses rubriques), ou rien. */
+/** État de la case ronde : volume entier, en partie (une partie de ses rubriques), ou rien. */
 export function volumeState(
   tree: SectionTree,
   checked: ReadonlySet<string>,
-  volumeId: string,
 ): boolean | "indeterminate" {
-  if (isVolumeFull(tree, checked, volumeId)) return true;
-  return isVolumeSelected(tree, checked, volumeId) && "indeterminate";
+  if (isVolumeFull(tree, checked)) return true;
+  return checked.size > 0 && "indeterminate";
 }
 
-/** La case ronde d'un volume : tout le volume s'il ne l'est pas entier (rien ou en partie),
+/** La case ronde : tout le volume (ses rubriques de premier niveau) s'il ne l'est pas entier,
  * sinon plus rien. */
-export function toggleVolume(
-  tree: SectionTree,
-  checked: ReadonlySet<string>,
-  volumeId: string,
-): Set<string> {
-  return setVolume(tree, checked, volumeId, !isVolumeFull(tree, checked, volumeId));
+export function toggleVolume(tree: SectionTree, checked: ReadonlySet<string>): Set<string> {
+  if (isVolumeFull(tree, checked)) return new Set();
+  return new Set((tree.children.get(null) ?? []).map((s) => s.id));
 }
 
 /** Rubriques au-dessus des rubriques cochées : à déplier à l'arrivée pour les montrer ; cochées

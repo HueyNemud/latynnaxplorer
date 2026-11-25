@@ -16,11 +16,12 @@ d'ici.
 
 ## Plusieurs volumes
 
-- Une recherche sans rubrique, ou une URL dont un nœud n'est dans aucun
-  volume chargé, télécharge tous les volumes (1,3 Mo compressés pour 1807,
-  sans doute bien plus pour les annuaires de la fin du siècle). Si les
-  volumes se multiplient : un index commun, statique lui aussi (nœud →
-  volume ; mots → volumes), pour ne charger que les volumes concernés.
+- Le nombre de résultats de chaque volume sur sa vignette : il faudrait
+  télécharger tous les volumes, alors que seul celui au focus l'est. Si
+  c'est utile : un index commun, statique lui aussi (mots → volumes).
+- Vignette d'un annuaire à cheval sur deux années (an XIII) : elle montre
+  « 1804 », l'année du début ; « 1804-1805 » ou « an XIII » serait plus
+  juste.
 - Volumes très gros : Parquet, lu par colonnes, plutôt que JSON.
 
 ## Poids de l'arbre des rubriques

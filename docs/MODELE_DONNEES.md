@@ -126,10 +126,9 @@ leur texte plié pour la recherche, en entier et par zone.
   partie ;
 - `sections` (`facets.ts`) : les rubriques et le nombre d'entrées de leur
   sous-arbre qui contiennent le texte cherché ;
-- `explore.ts`, sur plusieurs volumes : quels volumes une requête demande
-  (`neededVolumes`), ce qu'elle donne sur les volumes chargés, mis bout à
-  bout dans l'ordre de l'index (`explore`), et le contexte de ce qu'une
-  vue en montre (`withContext`).
+- `explore.ts` : ce que la requête donne sur son volume, sélection et
+  rubriques (`explore`), et le contexte de ce qu'une vue en montre
+  (`withContext`).
 
 Une requête parcourt tout le volume, sans index. Le coût d'une grosse
 sélection est son rendu : la Liste la montre par tranches

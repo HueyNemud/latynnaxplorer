@@ -32,12 +32,15 @@ python3 -m http.server -d out 3000    # http://localhost:3000
 
 La requête est dans l'URL (`docs/SCENARIOS.md`) :
 
+- `?volume=<id>` choisit le volume interrogé, sinon le premier de l'index ;
+  les autres critères ne portent que sur lui ;
 - `?subtree=<uuid>` sélectionne un nœud et tout son sous-arbre ; répété,
   l'union des sous-arbres (les rubriques cochées dans les facettes) ;
 - `?text=<texte>` garde les nœuds qui contiennent le texte, sans tenir
   compte des accents ni de la casse ; `&in=subj` (répétable : `subj`,
   `desc`, `addr`, `other`) le cherche seulement dans ces zones ;
-- les critères se combinent ; sans critère, tout est sélectionné.
+- les critères se combinent ; sans critère, tout le volume est
+  sélectionné.
 
 ## Commandes
 

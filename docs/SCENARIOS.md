@@ -5,7 +5,9 @@ il donne un critère de la requête (`lib/query/`) et au moins un test.
 
 Tous les critères sont facultatifs et se combinent (conjonction), sans cas
 particulier ; un critère absent ne filtre rien, et sans aucun critère tout
-est sélectionné. Le résultat
+le volume est sélectionné. La requête porte sur un seul volume,
+`?volume=<id>`, sinon le premier de l'index ; un volume inconnu est une
+erreur, comme un `subtree` qui n'est pas dans ce volume. Le résultat
 contient tout ce que la requête désigne, quel que soit le type de nœud :
 `lib/query/` fait confiance aux données et ne juge pas de la pertinence.
 
@@ -32,7 +34,7 @@ même si deux nœuds désignés sont l'un sous l'autre.
   réduit à elle-même.
 
 **Erreurs** : uuid absent ou mal formé, même parmi d'autres (requête
-invalide) ; uuid d'aucun volume, même à côté d'uuid connus. Une valeur
+invalide) ; uuid hors du volume, même à côté d'uuid connus. Une valeur
 répétée est lue une fois.
 
 **Tests** : `lib/query/query.test.ts`, `lib/query/resolve.test.ts`,
@@ -70,8 +72,6 @@ casse.
   une erreur.
 - Contexte : les rubriques ancêtres des résultats qui n'en font pas
   partie, chacune une fois, dans l'ordre de lecture. Vide sans résultat.
-- Sans rubrique, la recherche porte sur tous les volumes : ils sont tous
-  chargés.
 
 **Erreurs** : `text` répété ; zone inconnue ; avec `subtree`, celles du
 scénario 1 (un `subtree` inconnu reste une erreur, même sans résultat).
