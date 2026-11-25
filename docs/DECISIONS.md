@@ -71,8 +71,8 @@ de revenir.
   chaque vue fournit ses outils (ses réglages), séparés par un trait
   (`docs/DESIGN.md`, « Barre de la sélection et outils de la vue »).
 - Radix Themes pour toute l'interface (iris sur gris mauve), feuille
-  importée entière ; `app/globals.css` ne garde que ce que Radix n'a pas.
-  Écartés sur maquette : Primer React, shadcn/ui (Tailwind obligatoire).
+  importée entière, et ses icônes (`@radix-ui/react-icons`) ;
+  `app/globals.css` ne garde que ce que Radix n'a pas. Écartés sur maquette : Primer React, shadcn/ui (Tailwind obligatoire).
 - Police Fira Sans (vraies petites capitales), servie par `next/font`.
 - Une seule navigation : seules les facettes et la recherche changent la
   sélection. Pas de `nuqs`.
@@ -89,8 +89,8 @@ de revenir.
   ne se distinguent que par leur texte.
 - Fiche rendue au premier dépliage.
 - Correspondances surlignées là où elles sélectionnent (texte plié, zones
-  fouillées), contexte compris, sur un fond iris opaque, le même sur tous
-  les empans ; un empan reste un seul élément.
+  fouillées), contexte compris, sur le jaune opaque d'un surligneur,
+  qu'aucun empan ne porte ; un empan reste un seul élément.
 - Sélection montrée par tranches de 200 nœuds ; écartées : la pagination
   (lecture coupée) et la virtualisation (dépendance, mal accordée aux
   rubriques emboîtées et aux intitulés fixés).

@@ -15,7 +15,7 @@ d'un nœud »). Jetons et fiche de Radix Themes.
   survol et ouvert ; les types ne se distinguent que par leur texte.
 - **Par tranches** de 200 nœuds, avec leur contexte : la suivante s'ajoute
   quand la fin de la Liste approche ; une autre sélection repart de la
-  première. Ni décompte ni URL changée ; Ctrl+F ne trouve que les lignes
+  première. L'URL ne change pas ; Ctrl+F ne trouve que les lignes
   montrées (la recherche couvre le reste).
 - **Vue vide** : un grand aplat gris, « No match », quand les critères ne
   trouvent rien (sans critère, tout est montré).
@@ -39,7 +39,7 @@ Relevé sur 1807 (22 158 nœuds) :
 ## Anatomie
 
 ```
-                                                               Page    ← en-tête des colonnes
+22,158 selected                                                Page    ← en-tête des colonnes
 ┌› MAIRIES DU CANTON DE PARIS.                                   198   ← rubrique (contexte), intitulé fixé
 │ ┌› III.E MAIRIE, COMPOSÉE DES DIVISIONS…                       199   ← sous-rubrique, intitulé empilé
 │ │ › [M. Rousseau], [maire], [rue des Jeuneurs, 9.]             199   ← entrée
@@ -52,8 +52,10 @@ Relevé sur 1807 (22 158 nœuds) :
 ```
 
 - **Colonnes** : texte, puis page (largeur fixe, à droite), pour que
-  l'en-tête et toutes les lignes s'alignent. L'en-tête ne porte que
-  « Page », en petit et atténué, et ne reste pas fixé.
+  l'en-tête et toutes les lignes s'alignent. L'en-tête porte le décompte
+  de la sélection (les lignes de l'export, sans le contexte, même quand la
+  Liste n'en montre qu'une partie), puis « Page » ; en petit et atténué,
+  il ne reste pas fixé.
 
 ## Rubrique et guide
 
@@ -86,7 +88,7 @@ Relevé sur 1807 (22 158 nœuds) :
 |---|---|---|
 | SUBJ | violet transparent `--violet-a4` | petites capitales |
 | DESC | sarcelle transparent `--teal-a4` | normal |
-| ADDR | jaune transparent `--yellow-a3` | normal |
+| ADDR | rose transparent `--pink-a4` | normal |
 
 Couleurs transparentes de Radix : elles se fondent dans le fond d'une ligne
 survolée ou ouverte. Le fond déborde de 0,08 em de chaque côté (coins
@@ -98,8 +100,9 @@ petites capitales.
 **Correspondances** du texte cherché (`lib/text/matches.ts`) : les mêmes
 que celles qui sélectionnent, texte plié et zones fouillées, ramenées aux
 positions du texte brut ; dans toute ligne, contexte compris. Chacune est
-un `<mark>` sur fond `--iris-6` : opaque, il recouvre le fond de l'empan et
-se lit pareil sur tous ; texte `--gray-12`, même hors champ.
+un `<mark>` sur le jaune vif d'un surligneur (`--yellow-9`, qu'aucun empan
+ne porte) : opaque, il recouvre le fond de l'empan et se lit pareil sur
+tous ; texte `--gray-12`, même hors champ.
 
 **Chevron** : devant toute ligne (tout nœud se déplie), gris, tourné vers
 le bas quand le nœud est ouvert ; le texte garde sa place après lui, même
@@ -159,7 +162,7 @@ blanc, sur `--gray-2` et sur les fonds des empans.
 | `--heading-height` | `1.75rem` | hauteur de la ligne d'une rubrique, pas de la pile |
 | `--line-pad` / `--line-pad-y` | `0.375rem` / `0.125rem` | marges intérieures d'une ligne (Liste et Contents) ; retrait d'une sous-rubrique |
 | `--guide-width` / `--guide-gap` / `--ball` | `2px` / `0.25rem` / `6px` | guide, écart avec les lignes, boule |
-| `--icon` | `0.875rem` | icônes (chevron) |
+| `--icon` | `15px` | icônes (`@radix-ui/react-icons`, à leur taille) |
 
 Police **Fira Sans** pour toute l'interface (vraies petites capitales),
 chargée par `next/font` et servie avec le site. Lignes, intitulés et
