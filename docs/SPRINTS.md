@@ -38,7 +38,23 @@ dépendances, choix discutables).
 | 21, barre et retours | #39 | barre qui passe à la ligne, menu Export, zone qui relance la recherche, icônes Radix |
 | 22, hors champ | #40 | hors champ écartés par défaut, menu des réglages de l'application (General, List) |
 
-## Prochain : sprint 23, facettes (`feat/facettes`)
+## Prochain : sprint 24, volume au focus (`feat/volume-au-focus`)
+
+La sélection (vue, recherche, export) ne porte que sur le volume au
+focus ; en changer réapplique la recherche et ses zones, et retire les
+rubriques cochées.
+
+- Requête : paramètre `volume=<id>` ; absent, le premier volume de
+  l'index ; inconnu, un message.
+- Exploration sur un seul volume : seul le volume au focus se télécharge
+  (`neededVolumes` retiré) ; un `subtree` d'un autre volume est ignoré.
+- Vignette : un clic réécrit l'URL (`volume`, `text` et `in` gardés, plus
+  de `subtree`), à la place de l'état `chosen`. La case ronde coche ou
+  décoche toutes les rubriques de son volume, après l'avoir mis au focus.
+- Tests de la requête et de l'exploration, changement de volume compris ;
+  docs (décisions, concept, scénarios, facettes, README).
+
+## Ensuite : sprint 23, facettes (`feat/facettes`)
 
 - Clear de Contents : « Clear sections », caché quand il ne sert pas mais
   gardant sa place (`visibility: hidden`), pour que l'arbre ne saute pas ;

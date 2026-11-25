@@ -63,6 +63,13 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
 
+## 2026-11-25 — Annuaire de l'an XIII
+
+- `1804-1805_BNF-bpt6k62915570-LaTynnaAnXIII` exporté (24 183 nœuds,
+  7,7 Mo) et publié avec 1807, sans changement de code ; `temporal` du
+  1er vendémiaire an XIII au dernier jour complémentaire (1804-09-23 –
+  1805-09-22).
+
 ## 2026-11-25 — Hors champ et réglages (sprint 22)
 
 - Les éléments hors champ sont écartés de la sélection (Liste, recherche,
