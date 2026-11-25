@@ -36,7 +36,7 @@ dépendances, choix discutables).
 | 19, barre de la sélection | #36 | barre de la sélection commune aux vues, outils de la vue après un trait |
 | 20, nettoyage | #37 | docs d'accord avec le code, brief initial retiré, calcul des arcs retiré, fiche par `onToggle`, barre en `Flex` de Radix |
 | 21, barre et retours | #39 | barre qui passe à la ligne, menu Export, zone qui relance la recherche, icônes Radix |
-| 22, hors champ | | hors champ écartés par défaut, menu des réglages de l'application (General, List) |
+| 22, hors champ | #40 | hors champ écartés par défaut, menu des réglages de l'application (General, List) |
 
 ## Prochain : sprint 23, Liste et facettes
 
