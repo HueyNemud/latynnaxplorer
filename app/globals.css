@@ -119,7 +119,7 @@ summary::-webkit-details-marker {
 }
 
 .span-addr {
-  background: var(--yellow-a3);
+  background: var(--pink-a4);
 }
 
 /* réglage Span colors décoché (components/Settings.tsx) : les empans sans fond */
@@ -127,11 +127,12 @@ summary::-webkit-details-marker {
   background: none;
 }
 
-/* Correspondance du texte cherché : fond iris opaque, qui recouvre celui des empans et se lit
-   pareil sur tous ; texte foncé, même hors champ (le gris n'y atteint pas 4,5:1) */
+/* Correspondance du texte cherché : fond jaune vif de surligneur, opaque, qui recouvre celui des
+   empans et se lit pareil sur tous (aucun empan n'est jaune) ; texte foncé, même hors champ (le
+   gris n'y atteint pas 4,5:1) */
 .printed mark {
   color: var(--gray-12);
-  background: var(--iris-6);
+  background: var(--yellow-9);
   border-radius: 0.2em;
 }
 

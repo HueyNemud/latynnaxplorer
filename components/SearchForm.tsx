@@ -99,7 +99,7 @@ const ZONE_BUTTONS = {
     title: "Search in subjects: names of people and businesses",
   },
   desc: { label: "Desc", color: "teal", title: "Search in descriptions: trades, titles, details" },
-  addr: { label: "Addr", color: "yellow", title: "Search in addresses" },
+  addr: { label: "Addr", color: "pink", title: "Search in addresses" },
   other: {
     label: "Other",
     color: "gray",
