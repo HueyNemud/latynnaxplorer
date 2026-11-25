@@ -24,17 +24,17 @@ import { PrintedText } from "./PrintedText.tsx";
 const STEP = 200;
 
 /**
- * `selection` : les nœuds sélectionnés, volume après volume, chacun dans l'ordre de lecture ;
- * `volumes` : les volumes chargés, d'où la Liste tire le contexte et les fiches ; `search` : le
+ * `selection` : les nœuds sélectionnés, dans l'ordre de lecture ; `volume` : leur volume, d'où
+ * la Liste tire le contexte ; `search` : le
  * texte cherché et ses zones, surligné dans les lignes.
  */
 export function NodeList({
   selection,
-  volumes,
+  volume,
   search,
 }: {
   selection: SubgraphNode[];
-  volumes: readonly LoadedVolume[];
+  volume: LoadedVolume;
   search: Search;
 }) {
   // nombre de nœuds sélectionnés montrés, pour cette sélection ; une autre repart d'une tranche
@@ -46,8 +46,8 @@ export function NodeList({
   );
   // les nœuds montrés et leur contexte (rubriques ancêtres)
   const shown = useMemo(
-    () => withContext(volumes, selection.slice(0, count)),
-    [volumes, selection, count],
+    () => withContext(volume, selection.slice(0, count)),
+    [volume, selection, count],
   );
   // une sélection d'un seul nœud : montré déplié
   const opened = selection.length === 1 ? selection[0]?.id : undefined;

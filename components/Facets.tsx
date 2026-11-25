@@ -3,7 +3,8 @@
 // Facettes de structure (docs/composants/facettes.md) : panneaux Volumes et Contents ; règles des
 // cases dans lib/facets/selection.ts. Les cases cochées sont l'état de ce composant, lu une fois
 // depuis l'URL, que l'URL suit ; elles appartiennent au formulaire de la recherche (attribut
-// `form`). Le volume au focus est l'état de la page (components/Explorer.tsx), qui le charge.
+// `form`). Le volume au focus est celui de la requête ; cliquer une vignette en change dans l'URL,
+// la page (components/Explorer.tsx) le charge, puis remonte les facettes.
 
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import { Button, Card, Checkbox, Flex, Spinner } from "@radix-ui/themes";
@@ -11,11 +12,9 @@ import { memo, type ReactNode, useEffect, useMemo, useRef, useState, useTransiti
 import {
   checkedOf,
   coveredBy,
-  isVolumeSelected,
   keepOnly,
   pathTo,
   sectionTree,
-  setVolume,
   toggleSection,
   toggleVolume,
   volumeState,
@@ -30,16 +29,15 @@ import { QUERY_FORM, usePagePath } from "./SearchForm.tsx";
 interface FacetsProps {
   /** tous les volumes de l'index */
   volumes: Volume[];
-  /** les rubriques des volumes chargés */
+  /** les rubriques du volume de la sélection affichée */
   sections: FacetSection[];
   /** la requête de la sélection affichée : ses `subtree` sont les rubriques cochées les plus
-   * hautes ; son texte est gardé quand les cases changent */
+   * hautes ; son texte est gardé quand les cases ou le volume changent */
   query: Query;
-  /** le volume au focus, dont Contents montre l'arbre */
-  focus: string | undefined;
-  onFocus: (volumeId: string) => void;
-  /** les volumes chargés, par identifiant */
-  loaded: ReadonlyMap<string, unknown>;
+  /** le volume au focus, celui de la requête */
+  focus: string;
+  /** le volume au focus est chargé : `sections` sont les siennes */
+  ready: boolean;
 }
 
 /**
@@ -50,8 +48,7 @@ function sameFacets(a: FacetsProps, b: FacetsProps): boolean {
   return (
     a.volumes === b.volumes &&
     a.focus === b.focus &&
-    a.onFocus === b.onFocus &&
-    a.loaded === b.loaded &&
+    a.ready === b.ready &&
     a.query.text === b.query.text &&
     a.query.zones?.join() === b.query.zones?.join() &&
     a.sections.length === b.sections.length &&
@@ -64,8 +61,7 @@ export const Facets = memo(function Facets({
   sections,
   query,
   focus,
-  onFocus,
-  loaded,
+  ready,
 }: FacetsProps) {
   const tree = useMemo(() => sectionTree(sections), [sections]);
   // les rubriques cochées, lues une fois depuis l'URL
@@ -166,53 +162,57 @@ export const Facets = memo(function Facets({
                     type="button"
                     aria-pressed={v.id === focus}
                     aria-label={`Show the contents of ${name}`}
+                    // le volume au focus : ouvre Contents ; un autre : la même recherche, sans
+                    // les rubriques de celui-ci (les facettes remontées rouvrent Contents)
                     onClick={() => {
-                      onFocus(v.id);
-                      setPanels(2);
+                      if (v.id === focus) return setPanels(2);
+                      const { text, zones } = query;
+                      window.history.pushState(
+                        null,
+                        "",
+                        queryUrl(pathname, { volume: v.id, text, zones }),
+                      );
                     }}
                   >
                     <span className="volume-year">{year}</span>
                     <span className="volume-name">{v.title ?? v.id}</span>
                   </button>
                 </Card>
-                <Checkbox
-                  size="3"
-                  className="volume-box"
-                  checked={volumeState(tree, checked, v.id)}
-                  disabled={!loaded.has(v.id)}
-                  onCheckedChange={() => select(toggleVolume(tree, checked, v.id))}
-                  aria-label={`Select ${name}`}
-                />
+                {v.id === focus && (
+                  <Checkbox
+                    size="3"
+                    className="volume-box"
+                    checked={volumeState(tree, checked)}
+                    disabled={!ready}
+                    onCheckedChange={() => select(toggleVolume(tree, checked))}
+                    aria-label={`Select all of ${name}`}
+                  />
+                )}
               </div>
             );
           })}
         </div>
       </Panel>
       <Panel id="contents" title="Contents" {...panel(1)}>
-        {/* plus rien du volume au focus ; inactif quand il ne changerait rien */}
-        {focus !== undefined && !loaded.has(focus) && (
+        {ready ? (
+          <>
+            {/* plus aucune rubrique cochée ; inactif quand il ne changerait rien */}
+            <div className="facet-actions">
+              <Button
+                variant="soft"
+                disabled={checked.size === 0}
+                onClick={() => select(new Set())}
+              >
+                Clear
+              </Button>
+            </div>
+            <ul className="tree tree-root">{(tree.children.get(null) ?? []).map(row)}</ul>
+          </>
+        ) : (
           <Flex justify="center" p="4">
             <Spinner />
           </Flex>
         )}
-        {focus !== undefined && loaded.has(focus) && (
-          <div className="facet-actions">
-            <Button
-              variant="soft"
-              disabled={!isVolumeSelected(tree, checked, focus)}
-              onClick={() => select(setVolume(tree, checked, focus, false))}
-            >
-              Clear
-            </Button>
-          </div>
-        )}
-        <ul className="tree tree-root">{(tree.children.get(focus ?? "") ?? []).map(row)}</ul>
-        {/* rubriques cochées des autres volumes, que Contents ne montre pas : envoyées aussi */}
-        {[...checked]
-          .filter((id) => tree.byId.get(id)?.volumeId !== focus)
-          .map((id) => (
-            <input key={id} type="hidden" form={QUERY_FORM} name="subtree" value={id} />
-          ))}
       </Panel>
     </section>
   );

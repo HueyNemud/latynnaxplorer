@@ -10,8 +10,8 @@ const entries = (text?: string) =>
 describe("sections", () => {
   it("rend les rubriques par ordre de lecture, un parent avant ses enfants", () => {
     expect(sections(volume, {})).toEqual([
-      { id: T1, parentId: null, volumeId: "TEST", text: "PARTIE.", entries: 3 },
-      { id: T2, parentId: T1, volumeId: "TEST", text: "RUBRIQUE.", entries: 2 },
+      { id: T1, parentId: null, text: "PARTIE.", entries: 3 },
+      { id: T2, parentId: T1, text: "RUBRIQUE.", entries: 2 },
     ]);
   });
 

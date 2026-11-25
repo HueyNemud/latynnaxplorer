@@ -1,26 +1,21 @@
-// Cases des facettes sur un petit arbre : volume V, A ⊃ { A1, A2 ⊃ { A2a } } et B ;
-// volume W, C.
+// Cases des facettes sur un petit arbre : A ⊃ { A1, A2 ⊃ { A2a } } et B.
 
 import { describe, expect, it } from "vitest";
 import type { FacetSection } from "../query/types.ts";
 import {
   checkedOf,
   coveredBy,
-  isVolumeFull,
-  isVolumeSelected,
   keepOnly,
   pathTo,
   sectionTree,
-  setVolume,
   toggleSection,
   toggleVolume,
   volumeState,
 } from "./selection.ts";
 
-const section = (id: string, parentId: string | null, volumeId = "V"): FacetSection => ({
+const section = (id: string, parentId: string | null): FacetSection => ({
   id,
   parentId,
-  volumeId,
   text: id,
   entries: 0,
 });
@@ -31,16 +26,14 @@ const tree = sectionTree([
   section("A2", "A"),
   section("A2a", "A2"),
   section("B", null),
-  section("C", null, "W"),
 ]);
 
 const set = (...ids: string[]) => new Set(ids);
 
 describe("sectionTree", () => {
-  it("range les rubriques de premier niveau sous leur volume, les autres sous leur parent", () => {
-    const ids = (key: string) => tree.children.get(key)?.map((s) => s.id);
-    expect(ids("V")).toEqual(["A", "B"]);
-    expect(ids("W")).toEqual(["C"]);
+  it("range les rubriques de premier niveau sous null, les autres sous leur parent", () => {
+    const ids = (key: string | null) => tree.children.get(key)?.map((s) => s.id);
+    expect(ids(null)).toEqual(["A", "B"]);
     expect(ids("A")).toEqual(["A1", "A2"]);
     expect(ids("A2a")).toBeUndefined();
   });
@@ -68,7 +61,7 @@ describe("coveredBy", () => {
 describe("keepOnly", () => {
   it("décoche la rubrique qui couvre et ne coche que celle-ci, même plus bas", () => {
     expect(keepOnly(tree, set("A", "B"), "A2")).toEqual(set("B", "A2"));
-    expect(keepOnly(tree, set("A", "C"), "A2a")).toEqual(set("C", "A2a"));
+    expect(keepOnly(tree, set("A"), "A2a")).toEqual(set("A2a"));
   });
 });
 
@@ -90,40 +83,20 @@ describe("toggleSection", () => {
   });
 });
 
-describe("volumes", () => {
-  it("un volume est sélectionné si une de ses rubriques l'est", () => {
-    expect(isVolumeSelected(tree, set("A2a"), "V")).toBe(true);
-    expect(isVolumeSelected(tree, set("A2a"), "W")).toBe(false);
+describe("case ronde", () => {
+  it("coche les rubriques de premier niveau, que le volume soit en partie coché ou non", () => {
+    expect(toggleVolume(tree, set())).toEqual(set("A", "B"));
+    expect(toggleVolume(tree, set("A2a"))).toEqual(set("A", "B"));
   });
 
-  it("cocher un volume coche ses rubriques de premier niveau, sans toucher aux autres volumes", () => {
-    expect(toggleVolume(tree, set("C"), "V")).toEqual(set("C", "A", "B"));
+  it("décoche tout quand le volume est entier", () => {
+    expect(toggleVolume(tree, set("A", "B"))).toEqual(set());
   });
 
-  it("un volume en partie coché se coche entier, un volume entier se vide", () => {
-    expect(toggleVolume(tree, set("A2a", "C"), "V")).toEqual(set("C", "A", "B"));
-    expect(toggleVolume(tree, set("A", "B", "C"), "V")).toEqual(set("C"));
-  });
-
-  it("état de la case d'un volume : entier, en partie ou rien", () => {
-    expect(volumeState(tree, set("A", "B"), "V")).toBe(true);
-    expect(volumeState(tree, set("A2a"), "V")).toBe("indeterminate");
-    expect(volumeState(tree, set("C"), "V")).toBe(false);
-  });
-});
-
-describe("setVolume (case ronde, Clear)", () => {
-  it("coche les rubriques de premier niveau du volume, sans toucher aux autres", () => {
-    expect(setVolume(tree, set("A2a", "C"), "V", true)).toEqual(set("C", "A", "B"));
-  });
-
-  it("Clear décoche tout le volume, sans toucher aux autres", () => {
-    expect(setVolume(tree, set("A", "A2a", "C"), "V", false)).toEqual(set("C"));
-  });
-
-  it("un volume est entier quand toutes ses rubriques de premier niveau sont cochées", () => {
-    expect(isVolumeFull(tree, set("A", "B"), "V")).toBe(true);
-    expect(isVolumeFull(tree, set("A", "A2a"), "V")).toBe(false);
+  it("état : entier, en partie ou rien", () => {
+    expect(volumeState(tree, set("A", "B"))).toBe(true);
+    expect(volumeState(tree, set("A2a"))).toBe("indeterminate");
+    expect(volumeState(tree, set())).toBe(false);
   });
 });
 

@@ -6,7 +6,7 @@ import { indexVolume } from "../query/volume.ts";
 import { selectionCsv } from "./csv.ts";
 
 const volume = indexVolume(fixtureFile());
-const csv = (query: Query) => selectionCsv([volume], explore([volume], query).selection);
+const csv = (query: Query) => selectionCsv(volume, explore(volume, query).selection);
 const lines = (text: string) => text.split("\r\n");
 
 describe("selectionCsv", () => {
@@ -38,7 +38,7 @@ describe("selectionCsv", () => {
       volume: volume.meta,
       nodes: [{ id: E3, kind: "entry", parentId: null, text: 'Durand, dit "le jeune".' }],
     });
-    expect(lines(selectionCsv([quoted], quoted.nodes))[1]).toBe(
+    expect(lines(selectionCsv(quoted, quoted.nodes))[1]).toBe(
       `TEST,${E3},entry,,0,"Durand, dit ""le jeune"".",,,,`,
     );
   });
