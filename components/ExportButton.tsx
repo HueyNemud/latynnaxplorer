@@ -21,7 +21,7 @@ export function ExportButton({
     <DropdownMenu.Root>
       {/* inactif par le déclencheur, qui impose son `disabled` au bouton */}
       <DropdownMenu.Trigger disabled={selection.length === 0}>
-        <Button type="button" size="3" variant="surface" ml="auto">
+        <Button size="3" variant="surface" ml="auto">
           <DownloadIcon aria-hidden="true" />
           Export
           <DropdownMenu.TriggerIcon />
