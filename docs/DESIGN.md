@@ -140,13 +140,17 @@ de ce qui ne change que l'affichage d'une vue.
   aussi les critères posés depuis une vue (secteur, période), pour les
   retirer de partout.
   - Un bouton par zone (Subj, Desc, Addr, Other), aux couleurs de ses
-    empans : enfoncé, la zone est fouillée ; relâché, elle ne l'est pas ;
-    un clic ne lance rien.
+    empans : enfoncé, la zone est fouillée ; relâché, elle ne l'est pas.
+    Quand un texte est cherché, un clic relance la recherche ; sans texte,
+    il ne lance rien.
   - Le champ, plus grand, soudé à son bouton Search ; Entrée ou Search
     lance la recherche, en gardant les rubriques cochées.
-  - Le bouton Export (en CSV), inactif quand rien n'est sélectionné.
+  - Le bouton Export, qui ouvre le menu des formats (pour l'instant
+    « Export to CSV ») ; inactif quand rien n'est sélectionné.
+  - Faute de place, le champ (16 rem au moins) passe sous les zones, puis
+    Export sous la recherche.
 - **Outils de la vue** : fournis par chaque vue. Celle de la Liste : le
-  bouton « ⚙ » des réglages d'affichage, un menu de cases à cocher (Span
+  bouton à roue dentée des réglages d'affichage, un menu de cases à cocher (Span
   colors : les fonds des empans), hors de l'URL, mémorisées dans le
   navigateur. Le menu change avec la vue ; un réglage qui vaut pour
   plusieurs vues est mémorisé une fois et figure dans le menu de chacune.
@@ -179,7 +183,7 @@ détaillée (sa fiche). Le contenu (texte, empans) est porté par toutes.
 
 | Vue | Compacte | Fiche | Disponible |
 |---|---|---|---|
-| Liste | une ligne de texte imprimé, empans sur fond coloré, correspondances sur fond iris ; une rubrique est marquée par son guide de niveau, son intitulé fixé en haut | dépliée sous la ligne | maintenant |
+| Liste | une ligne de texte imprimé, empans sur fond coloré, correspondances en jaune surligneur ; une rubrique est marquée par son guide de niveau, son intitulé fixé en haut | dépliée sous la ligne | maintenant |
 | Page | la boîte du nœud sur sa page (vignette) | la page, boîte surlignée | ancres présentes, images à venir (IIIF) |
 | Carte | un point | le point dans son quartier | après le géocodage |
 | Frise | un repère | sa date ; plus tard, ses entrées liées | date du volume maintenant, liens plus tard |
@@ -199,7 +203,8 @@ part.
 - **Vues** : une à la fois pour commencer, le focus pensé dès le départ
   comme partagé ; à terme, deux côte à côte (Liste + Page, Liste + Carte…).
 - **Composants** : ceux de Radix Themes, sur son thème (accent iris, gris
-  mauve) ; nos styles seulement pour ce que Radix n'a pas (guides de la
-  Liste, arbre de Contents, panneaux), avec ses jetons.
+  mauve), et ses icônes (`@radix-ui/react-icons`) ; nos styles seulement
+  pour ce que Radix n'a pas (guides de la Liste, arbre de Contents,
+  panneaux), avec ses jetons.
 - **La source à un clic** : depuis tout nœud, dans toute vue, la page
   d'origine est accessible.

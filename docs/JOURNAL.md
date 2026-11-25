@@ -55,8 +55,23 @@ Ce qui a été fait, en bref, le plus récent en haut ; le détail est dans
 - **`:has()`** : quand la page grandit (tranches), Chromium recalcule le
   style de tout ce qu'un `:has()` peut toucher ; préférer un attribut ou
   une règle sans `:has()`.
+- **Radix, menus** : `DropdownMenu.Trigger` impose son `disabled` au
+  bouton qu'il enveloppe ; mettre `disabled` sur le déclencheur.
+- **Flexbox qui passe à la ligne** : la coupure se décide sur la base
+  (`flex-basis`, par défaut la largeur du contenu), pas sur `min-width` ;
+  donner la base voulue (le champ de recherche : `16rem`).
 - **commitlint** : le sujet ne commence pas par une majuscule, même un
   nom de type (`renommer FacetVolume…`, pas `FacetVolume devient…`).
+
+## 2026-11-25 — Barre et retours (sprint 21)
+
+- Suite d'un audit UX/UI. La barre passe à la ligne au lieu d'écraser le
+  champ ; le nom du volume au focus est le titre de l'onglet.
+- Export ouvre un menu des formats (CSV pour l'instant) ; le décompte de
+  la sélection est dans l'en-tête de la Liste.
+- Un clic sur une zone relance la recherche quand un texte est cherché.
+- Adresses en rose, correspondances en jaune surligneur.
+- Icônes de `@radix-ui/react-icons` : `components/icons.tsx` retiré.
 
 ## 2026-11-25 — Nettoyage (sprint 20)
 

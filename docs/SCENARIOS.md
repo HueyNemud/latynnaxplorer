@@ -46,7 +46,8 @@ activité, une rue.
 **URL** : `?text=<texte>`, et `in=<zone>` (répétable) pour ne chercher
 que dans certaines zones ; avec `subtree`, la recherche est restreinte à
 ce sous-arbre (conjonction des critères). Le formulaire de recherche
-(`components/SearchForm.tsx`) envoie `text` et les zones enfoncées ; avec
+(`components/SearchForm.tsx`) envoie `text` et les zones enfoncées, par
+Search, Entrée ou un clic sur une zone quand un texte est cherché ; avec
 les facettes, il envoie aussi les rubriques cochées.
 
 **Résultat** : les nœuds de tout type dont le texte contient le texte

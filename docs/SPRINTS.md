@@ -36,6 +36,16 @@ dépendances, choix discutables).
 | 19, barre de la sélection | #36 | barre de la sélection commune aux vues, outils de la vue après un trait |
 | 20, nettoyage | #37 | docs d'accord avec le code, brief initial retiré, calcul des arcs retiré, fiche par `onToggle`, barre en `Flex` de Radix |
 
+## Prochain : sprint 22, Liste et facettes
+
+- Cacher les éléments hors champ : un réglage d'affichage seulement (menu
+  des réglages), l'export les garde.
+- Clear de Contents : « Clear sections », montré seulement s'il sert ; à
+  voir sur captures (l'arbre ne doit pas sauter).
+- Écran étroit, au plus simple : panneaux repliés d'emblée.
+- Atteindre une rubrique dans la Liste depuis Contents, seulement si
+  l'implémentation reste légère.
+
 ## Hors sprint : demandes à numrev
 
 À transmettre par l'utilisateur ; rien n'est contourné ici.

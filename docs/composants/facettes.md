@@ -71,8 +71,9 @@ de repli**.
   l'année en gras, puis le nom du volume en petit, centrés ; rien dessous.
 - **Focus** : un clic sur la vignette met le volume au focus, Contents
   montre ses rubriques. Vignette cernée (2 px `--gray-12`, à 2 px) et
-  encoche pointée vers Contents. Par défaut, le volume de la première
-  rubrique cochée, sinon le premier. Le volume au focus est téléchargé s'il
+  encoche pointée vers Contents ; son nom (`volumeName`) est le titre de
+  l'onglet. Par défaut, le volume de la première rubrique cochée, sinon le
+  premier. Le volume au focus est téléchargé s'il
   ne l'est pas : Contents attend (Spinner).
 - **Case ronde** : la Checkbox de Radix, ronde et de 1,5 rem, en haut à
   gauche de la vignette. Cochée si tout le volume l'est (toutes ses

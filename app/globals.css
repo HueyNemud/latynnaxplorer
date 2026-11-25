@@ -13,10 +13,11 @@
     var(--font-fira), system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     sans-serif;
 
-  /* lignes (Liste, arbre des facettes) : marges intérieures horizontale et verticale ; icônes */
+  /* lignes (Liste, arbre des facettes) : marges intérieures horizontale et verticale ; icônes
+     (@radix-ui/react-icons, dessinées sur 15 × 15 : à cette taille, elles restent nettes) */
   --line-pad: 0.375rem;
   --line-pad-y: 0.125rem;
-  --icon: 0.875rem;
+  --icon: 15px;
 
   /* Liste : hauteur de la ligne d'une rubrique (pas de la pile des intitulés fixés) ; guide :
      épaisseur (en pixels entiers, sinon les traits sont inégaux), écart avec les lignes, boule */
@@ -79,17 +80,6 @@ summary::-webkit-details-marker {
   white-space: nowrap;
 }
 
-/* Icône (components/icons.tsx) : traits à la couleur du texte */
-.icon {
-  width: var(--icon);
-  height: var(--icon);
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.5;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
 /* ── Texte imprimé (components/PrintedText.tsx) ── */
 
 /* retours à la ligne de numrev gardés (groupes à accolade) */
@@ -119,7 +109,7 @@ summary::-webkit-details-marker {
 }
 
 .span-addr {
-  background: var(--yellow-a3);
+  background: var(--pink-a4);
 }
 
 /* réglage Span colors décoché (components/Settings.tsx) : les empans sans fond */
@@ -127,11 +117,12 @@ summary::-webkit-details-marker {
   background: none;
 }
 
-/* Correspondance du texte cherché : fond iris opaque, qui recouvre celui des empans et se lit
-   pareil sur tous ; texte foncé, même hors champ (le gris n'y atteint pas 4,5:1) */
+/* Correspondance du texte cherché : fond jaune vif de surligneur, opaque, qui recouvre celui des
+   empans et se lit pareil sur tous (aucun empan n'est jaune) ; texte foncé, même hors champ (le
+   gris n'y atteint pas 4,5:1) */
 .printed mark {
   color: var(--gray-12);
-  background: var(--iris-6);
+  background: var(--yellow-9);
   border-radius: 0.2em;
 }
 
@@ -225,10 +216,11 @@ details[open] > summary .chevron {
 }
 
 /* recherche (components/SearchForm.tsx) : les boutons des zones, puis le champ soudé à son
-   bouton Search, à une largeur raisonnable */
+   bouton Search, à une largeur raisonnable ; faute de place, le champ passe sous les zones (il
+   garde une largeur minimale), et Export sous la recherche */
 .search-form {
-  flex: 0 1 46rem;
-  min-width: 0;
+  flex: 1 1 0;
+  max-width: 46rem;
 }
 
 /* le champ et le bouton Search soudés */
@@ -251,7 +243,7 @@ details[open] > summary .chevron {
 
 /* ── Vue Liste (components/NodeList.tsx, docs/composants/noeud-liste.md) ── */
 
-/* En-tête (seulement « Page ») et lignes : mêmes colonnes texte | page */
+/* En-tête (décompte de la sélection, « Page ») et lignes : mêmes colonnes texte | page */
 .columns,
 .line {
   display: grid;

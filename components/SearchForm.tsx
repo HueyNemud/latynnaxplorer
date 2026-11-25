@@ -5,11 +5,12 @@
 // L'envoi, comme le lien qui efface la recherche, ajoute une entrée à l'historique sans recharger
 // la page, comme un envoi natif.
 
+import { Cross2Icon, MagnifyingGlassIcon } from "@radix-ui/react-icons";
 import { Box, Button, Flex, IconButton, TextField } from "@radix-ui/themes";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
+import { flushSync } from "react-dom";
 import { parseQuery, type Query, queryUrl, ZONES, type Zone } from "../lib/query/query.ts";
-import { ClearIcon, SearchIcon } from "./icons.tsx";
 
 /** Identifiant du formulaire de la requête, auquel les cases des facettes se rattachent. */
 export const QUERY_FORM = "query";
@@ -27,7 +28,7 @@ export function SearchForm({ query }: { query: Query }) {
   const go = (query: Query) => window.history.pushState(null, "", queryUrl(pathname, query));
   return (
     <search className="search-form">
-      <Flex asChild align="center" gap="3">
+      <Flex asChild align="center" gap="3" wrap="wrap">
         <form
           id={QUERY_FORM}
           method="get"
@@ -40,12 +41,12 @@ export function SearchForm({ query }: { query: Query }) {
           }}
         >
           {/* clé : des boutons neufs à chaque requête, comme le champ */}
-          <ZoneToggles key={zones?.join()} zones={zones} />
-          <Flex flexGrow="1">
+          <ZoneToggles key={zones?.join()} zones={zones} live={text !== undefined} />
+          <Flex flexGrow="1" flexBasis="16rem" minWidth="16rem">
             <label htmlFor="search-text" className="visually-hidden">
               Search text
             </label>
-            <Box flexGrow="1">
+            <Box flexGrow="1" minWidth="0">
               {/* clé : un champ neuf à chaque texte, même quand une navigation garde la page */}
               <TextField.Root
                 key={text}
@@ -70,7 +71,7 @@ export function SearchForm({ query }: { query: Query }) {
                           go(cleared);
                         }}
                       >
-                        <ClearIcon />
+                        <Cross2Icon aria-hidden="true" />
                         <span className="visually-hidden">Clear search</span>
                       </a>
                     </IconButton>
@@ -79,7 +80,7 @@ export function SearchForm({ query }: { query: Query }) {
               </TextField.Root>
             </Box>
             <Button type="submit" size="3" variant="surface" className="search-submit">
-              <SearchIcon />
+              <MagnifyingGlassIcon aria-hidden="true" />
               Search
             </Button>
           </Flex>
@@ -98,7 +99,7 @@ const ZONE_BUTTONS = {
     title: "Search in subjects: names of people and businesses",
   },
   desc: { label: "Desc", color: "teal", title: "Search in descriptions: trades, titles, details" },
-  addr: { label: "Addr", color: "yellow", title: "Search in addresses" },
+  addr: { label: "Addr", color: "pink", title: "Search in addresses" },
   other: {
     label: "Other",
     color: "gray",
@@ -106,9 +107,16 @@ const ZONE_BUTTONS = {
   },
 } as const satisfies Record<Zone, object>;
 
-/** Boutons des zones où chercher, enfoncés pour celles de la requête (toutes sans zone) ; un clic
- * n'envoie rien, le formulaire envoie les zones enfoncées avec le texte. */
-function ZoneToggles({ zones = ZONES }: { zones: readonly Zone[] | undefined }) {
+/** Boutons des zones où chercher, enfoncés pour celles de la requête (toutes sans zone) ; le
+ * formulaire envoie les zones enfoncées avec le texte. `live` : un texte est cherché, un clic
+ * relance aussitôt la recherche ; sinon il n'envoie rien. */
+function ZoneToggles({
+  zones = ZONES,
+  live,
+}: {
+  zones: readonly Zone[] | undefined;
+  live: boolean;
+}) {
   const [pressed, setPressed] = useState(zones);
   return (
     <Flex gap="1" align="center" role="group" aria-label="Search in">
@@ -122,7 +130,13 @@ function ZoneToggles({ zones = ZONES }: { zones: readonly Zone[] | undefined }) 
             color={ZONE_BUTTONS[z].color}
             aria-pressed={on}
             title={ZONE_BUTTONS[z].title}
-            onClick={() => setPressed(on ? pressed.filter((p) => p !== z) : [...pressed, z])}
+            onClick={(event) => {
+              const next = on ? pressed.filter((p) => p !== z) : [...pressed, z];
+              if (!live) return setPressed(next);
+              // les champs cachés des zones à jour avant l'envoi
+              flushSync(() => setPressed(next));
+              event.currentTarget.form?.requestSubmit();
+            }}
           >
             {ZONE_BUTTONS[z].label}
           </Button>

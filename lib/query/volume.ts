@@ -17,6 +17,11 @@ export interface IndexedVolume extends Volume {
   url: string;
 }
 
+/** Nom d'un volume à l'écran : son année, puis son titre, sinon son identifiant. */
+export function volumeName(volume: Volume): string {
+  return `${volume.temporalStart.slice(0, 4)} ${volume.title ?? volume.id}`;
+}
+
 /** Fichier d'un volume : JSON compact, sans ce qui se déduit. */
 export interface VolumeFile {
   volume: Volume;

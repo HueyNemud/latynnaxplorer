@@ -44,6 +44,14 @@ d'ici.
 - Les panneaux ouverts prennent 34,5 rem : sur un téléphone, ils devraient
   passer par-dessus la vue (tiroir), repliés par défaut.
 
+## Accueil et barre
+
+- Une page d'accueil : ce qu'est le site, d'où viennent les annuaires.
+- Les critères actifs résumés dans la barre (rubriques cochées dans une
+  branche repliée ou un autre volume), chacun retirable.
+- Les menus Export et réglages plus proches d'un menu que d'une bulle,
+  si Radix le permet sans CSS sur mesure.
+
 ## Mode sombre
 
 - Chaque échelle de couleurs de Radix a sa variante sombre : un mode sombre
